@@ -33,11 +33,6 @@ def process(fft_queue,led_queue):
 
 			fft_data = np.fft.fft(audio_data,n = NUM_BINS)
 			fft_mag = np.abs(fft_data)[:NUM_BINS//2]
-
-			max_freq = 5000
-			idx_max_freq = np.argmax(np.fft.fftfreq(NUM_BINS, 1/RATE)[:NUM_BINS//2] > max_freq)
-			fft_mag = fft_mag[:idx_max_freq]
-
 			#fft_mag_db = 20 * np.log10(fft_mag + 1e-6)
 			#fft_mag_db[fft_mag_db < -60] = -60
 			#max_freq_idx = np.argmax(fft_mag)

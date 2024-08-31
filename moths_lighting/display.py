@@ -1,15 +1,26 @@
 from luma.core.interface.serial import i2c
+import numpy as np
 from luma.oled.device import ssd1309
 from PIL import Image, ImageDraw
 import time
 serial = i2c(port = 1, address = 0x3C)
 device = ssd1309(serial, width=128, height = 64)
 
-def update(data):
+def update(fft_queue):
 	try:
 		while True:
 			start_time = time.time()
-			data = fft_queue.get()
+
+			results_buffer = []
+			while not fft_queue.empty():
+				fft_data=fft_queue.get()
+				results_buffer.append(fft_data)
+
+			if results_buffer:
+				fft_array = np.array(results_buffer)
+				data = np.mean(fft_array, axis = 0)
+				results_buffer = []
+
 			max_magnitude = max(data)
 			scaled_magnitude = (data/max_magnitude)*device.height
 			scaled_magnitude = scaled_magnitude.astype(int)
@@ -22,7 +33,7 @@ def update(data):
 
 			device.display(image)
 			duration = time.time()-start_time
-			print(f"Display Loop time: {duration:.6f}seconds")
+			#print(f"Display Loop time: {duration:.6f}seconds")
 	except KeyboardInterrupt:
 		print("display : Interrupted by user, stopping")
 

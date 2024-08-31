@@ -6,11 +6,11 @@ import time
 import queue
 
 fft_queue = queue.Queue()
-
+led_queue = queue.Queue()
 def display_thread():
 	while not stop_flag.is_set():
 		if not fft_queue.empty():
-			display.update()
+			display.update(fft_queue)
 
 
 #def artnet_thread():
@@ -19,7 +19,7 @@ def display_thread():
 
 def audio_thread():
 	while not stop_flag.is_set():
-		audio.process()
+		audio.process(fft_queue,led_queue)
 
 
 def main():
@@ -30,8 +30,10 @@ def main():
 	display_thread_instance.start()
 
 	try:
+		
 		while True:
-			time.sleep(1)
+			artnet.update(led_queue)
+			time.sleep(0.05)
 	except KeyboardInterrupt:
 		print("Interrupted by user")
 
