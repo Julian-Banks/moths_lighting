@@ -1,7 +1,7 @@
 from display import Display
 from encoder import Encoder
 import audio
-import artnet
+from artnet import ArtnetController
 import threading
 import time
 import queue
@@ -12,16 +12,23 @@ fps_queue = queue.Queue()
 
 FPS_target = 40
 
-menu_options = ["Brightness", "Display FFT", "Change modes"]
+esp_configs = [
+    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': FPS_target},
+    {'target_ip': '192.168.1.102', 'universe': 0,'fps': FPS_target},
+    {'target_ip': '192.168.1.103', 'universe': 0,'fps': FPS_target},
+]
 
-def artnet_thread():
+def artnet_thread(artnet_controller):
+	artnet_controller.start()
 	while not stop_flag.is_set():
+		artnet_controller.send_data()
+		'''
 		start_time = time.time()
 		artnet.update(led_queue)
 		time.sleep(0.05)
 		elapsed_time = time.time() - start_time
 		fps = 1/elapsed_time
-		fps_queue.put(fps)
+		fps_queue.put(fps)'''
 
 def audio_thread():
 	while not stop_flag.is_set():
@@ -48,9 +55,12 @@ def main():
 	audio_thread_instance = threading.Thread(target=audio_thread)
 	audio_thread_instance.start()
 
-	#write the arnet as a bar class? then have an array of the classes for each bar? oo I like that.
+	#create Artnet class. create an instance of the class.
+	artnet_controller = ArtnetController(esp_configs)
+	#Create Bar classes here? 
+	
 	#start the artnet Thread
-	artnet_thread_instance = threading.Thread(target=artnet_thread)
+	artnet_thread_instance = threading.Thread(target=artnet_thread(artnet_controller))
 	artnet_thread_instance.start()
 
 	#initialise the display and encoder
