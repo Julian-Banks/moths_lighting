@@ -17,13 +17,19 @@ class AudioProcessor:
         self.stream = None
         self.running = False
 
-    
     def start_stream(self):
-        self.stream = self.p.open(format=self.format,
+        try:
+            self.stream = self.p.open(format=self.format,
                                   channels=self.channels,
                                   rate=self.rate,
                                   input=True,
                                   frames_per_buffer=self.chunk)
+            print('Audio Stream started successfully')
+            while self.running:
+                self.process_audio()
+
+        except Exception as e:
+            print(f'Failed to start audio stream {e}')
 
     def process_audio(self):
         start_time = time.time()
@@ -48,7 +54,7 @@ class AudioProcessor:
 
         end_time = time.time()
         duration = end_time - start_time
-        # print(f"Loop executed in: {duration:.6f} seconds")
+        print(f"Loop executed in: {duration:.6f} seconds")
 
        
    

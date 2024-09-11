@@ -20,7 +20,7 @@ RATE = 44100
 CHUNK = 1024
 NUM_BINS = 1024
 
- 
+
 
 esp_configs = [
     {'target_ip': '255.255.255.255', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
@@ -29,10 +29,10 @@ esp_configs = [
 ]
 
 def artnet_thread(artnet_controller):
-	#If I go the threading route I could start the sending here. 
- 	#artnet_controller.start()
+	print('Starting the Artnet Thread')
+	#start the bars generating patterns
 	artnet_controller.start_mode()
- 
+	print('finished Start mode function')
 	while not stop_flag.is_set():
 		artnet_controller.send_data()
 		'''
@@ -42,15 +42,19 @@ def artnet_thread(artnet_controller):
 		elapsed_time = time.time() - start_time
 		fps = 1/elapsed_time
 		fps_queue.put(fps)'''
-  
+
 	artnet_controller.end_mode()
 
 def audio_thread(audio_processor):
+
+	print('Starting the Audio Thread')
+	audio_processor.running = True
 	audio_processor.start_stream()
- 
+
 	while not stop_flag.is_set():
-		audio_processor.process_audio()
-  
+		#audio_processor.process_audio()
+		time.sleep(1)
+	audio_processor.running = False
 	audio_processor.stop_stream()
 
 
@@ -66,22 +70,24 @@ def on_button_push(display):
 			display.on_button_push(fft_queue)
 	else:
 		display.on_button_push("None")
-  
+
 def main():
 	#get the class to run the fft in a state and change the state when needed.
 	#start the audio thread
+	print('About to create Audio class and start thread')
 	audio_processor = AudioProcessor(FORMAT, CHANNELS, RATE, CHUNK, NUM_BINS, fft_queue, led_queue)
-	audio_thread_instance = threading.Thread(target=audio_thread(audio_processor))
-	audio_thread_instance.start()
+	#audio_thread_instance = threading.Thread(target=audio_thread(audio_processor))
+	#audio_thread_instance.start()
 
+	print('About to create ArtnetController and start thread')
 	#create Artnet class. create an instance of the class.
-	artnet_controller = ArtnetController(esp_configs)
-	#Create Bar classes here? 
-	
+	artnet_controller = ArtnetController(esp_configs=esp_configs, num_esps = 1)
+
 	#start the artnet Thread
 	artnet_thread_instance = threading.Thread(target=artnet_thread(artnet_controller))
 	artnet_thread_instance.start()
 
+	print('About to create Display and encoder')
 	#initialise the display and encoder
 	display = Display()
 	encoder = Encoder(pin_A = 22, pin_B = 27, pin_button = 17, display= display, callback= on_position_change, button_callback = on_button_push)

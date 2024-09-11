@@ -5,11 +5,7 @@
 import time
 import numpy as np
 import threading
-from moths_lighting.artnet import Artnet
-from moths_lighting import config
-from moths_lighting import display
-from moths_lighting import fft
-from moths_lighting import fps
+import sys
 
 
 class Bar:
@@ -21,9 +17,8 @@ class Bar:
                  fps = 45,
                  colours = [(255,0,0),(0,255,0),(0,0,255)],
                  steps_per_transition = 100
-                  
                 ):
-        self.artnet = Artnet()
+        self.lock = threading.Lock()
         self.thread = None
         self.num_leds = num_leds
         self.num_pixels = num_leds*3
@@ -37,14 +32,13 @@ class Bar:
         self.steps_per_transition = steps_per_transition
         self.all_colours = self.cycle_colours(colours=colours,steps_per_transition=steps_per_transition)
         self.state = 0
-        
+
     #write a function to fill the bar a solid colour and slowly fade into different colours
     def interpolate_colour(self, colour1, colour2, steps):
         #this function will take two colours and return a list of colours that are interpolated between the two colours
-        return [(1-t) * np.array(colour1) + t * np.array(colour2) for t in np.linspace(0,1,steps)]
-      
-    
-    
+        return [(1-t) * np.array(colour1) + t * np.array(colour2) for t in np.linspace(0,1,steps)] 
+
+
     def cycle_colours(self, colours, steps_per_transition):
         """Cycle through a list of RGB colors smoothly."""
         all_colors = []
@@ -53,42 +47,43 @@ class Bar:
             color2 = colours[(i + 1) % len(colours)]  # Wrap to the first color after the last
             all_colors.extend(self.interpolate_colour(color1, color2, steps_per_transition))
         return all_colors
-    
+
     def stop_generator(self):
         #change the state to 1 to stop the generator function
         self.state = 1
         #wait for the thread to finish
         self.thread.join()
-    
+
     def start_generator(self):
         #set the stat to 0 so it will run
         self.state = 0
         #start a thread that will run the generator function
         self.thread = threading.Thread(target=self.generator)
         self.thread.start()
-    
+
     #Write a function that sets self.pixels to a solid colour and steps through self.all_colours at self.fps frames per second
-    def generator(self, colour):
-        
+    def generator(self):
+
         #start a loop that will run until the state is changed from 0
         while self.state == 0:
-            #use the lock to prevent the pixels from being changed while the artnet class is sending the pixels to the LED bar
-            with self.lock:
+            #Grab a colour from the list of colours, need to add some more checks in here otherwise it will only stop once the state is changed and it's finished it's full cycle through the colours 
+            for colour in self.all_colours:
                 start_time = time.time()
-                #set the pixels to the colour
-                self.pixels = bytearray([int(self.brightness * x) for x in colour * self.num_leds])
+                if self.state == 0:
+                    with self.lock:
+                        #set the pixels to the colour
+                        self.pixels = bytearray([int(self.brightness * x) for x in colour for _ in range(self.num_leds)])
+                        print(len(self.pixels))
+                else:
+                    sys.exit()
+                #calculate elapsed time
+                elapsed_time = time.time() - start_time
+            	#calculate the time to sleep
+                sleep_time = max(1/self.fps - elapsed_time,0)
+            	#sleep to get accurate fps
+                time.sleep(sleep_time)
 
-            #calculate elapsed time
-            elapsed_time = time.time() - start_time
-            #calculate the time to sleep
-            sleep_time = max(1/self.fps - elapsed_time,0)
-            #sleep to get accurate fps
-            time.sleep(sleep_time)
-                
     #function to allow the Artnet class access to the pixels.
     def get_pixels(self):
-        
         with self.lock:
             return self.pixels
-        
-        

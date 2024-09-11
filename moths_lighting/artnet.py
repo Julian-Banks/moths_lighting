@@ -4,36 +4,31 @@ import random
 from scipy.signal import resample
 import numpy as np
 from bar import Bar
-#delete this shit
-target_ip = '255.255.255.255'
-universe = 0
-NUM_LEDS = 144
-packet_size = NUM_LEDS*3
 
-#move config into the main foloder, 
 
 
 class ArtnetController: 
-	def __init__(self,num_bars, num_esps,esp_configs):
-		
+	def __init__(self,num_esps,esp_configs,fps = 45):
+		self.device_bars_map = {}
 		self.artnet_devices = []
+		self.fps = fps
 		for config in esp_configs:
 			target_ip = config['target_ip']
 			universe = config['universe']
 			packet_size = (config.get('num_bars')*96*3)
 			fps = config.get('fps',40)
-		
+
 			#Create new artnet device
 			artnet_device = StupidArtnet(target_ip, universe, packet_size, fps, True, True)
 
 			#Add the new artnet device to the list of artnet devices
 			self.artnet_devices.append(artnet_device)
-   
+
 			bars = [Bar(bar_id) for bar_id in range(config.get('num_bars'))]
 			self.device_bars_map[artnet_device] = bars
-  
+
 		self.packet = bytearray(packet_size)
-		
+
 	def start_mode(self):
 		for artnet_device in self.artnet_devices:
 			bars = self.device_bars_map[artnet_device]
@@ -51,7 +46,7 @@ class ArtnetController:
 		#update packet for each artnet instance using bar.get_pixels
 		start_time = time.time()
 		for artnet_device in self.artnet_devices:
-			packet = bytearray(self.packet_size)
+			packet = bytearray(artnet_device.packet_size)
 			bars = self.device_bars_map[artnet_device]
 			offset = 0
 			for bar in bars:
