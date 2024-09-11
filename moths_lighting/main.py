@@ -1,25 +1,38 @@
 from display import Display
 from encoder import Encoder
-import audio
+from audio import AudioProcessor
 from artnet import ArtnetController
 import threading
 import time
-import queue
+from queue import Queue
+import pyaudio
 
-fft_queue = queue.Queue()
-led_queue = queue.Queue()
-fps_queue = queue.Queue()
+fft_queue = Queue()
+led_queue = Queue()
+fps_queue = Queue()
 
 FPS_target = 40
 
+	#create Audio class. create an  instance of the class.
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 44100
+CHUNK = 1024
+NUM_BINS = 1024
+
+ 
+
 esp_configs = [
-    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': FPS_target},
-    {'target_ip': '192.168.1.102', 'universe': 0,'fps': FPS_target},
-    {'target_ip': '192.168.1.103', 'universe': 0,'fps': FPS_target},
+    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
+    {'target_ip': '192.168.1.102', 'universe': 0,'fps': FPS_target, 'num_bars': 1},
+    {'target_ip': '192.168.1.103', 'universe': 0,'fps': FPS_target, 'num_bars': 1},
 ]
 
 def artnet_thread(artnet_controller):
-	artnet_controller.start()
+	#If I go the threading route I could start the sending here. 
+ 	#artnet_controller.start()
+	artnet_controller.start_mode()
+ 
 	while not stop_flag.is_set():
 		artnet_controller.send_data()
 		'''
@@ -29,10 +42,16 @@ def artnet_thread(artnet_controller):
 		elapsed_time = time.time() - start_time
 		fps = 1/elapsed_time
 		fps_queue.put(fps)'''
+  
+	artnet_controller.end_mode()
 
-def audio_thread():
+def audio_thread(audio_processor):
+	audio_processor.start_stream()
+ 
 	while not stop_flag.is_set():
-		audio.process(fft_queue,led_queue)
+		audio_processor.process_audio()
+  
+	audio_processor.stop_stream()
 
 
 def on_position_change(display,position):
@@ -47,12 +66,12 @@ def on_button_push(display):
 			display.on_button_push(fft_queue)
 	else:
 		display.on_button_push("None")
+  
 def main():
-
-	#create Audio class. create an  instance of the class.
 	#get the class to run the fft in a state and change the state when needed.
 	#start the audio thread
-	audio_thread_instance = threading.Thread(target=audio_thread)
+	audio_processor = AudioProcessor(FORMAT, CHANNELS, RATE, CHUNK, NUM_BINS, fft_queue, led_queue)
+	audio_thread_instance = threading.Thread(target=audio_thread(audio_processor))
 	audio_thread_instance.start()
 
 	#create Artnet class. create an instance of the class.
@@ -81,6 +100,11 @@ def main():
 		audio_thread_instance.join()
 		artnet_thread_instance.join()
 		encoder.cleanup()
+		#display Cleanup
+
+		#artnet cleanup
+  
+		#audio cleanup
 
 
 if  __name__ == "__main__":
