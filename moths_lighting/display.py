@@ -183,12 +183,14 @@ class Display:
             return self.artnet_controller.get_bass_threshold()
 
         def set_bass_threshold(value):
+            self.bass_threshold = value
             self.artnet_controller.set_bass_threshold(self.bass_threshold)
             
         def get_mid_threshold():
             return self.artnet_controller.get_mid_threshold()
         
         def set_mid_threshold(value):
+            self.mid_threshold(value)
             self.artnet_controller.set_mid_threshold(value)
 
         def get_audio_sensitivity():
