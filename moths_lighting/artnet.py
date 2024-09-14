@@ -42,7 +42,7 @@ class ArtnetController:
 
     def update_bars(self, led_queue):
         fft_data = self.process_audio(led_queue)
-        
+
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
@@ -79,3 +79,9 @@ class ArtnetController:
                 offset += len(pixels)
             artnet_device.send(packet)
         # Timing control is handled in the main loop
+        
+    def set_brighness(self, brightness):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.brightness = brightness
