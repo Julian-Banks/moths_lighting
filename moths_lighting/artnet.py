@@ -80,7 +80,7 @@ class ArtnetController:
             artnet_device.send(packet)
         # Timing control is handled in the main loop
         
-    def set_brighness(self, brightness):
+    def set_brightness(self, brightness):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
