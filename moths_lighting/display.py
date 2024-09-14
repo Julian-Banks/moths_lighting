@@ -260,7 +260,7 @@ class Display:
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
             AdjustableMenuItem("Sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),
-            AdjustableMenuItem("Bass Trigger", get_bass_threshold, set_bass_threshold, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Bass Trigger", get_bass_threshold,  set_bass_threshold, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Bass LB", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=200, step=10),
             AdjustableMenuItem("Bass UB", get_bass_upper_bound, set_bass_upper_bound, min_value=0, max_value=200, step=10),
             AdjustableMenuItem("Mid Trigger", get_mid_threshold, set_mid_threshold, min_value=0, max_value=1, step=0.1),
@@ -345,6 +345,8 @@ class Display:
                 if self.showing_fft:
                     with Image.new("1", (self.device.width, self.device.height)) as img:
                         draw = ImageDraw.Draw(img)
+                        # Display FFT FPS
+                        draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
                         draw = self.draw_fft_display_inpicture(draw=draw)
                         self.device.display(img)
                     
@@ -413,10 +415,7 @@ class Display:
             x_pos = x + i * bar_width
             y_top = y + height - scaled_magnitude[i]
             draw.rectangle([x_pos, y_top, x_pos + bar_width - 1, y + height], fill=255)
-
-        # Display FFT FPS
-        draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
-
+            
         # Draw the bass threshold line across this frequency range
         threshold_y = y + height - int(self.bass_threshold * height)
         start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.bass_lower_bound, upper_bound=self.bass_upper_bound, width=width)
@@ -429,46 +428,6 @@ class Display:
 
         return draw
 
-    def draw_fft_display(self, height = None, width = None):
-        
-        device = self.device
-        
-        if height is None:
-            height = device.height
-        if width is None:
-            width = device.width
-        
-        data = self.get_audio_data()
-
-        max_magnitude = max(data) if np.max(data) > 0 else 1
-        scaled_magnitude = (data) * (height)
-        scaled_magnitude = scaled_magnitude.astype(int)
-
-        with Image.new('1', (width, height)) as img:
-            draw = ImageDraw.Draw(img)
-
-            # Draw FFT bars
-            num_bars = min(width, len(scaled_magnitude))
-            bar_width = max(1, width // num_bars)
-            for i in range(num_bars):
-                x = i * bar_width
-                y_top = height - scaled_magnitude[i]
-                draw.rectangle([x, y_top, x + bar_width - 1, height], fill=255)
-
-            # Display FFT FPS
-            draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
-
-            # Draw the bass threshold line across this frequency range
-            threshold_y = height - int(self.bass_threshold * height)
-            start_pixel, end_pixel = self.calculate_line(data, self.bass_lower_bound, self.bass_upper_bound)
-            draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
-            
-            # Draw the mid threshold line across this frequency range
-            threshold_y = height - int(self.mid_threshold * height)
-            start_pixel, end_pixel = self.calculate_line(data, self.mid_lower_bound, self.mid_upper_bound)
-            draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
-
-            self.device.display(img)
             
     def calculate_line(self, data, lower_bound, upper_bound, width):
         # Determine frequency resolution and find indices for 0-200 Hz
