@@ -190,7 +190,7 @@ class Display:
             return self.artnet_controller.get_mid_threshold()
         
         def set_mid_threshold(value):
-            self.mid_threshold(value)
+            self.mid_threshold = value
             self.artnet_controller.set_mid_threshold(value)
 
         def get_audio_sensitivity():
