@@ -42,7 +42,7 @@ class Display:
 
     def on_position_change(self, position):
         with self.lock:
-            if self.state == "MainScreen":
+            if self.state == "MainScreen" or "Options":
                 # Update menu position
                 self.position = position % len(self.menu_items)
             elif self.state == "Adjusting":
