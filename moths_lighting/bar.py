@@ -10,6 +10,7 @@ class Bar:
         self.brightness = brightness
         self.state = 0  # Mode index
         self.modes = [self.mode_static, self.mode_wave, self.mode_pulse]  # Add more modes as needed
+        self.modes_menu = ["Static", "Wave", "Pulse"]
 
     def update(self, fft_data):
         with self.lock:

@@ -26,7 +26,7 @@ class Display:
         self.position = 0
         self.last_position = 0
         self.menu_items = ["Lighting Mode", "Brightness", "Audio Sensitivity", "FPS", "Options"]
-        self.options_menu_items = ["Configure Controllers", "Show FFT Stats", "Select Modes"]
+        self.options_menu_items = ["Configure Controllers", "Show FFT Stats", "Select Modes", "Back"]
         self.selected_mode = 0
         self.brightness = 50  # Display range 0-100
         self.internal_brightness = self.brightness / 100.0  # Internal processing range 0-1
@@ -88,6 +88,8 @@ class Display:
                     self.state = "FFT_Display"
                 elif selected_option == "Select Modes":
                     self.state = "InDevelopment"
+                elif selected_option == "Back":
+                    self.state == "MainScreen"
             elif self.state == "Adjusting":
                 # Return to MainScreen from Adjusting state
                 self.state = "MainScreen"
@@ -133,6 +135,8 @@ class Display:
                     self.draw_adjusting_screen()
                 elif self.state == "FFT_Display":
                     self.draw_fft_display()
+                elif self.state == "SelectMode":
+                    self.draw_mode_display()
                 elif self.state == "InDevelopment":
                     self.draw_in_development()
             time.sleep(0.1)
@@ -146,7 +150,7 @@ class Display:
 
             # Menu items with current values
             for idx, item in enumerate(self.menu_items):
-                y = 16 + idx * 10
+                y = 12 + idx * 10
                 prefix = "-> " if idx == self.position else "   "
                 value_str = ""
                 if item == "Brightness":
@@ -159,7 +163,7 @@ class Display:
             self.device.display(img)
 
     def draw_options_menu(self):
-        options = ["Configure Controllers", "Show FFT Stats", "Select Modes"]
+        options = self.options_menu_items
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Options header
@@ -184,7 +188,25 @@ class Display:
                 value = round(self.audio_sensitivity, 2)
                 draw.text((0, 20), f"Value: {value}", font=self.font, fill=255)
             self.device.display(img)
-
+            
+            
+    def draw_mode_display(self):
+        device_0_bars = self.artnet_controller.device_bars_map[0]
+        device_0_bar_0 = device_0_bars[0]
+        modes = device_0_bar_0.modes_menu
+        with Image.new("1", (self.device.width, self.device.height)) as img:
+            draw = ImageDraw.Draw(img)
+            # Options header
+            draw.text((0, 0), "Modes", font=self.font, fill=255)
+            # Options items
+            for idx, mode in enumerate(modes):
+                y = 16 + idx * 10
+                prefix = "-> " if idx == self.position else "   "
+                draw.text((0, y), f"{prefix}{mode}", font=self.font, fill=255)
+            self.device.display(img)    
+                
+    
+        
     def draw_fft_display(self):
         device = self.device
 
@@ -201,7 +223,7 @@ class Display:
             data = np.zeros(64)
 
         max_magnitude = max(data) if np.max(data) > 0 else 1
-        scaled_magnitude = (data / max_magnitude) * device.height
+        scaled_magnitude = (data / max_magnitude) * (device.height)
         scaled_magnitude = scaled_magnitude.astype(int)
 
         with Image.new('1', (device.width, device.height)) as img:
