@@ -1,15 +1,21 @@
-from stupidArtnet import StupidArtnet
 import time
 import numpy as np
+from stupidArtnet import StupidArtnet
 from bar import Bar
 import queue
 
 class ArtnetController:
-    def __init__(self, num_esps, esp_configs, fps=45):
+    def __init__(self, esp_configs):
         self.device_bars_map = {}
         self.artnet_devices = []
-        self.fps = fps
-        for config in esp_configs:
+        self.fps = esp_configs[0].get('fps', 40)
+        self.esp_configs = esp_configs
+        self.initialize_devices()
+
+    def initialize_devices(self):
+        self.device_bars_map.clear()
+        self.artnet_devices.clear()
+        for config in self.esp_configs:
             target_ip = config['target_ip']
             universe = config['universe']
             num_bars = config.get('num_bars', 1)
@@ -35,17 +41,15 @@ class ArtnetController:
                 bar.state = "off"
 
     def update_bars(self, led_queue):
-    
         fft_data = self.process_audio(led_queue)
-               
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.update(fft_data)
-                
-    def process_audio(self,led_queue):
+
+    def process_audio(self, led_queue):
         fft_data_list = []
-        
+
         # Retrieve all values from the queue
         while True:
             try:
@@ -61,10 +65,9 @@ class ArtnetController:
             return avg_fft_data
         else:
             # Return a default value if no data was available
-            return np.zeros(128)  # Or another suitable default value
+            return np.zeros(128)
 
     def send_data(self):
-        start_time = time.time()
         for artnet_device in self.artnet_devices:
             packet = bytearray(artnet_device.packet_size)
             bars = self.device_bars_map[artnet_device]
@@ -74,7 +77,4 @@ class ArtnetController:
                 packet[offset:offset + len(pixels)] = pixels
                 offset += len(pixels)
             artnet_device.send(packet)
-        # Timing control to ensure constant FPS
-        elapsed_time = time.time() - start_time
-        sleep_time = max(0, 1 / self.fps - elapsed_time)
-        time.sleep(sleep_time)
+        # Timing control is handled in the main loop

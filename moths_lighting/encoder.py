@@ -31,3 +31,5 @@ class Encoder:
 
     def cleanup(self):
         pass  # Add cleanup code if necessary
+
+

@@ -1,18 +1,24 @@
 import pyaudio
 import numpy as np
-import time
+import threading
 
 class AudioProcessor:
-    def __init__(self, format=pyaudio.paInt16, channels=1, rate=44100, chunk=512, num_bins=512, fft_queue=None, led_queue=None):
-        self.format = format
-        self.channels = channels
-        self.rate = rate
-        self.chunk = chunk
-        self.num_bins = num_bins
+    def __init__(self, fft_queue, led_queue, audio_sensitivity):
+        self.format = pyaudio.paInt16
+        self.channels = 1
+        self.rate = 44100
+        self.chunk = 512
+        self.num_bins = 512
         self.fft_queue = fft_queue
         self.led_queue = led_queue
+        self.audio_sensitivity = audio_sensitivity
         self.p = pyaudio.PyAudio()
         self.stream = None
+        self.lock = threading.Lock()
+
+    def set_sensitivity(self, sensitivity):
+        with self.lock:
+            self.audio_sensitivity = sensitivity
 
     def start_stream(self):
         try:
@@ -26,14 +32,15 @@ class AudioProcessor:
             print(f'Failed to start audio stream: {e}')
 
     def process_audio(self):
-        start_time = time.time()
         data = self.stream.read(self.chunk, exception_on_overflow=False)
-        audio_data = np.frombuffer(data, dtype=np.int16)
+        audio_data = np.frombuffer(data, dtype=np.int16).astype(np.float32)
         # Normalize audio data
-        audio_data = audio_data.astype(np.float32) / 32768.0
+        audio_data /= 32768.0
+        # Apply sensitivity
+        audio_data *= self.audio_sensitivity
         # Apply window function
         window = np.hanning(len(audio_data))
-        audio_data = audio_data * window
+        audio_data *= window
         # Compute FFT
         fft_data = np.fft.rfft(audio_data, n=self.num_bins)
         fft_mag = np.abs(fft_data)
@@ -46,9 +53,6 @@ class AudioProcessor:
             self.fft_queue.put(fft_mag)
         if self.led_queue:
             self.led_queue.put(fft_mag)
-        end_time = time.time()
-        duration = end_time - start_time
-        #print(f"Audio processing time: {duration:.6f} seconds")
 
     def stop_stream(self):
         if self.stream is not None:
