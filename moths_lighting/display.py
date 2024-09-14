@@ -93,7 +93,11 @@ class Display:
                 self.state = "MainScreen"
             elif self.state == "FFT_Display":
                 # Return to MainScreen from FFT display
-                self.state = "MainScreen"
+                self.state = "OptionsMenu"
+            elif self.state == "InDevelopment":
+                # Return to MainScreen from FFT display
+                self.state = "OptionsMenu"
+
 
     def configure_controllers(self):
         # Placeholder for controller configuration
