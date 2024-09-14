@@ -94,7 +94,7 @@ class Display:
         self.brightness = 0.5
         self.bass_threshold = 0.5
         self.bass_lower_bound = 0
-        self.fade = 0.1
+        self.fade = 0.3
         self.last_position = 0
 
         # Initialize FPS tracking

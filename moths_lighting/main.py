@@ -17,7 +17,7 @@ fft_fps_queue = Queue()
 
 # Global variables
 FPS_target = 40
-audio_sensitivity = 0.5  # Initial audio sensitivity
+audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
 esp_configs = [
