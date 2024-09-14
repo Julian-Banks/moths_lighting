@@ -190,7 +190,7 @@ class Display:
             #code to initalise the controller with new number of bars
         
 
-        def reinitialise(value):
+        def reinitialise():
             pass
         
         #Define mode selector
@@ -228,10 +228,10 @@ class Display:
 
         # Configure Controllers Menu
         configure_controllers_menu = Menu("Configure Controllers", items=[
-            AdjustableMenuItem("Controller 1: ", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller 2: ", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller 3: ", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller 4: ", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller one", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller two", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller three", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller four", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
             #Menuitem to reinitialise the whole setup 
             MenuItem("Reinitialise", reinitialise),
             # Add adjustable items...
@@ -334,7 +334,8 @@ class Display:
                             value_str = f": {value}"
                     else:
                         value_str = ""
-                    draw.text((0, y), f"{prefix}{item.name}{value_str}", font=self.font, fill=255)
+                    draw.text((0, y), f"{prefix}{item.name}:", font=self.font, fill=255)
+                    draw.text((90, y), f"{value_str}", font=self.font, fill=255)
             self.device.display(img)
 
     def draw_fft_display(self):
