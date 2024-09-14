@@ -116,7 +116,7 @@ class Display:
         
         #configure Lighting options
         def get_brightness():
-            return self.artnet_controller.get_brightness(self.brightness)
+            return self.artnet_controller.get_brightness()
 
         def set_brightness(value):
             self.brightness = value
@@ -219,19 +219,19 @@ class Display:
 
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
-            AdjustableMenuItem("Overall audio sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),
-            AdjustableMenuItem("Bass Threshold", get_bass_threshold, set_bass_threshold, min_value=0, max_value=1, step=0.1),
-            AdjustableMenuItem("Bass Lower Bound", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Bass Trigger", get_bass_threshold, set_bass_threshold, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Bass LB", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=200, step=10),
             # Add other adjustable items...
             MenuItem("Back")
         ])
 
         # Configure Controllers Menu
         configure_controllers_menu = Menu("Configure Controllers", items=[
-            AdjustableMenuItem("Controller one", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller two", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller three", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
-            AdjustableMenuItem("Controller four", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("ESP One", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("ESP Two", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("ESP Three", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("ESP Four", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
             #Menuitem to reinitialise the whole setup 
             MenuItem("Reinitialise", reinitialise),
             # Add adjustable items...
@@ -252,7 +252,7 @@ class Display:
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
-            MenuItem("Configure Controllers", submenu=configure_controllers_menu),
+            MenuItem("Controller Config.", submenu=configure_controllers_menu),
             MenuItem("Choose Modes", submenu=choose_modes_menu),
             MenuItem("Show FFT Stats", action=show_fft_stats),
             MenuItem("Back")
@@ -329,13 +329,13 @@ class Display:
                     if isinstance(item, AdjustableMenuItem):
                         value = item.get_value()
                         if isinstance(value, float):
-                            value_str = f": {round(value, 2)}"
+                            value_str = f"{round(value, 2)}"
                         else:
-                            value_str = f": {value}"
+                            value_str = f"{value}"
                     else:
                         value_str = ""
-                    draw.text((0, y), f"{prefix}{item.name}:", font=self.font, fill=255)
-                    draw.text((90, y), f"{value_str}", font=self.font, fill=255)
+                    draw.text((0, y), f"{prefix}{item.name}", font=self.font, fill=255)
+                    draw.text((115, y), f"{value_str}", font=self.font, fill=255)
             self.device.display(img)
 
     def draw_fft_display(self):
