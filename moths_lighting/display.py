@@ -343,7 +343,11 @@ class Display:
                 self.fft_fps = fft_fps if fft_fps is not None else self.fft_fps
 
                 if self.showing_fft:
-                    self.draw_fft_display()
+                    with Image.new("1", (self.device.width, self.device.height)) as img:
+                        draw = ImageDraw.Draw(img)
+                        draw = self.draw_fft_display_inpicture(draw=draw)
+                        self.device.display(img)
+                    
                 else:
                     # Render display based on current menu
                     self.draw_current_menu()
@@ -365,7 +369,7 @@ class Display:
                     value_str = f"Value: {value}"
                 draw.text((0, 20), value_str, font=self.font, fill=255)
                 if item.name == "Bass Trigger":
-                    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw)
+                    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
                 
                 
             else:
@@ -387,7 +391,7 @@ class Display:
                     draw.text((115, y), f"{value_str}", font=self.font, fill=255)
             self.device.display(img)
             
-    def draw_fft_display_inpicture(self, height = None, width = None, draw = None):
+    def draw_fft_display_inpicture(self, height = None, width = None, draw = None , y = 0, x = 0):
         
         device = self.device
         
@@ -406,21 +410,21 @@ class Display:
         num_bars = min(width, len(scaled_magnitude))
         bar_width = max(1, width // num_bars)
         for i in range(num_bars):
-            x = i * bar_width
-            y_top = height - scaled_magnitude[i]
-            draw.rectangle([x, y_top, x + bar_width - 1, height], fill=255)
+            x_pos = x + i * bar_width
+            y_top = y + height - scaled_magnitude[i]
+            draw.rectangle([x_pos, y_top, x_pos + bar_width - 1, y + height], fill=255)
 
         # Display FFT FPS
         draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
 
         # Draw the bass threshold line across this frequency range
-        threshold_y = height - int(self.bass_threshold * height)
-        start_pixel, end_pixel = self.calculate_line(data, self.bass_lower_bound, self.bass_upper_bound)
+        threshold_y = y + height - int(self.bass_threshold * height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.bass_lower_bound, upper_bound=self.bass_upper_bound, width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
         
         # Draw the mid threshold line across this frequency range
-        threshold_y = height - int(self.mid_threshold * height)
-        start_pixel, end_pixel = self.calculate_line(data, self.mid_lower_bound, self.mid_upper_bound)
+        threshold_y = y + height - int(self.mid_threshold * height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.mid_lower_bound, upper_bound=self.mid_upper_bound, width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
 
         return draw
@@ -466,7 +470,7 @@ class Display:
 
             self.device.display(img)
             
-    def calculate_line(self, data, lower_bound, upper_bound):
+    def calculate_line(self, data, lower_bound, upper_bound, width):
         # Determine frequency resolution and find indices for 0-200 Hz
         fft_length = len(data)
         frequency_resolution = 5000 / fft_length
@@ -474,8 +478,8 @@ class Display:
         min_index = int(lower_bound / frequency_resolution)
         
         # Map to pixel coordinates  
-        start_pixel = int(min_index / fft_length * self.device.width)
-        end_pixel = int(max_index / fft_length * self.device.width)
+        start_pixel = int(min_index / fft_length * width)
+        end_pixel = int(max_index / fft_length * width)
         
         return start_pixel, end_pixel
     
