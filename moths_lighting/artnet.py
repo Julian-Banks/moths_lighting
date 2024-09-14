@@ -1,7 +1,7 @@
 from stupidArtnet import StupidArtnet
 import time
 import numpy as np
-from moths_lighting.bar_backup import Bar
+from bar import Bar
 
 class ArtnetController:
     def __init__(self, num_esps, esp_configs, fps=45):

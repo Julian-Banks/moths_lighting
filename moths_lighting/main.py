@@ -1,7 +1,7 @@
-from moths_lighting.display_backup import Display
-from moths_lighting.encoder_backup import Encoder
-from moths_lighting.audio_backup import AudioProcessor
-from moths_lighting.artnet_backup import ArtnetController
+from display import Display
+from encoder import Encoder
+from audio import AudioProcessor
+from artnet import ArtnetController
 import threading
 import time
 from queue import Queue
