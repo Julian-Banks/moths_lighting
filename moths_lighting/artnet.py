@@ -2,6 +2,7 @@ from stupidArtnet import StupidArtnet
 import time
 import numpy as np
 from bar import Bar
+import queue
 
 class ArtnetController:
     def __init__(self, num_esps, esp_configs, fps=45):
@@ -33,11 +34,34 @@ class ArtnetController:
             for bar in bars:
                 bar.state = "off"
 
-    def update_bars(self, fft_data):
+    def update_bars(self, led_queue):
+    
+        fft_data = self.process_audio(led_queue)
+               
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.update(fft_data)
+                
+    def process_audio(self,led_queue):
+        fft_data_list = []
+        
+        # Retrieve all values from the queue
+        while True:
+            try:
+                fft_data = led_queue.get_nowait()
+                fft_data_list.append(fft_data)
+            except queue.Empty:
+                break
+
+        # Compute the average if the list is not empty
+        if fft_data_list:
+            fft_data_array = np.array(fft_data_list)
+            avg_fft_data = np.mean(fft_data_array, axis=0)
+            return avg_fft_data
+        else:
+            # Return a default value if no data was available
+            return np.zeros(128)  # Or another suitable default value
 
     def send_data(self):
         start_time = time.time()

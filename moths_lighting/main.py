@@ -32,14 +32,14 @@ def artnet_thread(artnet_controller, led_queue):
     # Start the bars generating patterns
     artnet_controller.start_mode()
     print('Finished Start mode function')
+    
     while not stop_flag.is_set():
-        try:
-            fft_data = led_queue.get(timeout=0.1)
-            artnet_controller.update_bars(fft_data)
-        except queue.Empty:
-            pass
+        artnet_controller.update_bars(led_queue)
         artnet_controller.send_data()
     artnet_controller.end_mode()
+    
+
+        
 
 def audio_thread(audio_processor):
     print('Starting the Audio Thread')
@@ -87,6 +87,7 @@ def main():
         audio_thread_instance.join()
         artnet_thread_instance.join()
         encoder.cleanup()
+        print("All threads joined and cleanup done")
         # Additional cleanup if needed
 
 if __name__ == "__main__":
