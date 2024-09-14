@@ -10,7 +10,7 @@ class Bar:
         self.brightness = brightness
         self.state = 0  # Mode index
         self.colours = [(255,0,0),(0,255,0),(0,0,255)]
-        self.steps_per_transition = 100 
+        self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe]  # Add more modes as needed
         self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe"]

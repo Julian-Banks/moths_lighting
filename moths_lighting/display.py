@@ -247,7 +247,7 @@ class Display:
             data = np.zeros(64)
 
         max_magnitude = max(data) if np.max(data) > 0 else 1
-        scaled_magnitude = (data / max_magnitude) * (device.height)
+        scaled_magnitude = (data) * (device.height)
         scaled_magnitude = scaled_magnitude.astype(int)
 
         with Image.new('1', (device.width, device.height)) as img:
@@ -264,7 +264,7 @@ class Display:
             # Display FFT FPS
             draw.text((64, 0), f"FFT FPS: {self.fft_fps}", font=self.font, fill=255)
             
-            draw.line([(0, self.bass_threshold*(device.height)), (device.width, self.bass_threshold*(device.height))])
+            draw.line([(0, self.bass_threshold*(device.height)), (device.width, self.bass_threshold*(device.height))], fill=255)
             
             self.device.display(img)
 
