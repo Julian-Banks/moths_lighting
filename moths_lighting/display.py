@@ -194,9 +194,9 @@ class Display:
             
             
     def draw_mode_display(self):
-        device_0_bars = self.artnet_controller.device_bars_map[0]
-        device_0_bar_0 = device_0_bars[0]
-        modes = device_0_bar_0.modes_menu
+        first_artnet_device = list(self.artnet_controller.device_bars_map.keys())[0]
+        first_bar = self.artnet_controller.device_bars_map[first_artnet_device][0]
+        modes = first_bar.modes_menu
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Options header
