@@ -12,9 +12,10 @@ class Bar:
         self.colours = [(255,0,0),(0,255,0),(0,0,255)]
         self.steps_per_transition = 100 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
-        self.modes = [self.mode_static, self.mode_wave, self.mode_pulse]  # Add more modes as needed
-        self.modes_menu = ["Static", "Wave", "Pulse"]
+        self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe]  # Add more modes as needed
+        self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe"]
         self.current_step = 0
+        self.bass_threshold = 0.5
 
     def update(self, fft_data):
         with self.lock:
@@ -55,6 +56,42 @@ class Bar:
         level = level / np.max([level, 1e-6])
         color = (int(255 * level), 0, int(255 * (1 - level)))
         self.pixels = bytearray(color * self.num_leds)
+        
+    def mode_bass_strobe(self, fft_data):
+        # Compute the bass magnitude from fft_data
+        bass_magnitude = self.compute_bass_magnitude(fft_data)
+
+        # Check if the bass magnitude exceeds the threshold
+        if bass_magnitude > self.bass_threshold:
+            # Apply the strobe effect (turn on all LEDs)
+            color = (255, 255, 255)  # White color for strobe effect
+            self.pixels = bytearray([int(c * self.brightness) for c in color] * self.num_leds)
+        else:
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+
+            # Increment current_step and reset if it exceeds the length of all_colours
+            self.current_step += 1
+            if self.current_step >= len(self.all_colours):
+                self.current_step = 0
+
+    def compute_bass_magnitude(self, fft_data):
+        # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
+        # Extract indices corresponding to bass frequencies (20-200 Hz)
+        num_bins = len(fft_data)
+        max_freq = 5000
+        freqs = np.linspace(0, max_freq, num_bins)
+
+        # Find indices for the bass range (20-200 Hz)
+        bass_indices = np.where((freqs >= 20) & (freqs <= 200))[0]
+
+        # Compute the average bass magnitude
+        bass_magnitude = np.mean(fft_data[bass_indices])
+        return bass_magnitude
+    
+        
 
     def map_level_to_color(self, level):
         # Map level (0 to 1) to a color gradient

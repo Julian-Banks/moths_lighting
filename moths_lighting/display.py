@@ -17,6 +17,7 @@ class Display:
         self.artnet_controller = artnet_controller
         self.esp_configs = esp_configs
         self.audio_sensitivity = audio_sensitivity
+        self.audio_threshold = 1000
         self.artnet_fps_queue = artnet_fps_queue
         self.fft_fps_queue = fft_fps_queue
         self.fft_queue = fft_queue  # FFT data queue
@@ -25,12 +26,13 @@ class Display:
         self.state = "MainScreen"
         self.position = 0
         self.last_position = 0
-        self.menu_items = ["Lighting Mode", "Brightness", "Audio Sensitivity", "FPS", "Options"]
+        self.menu_items = ["Lighting Mode", "Brightness", "Audio Sensitivity","Bass Threshold", "FPS", "Options"]
         self.options_menu_items = ["Configure Controllers", "Show FFT Stats", "Select Modes", "Back"]
         self.mode_menu_items = self.get_modes()
         self.selected_mode = 0
         self.brightness = 50  # Display range 0-100
         self.internal_brightness = self.brightness / 100.0  # Internal processing range 0-1
+        self.bass_threshold = 0.5
 
         # Initialize FPS tracking
         self.artnet_fps = 0
@@ -64,6 +66,9 @@ class Display:
                 elif self.current_parameter == "audio_sensitivity":
                     self.audio_sensitivity = max(0, min(2, self.audio_sensitivity + (delta * 0.1)))
                     self.audio_processor.set_sensitivity(self.audio_sensitivity)
+                elif self.current_parameter == "bass_threshold":
+                    self.audio_sensitivity = max(0, min(2, self.bass_threshold + (delta * 0.1)))
+                    self.artnet_controller.set_bass_threshold(self.bass_threshold)            
 
     def on_button_push(self):
         with self.lock:
@@ -79,6 +84,10 @@ class Display:
                     self.state = "Adjusting"
                     self.current_parameter = "audio_sensitivity"
                     self.last_position = self.position
+                elif selected_item == "Bass Threshold":
+                    # Enter Adjusting state for audio sensitivity
+                    self.state = "Adjusting"
+                    self.current_parameter = "bass_threshold"                    
                 elif selected_item == "Options":
                     # Enter Options menu
                     self.state = "OptionsMenu"
@@ -108,6 +117,7 @@ class Display:
             elif self.state == "InDevelopment":
                 # 
                 self.state = "OptionsMenu"
+        print(f"State: {self.state}")
 
 
 
@@ -167,6 +177,8 @@ class Display:
                     value_str = f": {int(self.brightness)}"
                 elif item == "Audio Sensitivity":
                     value_str = f": {round(self.audio_sensitivity, 2)}"
+                elif item == "Bass Threshold":
+                    value_str = f": {round(self.bass_threshold, 2)}"
                 elif item == "FPS":
                     value_str = f": Art {self.artnet_fps} FFT {self.fft_fps}"
                 draw.text((0, y), f"{prefix}{item}{value_str}", font=self.font, fill=255)
@@ -197,6 +209,9 @@ class Display:
             elif self.current_parameter == "audio_sensitivity":
                 value = round(self.audio_sensitivity, 2)
                 draw.text((0, 20), f"Value: {value}", font=self.font, fill=255)
+            elif self.current_parameter == "bass_threshold":
+                value = round(self.bass_threshold,2)
+                draw.text((0, 20), f"Value: {value}", font=self.font, fill=255)
             self.device.display(img)
             
             
@@ -217,6 +232,7 @@ class Display:
         
     def draw_fft_display(self):
         device = self.device
+        heading_offset = 15
 
         # Get latest FFT data
         results_buffer = []
@@ -246,7 +262,10 @@ class Display:
                 draw.rectangle([x, y_top, x + bar_width - 1, device.height], fill=255)
 
             # Display FFT FPS
-            draw.text((0, 0), f"FFT FPS: {self.fft_fps}", font=self.font, fill=255)
+            draw.text((64, 0), f"FFT FPS: {self.fft_fps}", font=self.font, fill=255)
+            
+            draw.line([(0, self.bass_threshold*(device.height)), (device.width, self.bass_threshold*(device.height))])
+            
             self.device.display(img)
 
     def draw_in_development(self):
