@@ -2,7 +2,7 @@ import numpy as np
 import threading
 
 class Bar:
-    def __init__(self, num_leds=96, brightness=1.0):
+    def __init__(self, num_leds=96, brightness=0.5):
         self.lock = threading.Lock()
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
@@ -12,15 +12,26 @@ class Bar:
         self.colours = [(255,0,0),(0,255,0),(0,0,255)]
         self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
-        self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe]  # Add more modes as needed
-        self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe"]
+        self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe,self.mode_bass_mid_strobe]  # Add more modes as needed
+        self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe", "Bass & Mid Strobe"]
         
+        #lighting related
         self.fade = 0.1
-        self.current_step = 0
-        self.bass_threshold = 0.5
-        
         self.fade_out_count = 0  # Initialize counter for fade_out calls
         self.fade_out_threshold = 50  # Adjust this threshold based on the desired fading duration
+        
+        self.current_step = 0
+        
+        #audio related
+        self.bass_threshold = 0.5
+        self.bass_lower_bound = 0
+        self.bass_upper_bound = 200
+        
+        self.mid_threshold  = 0.5
+        self.mid_lower_bound = 800
+        self.mid_upper_bound = 3000
+        
+
 
     def update(self, fft_data):
         with self.lock:
@@ -84,6 +95,29 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.fade_out()
+            
+    def mode_bass_mid_strobe(self, fft_data):
+        # Compute the bass magnitude from fft_data
+        # Increment current_step and reset if it exceeds the length of all_colours
+        self.current_step += 1
+        if self.current_step >= len(self.all_colours):
+            self.current_step = 0
+            
+        bass_magnitude = self.compute_bass_magnitude(fft_data)
+
+        # Check if the bass magnitude exceeds the threshold
+        if bass_magnitude > self.bass_threshold:
+            # Apply the strobe effect (turn on all LEDs)
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+      
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
+        else:
+            # If not strobing, apply fading effect
+            self.fade_out()    
 
 
 
@@ -132,11 +166,25 @@ class Bar:
         freqs = np.linspace(0, max_freq, num_bins)
 
         # Find indices for the bass range (20-200 Hz)
-        bass_indices = np.where((freqs >= 20) & (freqs <= 200))[0]
+        bass_indices = np.where((freqs >= self.bass_lower_bound) & (freqs <= self.bass_upper_bound))[0]
 
         # Compute the average bass magnitude
         bass_magnitude = np.mean(fft_data[bass_indices])
         return bass_magnitude
+    
+    def compute_mid_magnitude(self, fft_data):
+        # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
+        # Extract indices corresponding to bass frequencies (20-200 Hz)
+        num_bins = len(fft_data)
+        max_freq = 5000
+        freqs = np.linspace(0, max_freq, num_bins)
+
+        # Find indices for the bass range (20-200 Hz)
+        mid_indices = np.where((freqs >= self.mid_lower_bound) & (freqs <= self.mid_upper_bound))[0]
+
+        # Compute the average bass magnitude
+        mid_magnitude = np.mean(fft_data[mid_indices])
+        return mid_magnitude
     
         
 
