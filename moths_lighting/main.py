@@ -24,6 +24,7 @@ esp_configs = [
     {'target_ip': '255.255.255.255', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
     {'target_ip': '192.168.1.102', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
     {'target_ip': '192.168.1.103', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
+    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': FPS_target, 'num_bars': 1},
 ]
 
 def artnet_thread(artnet_controller, led_queue):
