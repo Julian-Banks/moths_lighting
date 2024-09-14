@@ -92,8 +92,8 @@ def main():
     display = Display(audio_processor, artnet_controller, esp_configs, audio_sensitivity,
                       artnet_fps_queue, fft_fps_queue, fft_queue)
     encoder = Encoder(pin_A=22, pin_B=27, pin_button=17,
-                      on_position_change=on_position_change,
-                      on_button_push=on_button_push)
+                      callback=on_position_change,
+                      button_callback=on_button_push)
 
     try:
         while True:

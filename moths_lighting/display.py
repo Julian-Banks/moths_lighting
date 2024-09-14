@@ -112,8 +112,11 @@ class Display:
         while not self.stop_flag.is_set():
             with self.lock:
                 # Update FPS values
-                self.artnet_fps = self.get_fps(self.artnet_fps_queue)
-                self.fft_fps = self.get_fps(self.fft_fps_queue)
+                artnet_fps = self.get_fps(self.artnet_fps_queue)
+                self.artnet_fps = artnet_fps if artnet_fps is not None else self.artnet_fps
+                
+                fft_fps = self.get_fps(self.fft_fps_queue)
+                self.fft_fps = fft_fps if fft_fps is not None else self.fft_fps
 
                 # Render display based on current state
                 if self.state == "MainScreen":
@@ -221,7 +224,7 @@ class Display:
         fps = None
         while not fps_queue.empty():
             fps = fps_queue.get()
-        return fps if fps is not None else 0
+        return fps 
 
     def clear(self):
         self.device.clear()
