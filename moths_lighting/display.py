@@ -82,12 +82,13 @@ class Display:
                     self.position = 0
             elif self.state == "OptionsMenu":
                 selected_option = self.options_menu_items[self.position]
+                print(f"selected option:{selected_option}")
                 if selected_option == "Configure Controllers":
                     self.state = "InDevelopment"
                 elif selected_option == "Show FFT Stats":
                     self.state = "FFT_Display"
                 elif selected_option == "Select Modes":
-                    self.state = "InDevelopment"
+                    self.state = "SelectMode"
                 elif selected_option == "Back":
                     self.state == "MainScreen"
             elif self.state == "Adjusting":
@@ -98,6 +99,8 @@ class Display:
                 self.state = "OptionsMenu"
             elif self.state == "InDevelopment":
                 # Return to MainScreen from FFT display
+                self.state = "OptionsMenu"
+            elif self.state == "SelectMode":
                 self.state = "OptionsMenu"
 
 

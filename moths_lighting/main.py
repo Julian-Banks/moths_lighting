@@ -38,7 +38,7 @@ def artnet_thread(artnet_controller, led_queue):
         artnet_controller.update_bars(led_queue)
         artnet_controller.send_data()
         end_time_control = time.time()
-        time.sleep(1/FPS_target - (end_time_control- start_time_control))
+        time.sleep(max(1/FPS_target - (end_time_control- start_time_control),0))
         send_count += 1
 
         # Calculate FPS every second
