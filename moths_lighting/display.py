@@ -27,6 +27,7 @@ class Display:
         self.last_position = 0
         self.menu_items = ["Lighting Mode", "Brightness", "Audio Sensitivity", "FPS", "Options"]
         self.options_menu_items = ["Configure Controllers", "Show FFT Stats", "Select Modes", "Back"]
+        self.mode_menu_items = self.get_modes()
         self.selected_mode = 0
         self.brightness = 50  # Display range 0-100
         self.internal_brightness = self.brightness / 100.0  # Internal processing range 0-1
@@ -48,11 +49,13 @@ class Display:
                 self.position = position % len(self.menu_items)
             elif self.state == "OptionsMenu":
                 self.position = position % len(self.options_menu_items)
+            elif self.state == "SelectMode":
+                self.position = position % len(self.mode_menu_items)
+                
             elif self.state == "Adjusting":
                 # Calculate position delta
                 delta = position - self.last_position
                 self.last_position = position
-
                 # Adjust parameters based on delta
                 if self.current_parameter == "brightness":
                     self.brightness = max(0, min(100, self.brightness + delta))
@@ -91,6 +94,11 @@ class Display:
                     self.state = "SelectMode"
                 elif selected_option == "Back":
                     self.state == "MainScreen"
+            elif self.state == "SelectMode":
+                selected_mode = self.mode_menu_items[self.position]
+                self.artnet_controller.change_mode(self.position)
+                print(f"selected mode:{selected_mode}")
+                self.state = "OptionsMenu"
             elif self.state == "Adjusting":
                 # Return to MainScreen from Adjusting state
                 self.state = "MainScreen"
@@ -100,8 +108,7 @@ class Display:
             elif self.state == "InDevelopment":
                 # Return to MainScreen from FFT display
                 self.state = "OptionsMenu"
-            elif self.state == "SelectMode":
-                self.state = "OptionsMenu"
+
 
 
     def configure_controllers(self):
@@ -194,14 +201,12 @@ class Display:
             
             
     def draw_mode_display(self):
-        first_artnet_device = list(self.artnet_controller.device_bars_map.keys())[0]
-        first_bar = self.artnet_controller.device_bars_map[first_artnet_device][0]
-        modes = first_bar.modes_menu
+        modes = self.mode_menu_items
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
-            # Options header
+            # Modes header
             draw.text((0, 0), "Modes", font=self.font, fill=255)
-            # Options items
+            # Mode items
             for idx, mode in enumerate(modes):
                 y = 16 + idx * 10
                 prefix = "-> " if idx == self.position else "   "
@@ -256,6 +261,16 @@ class Display:
         while not fps_queue.empty():
             fps = fps_queue.get()
         return fps 
+    
+    def get_modes(self):
+        try:
+            first_artnet_device = list(self.artnet_controller.device_bars_map.keys())[0]
+            first_bar = self.artnet_controller.device_bars_map[first_artnet_device][0]
+            modes = first_bar.modes_menu
+        except:
+            modes = ["could not fetch modes"] 
+            
+        return modes    
 
     def clear(self):
         self.device.clear()
