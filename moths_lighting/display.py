@@ -189,12 +189,20 @@ class Display:
             self.esp_configs[3]['num_bars'] = value
             #code to initalise the controller with new number of bars
         
-        def get_reinitialise():
-            return "X"
-        
-        def set_reinitialise(value):
+
+        def reinitialise(value):
             pass
         
+        #Define mode selector
+        def set_static():
+            self.artnet_controller.change_mode(0)          
+        def set_wave():
+            self.artnet_controller.change_mode(1)
+        def set_pulse():
+            self.artnet_controller.change_mode(2)
+        def set_bass_strobe():
+            self.artnet_controller.change_mode(3)
+    
 
         # Define action functions
         def show_fft_stats():
@@ -225,16 +233,27 @@ class Display:
             AdjustableMenuItem("Controller 3: ", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
             AdjustableMenuItem("Controller 4: ", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
             #Menuitem to reinitialise the whole setup 
-            AdjustableMenuItem("Reinitialise", get_reinitialise, set_reinitialise, min_value=0, max_value=5, step=1),
+            MenuItem("Reinitialise", reinitialise),
             # Add adjustable items...
             MenuItem("Back")
         ])
+        
+        #choose modes menu
+        choose_modes_menu = Menu("Choose Modes", items=[
+            MenuItem("Static", action = set_static),
+            MenuItem("Wave", action = set_wave),
+            MenuItem("Pulse", action = set_pulse),
+            MenuItem("Bass Strobe", action =  set_bass_strobe),
+            MenuItem("Back")
+        ])
+        
 
         # Options Menu
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
             MenuItem("Configure Controllers", submenu=configure_controllers_menu),
+            MenuItem("Choose Modes", submenu=choose_modes_menu),
             MenuItem("Show FFT Stats", action=show_fft_stats),
             MenuItem("Back")
         ])
