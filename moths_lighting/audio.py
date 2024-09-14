@@ -17,7 +17,7 @@ class AudioProcessor:
         self.stream = None
         self.lock = threading.Lock()
         # High-pass filter parameters
-        self.highpass_cutoff = 150  # Hz
+        self.highpass_cutoff = 20  # Hz
         self.b, self.a = butter(4, self.highpass_cutoff / (0.5 * self.rate), btype='high', analog=False)
 
     def set_sensitivity(self, sensitivity):

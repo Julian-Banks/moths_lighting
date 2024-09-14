@@ -261,8 +261,18 @@ class Display:
                 y_top = device.height - scaled_magnitude[i]
                 draw.rectangle([x, y_top, x + bar_width - 1, device.height], fill=255)
 
-            # Display FFT FPS
-            draw.text((64, 0), f"FFT FPS: {self.fft_fps}", font=self.font, fill=255)
+            # Determine frequency resolution and find indices for 0-200 Hz
+            fft_length = len(data)
+            frequency_resolution = 5000 / fft_length
+            max_index = int(200 / frequency_resolution)  # Find the index corresponding to 200 Hz
+
+            # Map to pixel coordinates
+            start_pixel = 0  # Start at the first pixel
+            end_pixel = int(max_index / fft_length * device.width)  # Convert max_index to pixel position
+
+            # Draw the bass threshold line across this frequency range
+            threshold_y = device.height - int(self.bass_threshold * device.height)
+            draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
             
             draw.line([(0, self.bass_threshold*(device.height)), (device.width, self.bass_threshold*(device.height))], fill=255)
             
