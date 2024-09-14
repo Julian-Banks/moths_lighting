@@ -104,7 +104,7 @@ class Bar:
             self.current_step = 0
             
         bass_magnitude = self.compute_bass_magnitude(fft_data)
-
+        mid_magnitude = self.compute_mid_magnitude(fft_data)
         # Check if the bass magnitude exceeds the threshold
         if bass_magnitude > self.bass_threshold:
             # Apply the strobe effect (turn on all LEDs)
@@ -115,9 +115,25 @@ class Bar:
       
             # Reset fading when strobe is active
             self.fade_out_count = 0
+        
         else:
             # If not strobing, apply fading effect
-            self.fade_out()    
+            self.fade_out()   
+        
+        if mid_magnitude > self.mid_threshold:
+                    # Apply the strobe effect (turn on all LEDs)
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+      
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
+        
+        else:
+            # If not strobing, apply fading effect
+            self.fade_out()      
+            
 
 
 
