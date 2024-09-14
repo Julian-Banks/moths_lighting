@@ -10,7 +10,8 @@ import queue
 
 fft_queue = Queue()
 led_queue = Queue()
-fps_queue = Queue()
+artnet_fps_queue = Queue()
+fft_fps_queue = Queue()
 
 FPS_target = 40
 
@@ -31,11 +32,26 @@ def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
     # Start the bars generating patterns
     artnet_controller.start_mode()
-    print('Finished Start mode function')
     
+    #start fps counder
+    send_count = 0
+    start_time = time.time()
+
+    #start the loop
     while not stop_flag.is_set():
         artnet_controller.update_bars(led_queue)
         artnet_controller.send_data()
+        
+        send_count += 1
+
+        # Calculate FPS every second
+        current_time = time.time()
+        if current_time - start_time >= 1.0:
+            artnet_fps_queue.put(send_count)  # Send FPS to the display
+            send_count = 0
+            start_time = current_time  
+                  
+    # End the bars generating patterns
     artnet_controller.end_mode()
     
 
@@ -44,9 +60,26 @@ def artnet_thread(artnet_controller, led_queue):
 def audio_thread(audio_processor):
     print('Starting the Audio Thread')
     audio_processor.start_stream()
+    
+    #start fps counder
+    send_count = 0
+    start_time = time.time()   
+    
     while not stop_flag.is_set():
+        #need to think of a way to pass it information about Display and Arnet so it's only calculating FFTs if it needs to and it's only posting to a queue if it needs to
         audio_processor.process_audio()
+        send_count += 1
+
+        # Calculate FPS every second
+        current_time = time.time()
+        if current_time - start_time >= 1.0:
+            fft_fps_queue.put(send_count)  # Send FPS to the display
+            send_count = 0
+            start_time = current_time          
+        
     audio_processor.stop_stream()
+
+
 
 def on_position_change(display, position):
     display.on_position_change(position)
@@ -55,9 +88,9 @@ def on_button_push(display):
     print(f"State: {display.position}")
     if display.state == "Main_Menu":
         if display.position == 0:
-            display.on_button_push(fps_queue)
+            display.on_button_push(artnet_fps_queue)
         elif display.position == 1:
-            display.on_button_push(fft_queue)
+            display.on_button_push(fft_queue,fft_fps_queue)
     else:
         display.on_button_push("None")
 

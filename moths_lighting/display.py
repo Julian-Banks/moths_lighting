@@ -23,7 +23,7 @@ class Display:
             self.position = position % len(self.main_menu)
             self.display_menu()
 
-    def on_button_push(self, option):
+    def on_button_push(self, option, option2 = None):
         if self.state == "Main_Menu":
             if self.position == 0:
                 self.state = "Stats"
@@ -31,7 +31,7 @@ class Display:
                 self.thread.start()
             elif self.position == 1:
                 self.state = "FFT_Display"
-                self.thread = threading.Thread(target=self.display_fft, args=(option,))
+                self.thread = threading.Thread(target=self.display_fft, args=(option,option2))
                 self.thread.start()
         elif self.state in ["Stats", "FFT_Display"]:
             self.state = "Main_Menu"
@@ -62,9 +62,9 @@ class Display:
                 results_buffer.append(fps_data)
             if results_buffer:
                 fps_array = np.array(results_buffer)
-                fps = round(np.mean(fps_array))
-                var = round(np.var(fps_array))
-                std_deviation = round(np.std(fps_array))
+                fps = round(np.mean(fps_array),2)
+                var = round(np.var(fps_array),2)
+                std_deviation = round(np.std(fps_array),2)
             else:
                 fps = var = std_deviation = 0
             with Image.new("1", (self.device.width, self.device.height)) as img:
@@ -75,29 +75,59 @@ class Display:
                 self.device.display(img)
             time.sleep(0.5)
 
-    def display_fft(self, fft_queue):
+    def display_fft(self, fft_queue,fft_fps_queue):
         device = self.device
         while self.state == "FFT_Display":
             start_time = time.time()
+            
             results_buffer = []
             while not fft_queue.empty():
                 fft_data = fft_queue.get()
                 results_buffer.append(fft_data)
+
             if results_buffer:
                 fft_array = np.mean(np.array(results_buffer), axis=0)
                 data = fft_array
             else:
                 data = np.zeros(64)
+
             max_magnitude = max(data) if np.max(data) > 0 else 1
             scaled_magnitude = (data / max_magnitude) * device.height
             scaled_magnitude = scaled_magnitude.astype(int)
+
             image = Image.new('1', (device.width, device.height), 0)
             draw = ImageDraw.Draw(image)
+
+            # Draw FFT bars
             for x in range(min(device.width, len(scaled_magnitude))):
                 draw.line([(x, device.height), (x, device.height - scaled_magnitude[x])], fill=255)
+
+            # Add axis labels (simple implementation)
+            num_labels = 5
+            max_freq = 5000  # Hz
+            for i in range(num_labels):
+                freq = (i / (num_labels - 1)) * max_freq
+                label_x = (i / (num_labels - 1)) * (device.width // 2)  # Only use half the screen
+                draw.text((label_x, device.height - 10), f"{int(freq)}", font=self.font, fill=255)
+
+            results_buffer = []
+            while not fft_fps_queue.empty():
+                fps_data = fft_fps_queue.get()
+                results_buffer.append(fps_data)
+
+            if results_buffer:
+                fps = np.mean(np.array(results_buffer), axis=0)
+                
+            else:
+                fps = 0
+            
+            # Optional: Display FFT FPS on the right side
+            draw.text((device.width - 40, 5), f"FFT FPS: {fps}", font=self.font, fill=255)
+
             device.display(image)
             duration = time.time() - start_time
             time.sleep(max(0, 0.05 - duration))
+
 
     def clear(self):
         self.device.clear()
