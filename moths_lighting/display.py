@@ -102,7 +102,7 @@ class Display:
                     self.state = "SelectMode"
                 elif selected_option == "Back":
                     print(f"selected option:{selected_option}")
-                    self.state == "MainScreen"
+                    self.state = "MainScreen"
             elif self.state == "SelectMode":
                 selected_mode = self.mode_menu_items[self.position]
                 self.artnet_controller.change_mode(self.position)
