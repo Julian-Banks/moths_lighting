@@ -369,10 +369,11 @@ class Display:
                     value_str = f"Value: {round(value, 2)}"
                 else:
                     value_str = f"Value: {value}"
-                draw.text((0, 20), value_str, font=self.font, fill=255)
+                draw.text((0, 15), value_str, font=self.font, fill=255)
                 if item.name == "Bass Trigger":
                     draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
-                
+                if item.name == "Mid Trigger":
+                    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
                 
             else:
                 # Header
