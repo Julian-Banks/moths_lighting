@@ -64,6 +64,25 @@ class Bar:
         # Check if the bass magnitude exceeds the threshold
         if bass_magnitude > self.bass_threshold:
             # Apply the strobe effect (turn on all LEDs)
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+        else:
+
+
+            # Increment current_step and reset if it exceeds the length of all_colours
+            self.current_step += 1
+            if self.current_step >= len(self.all_colours):
+                self.current_step = 0
+    '''                    
+    def mode_bass_strobe(self, fft_data):
+        # Compute the bass magnitude from fft_data
+        bass_magnitude = self.compute_bass_magnitude(fft_data)
+
+        # Check if the bass magnitude exceeds the threshold
+        if bass_magnitude > self.bass_threshold:
+            # Apply the strobe effect (turn on all LEDs)
             color = (255, 255, 255)  # White color for strobe effect
             self.pixels = bytearray([int(c * self.brightness) for c in color] * self.num_leds)
         else:
@@ -76,7 +95,7 @@ class Bar:
             self.current_step += 1
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
-
+        '''
     def compute_bass_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
         # Extract indices corresponding to bass frequencies (20-200 Hz)
