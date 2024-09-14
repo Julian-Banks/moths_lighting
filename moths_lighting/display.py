@@ -67,7 +67,7 @@ class Display:
                     self.audio_sensitivity = max(0, min(2, self.audio_sensitivity + (delta * 0.1)))
                     self.audio_processor.set_sensitivity(self.audio_sensitivity)
                 elif self.current_parameter == "bass_threshold":
-                    self.audio_sensitivity = max(0, min(2, self.bass_threshold + (delta * 0.1)))
+                    self.bass_threshold = max(0, min(2, self.bass_threshold + (delta * 0.1)))
                     self.artnet_controller.set_bass_threshold(self.bass_threshold)            
 
     def on_button_push(self):

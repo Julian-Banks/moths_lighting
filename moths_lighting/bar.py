@@ -69,6 +69,8 @@ class Bar:
             brightened_color = tuple(int(c * self.brightness) for c in color)
             self.pixels = bytearray(brightened_color * self.num_leds)
         else:
+            #
+            self.pixels = bytearray([0] * self.num_pixels)
 
 
             # Increment current_step and reset if it exceeds the length of all_colours
