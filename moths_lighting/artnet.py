@@ -92,6 +92,12 @@ class ArtnetController:
             for bar in bars:
                 bar.brightness = brightness
                 
+    def get_brightness(self):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                return bar.brightness
+                
     def set_bass_threshold(self, base_threshold):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]

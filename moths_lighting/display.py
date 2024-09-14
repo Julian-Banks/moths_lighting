@@ -91,9 +91,10 @@ class Display:
         self.fft_queue = fft_queue  # FFT data queue
 
         # Initialize state variables
-        self.brightness = 50  # Display range 0-100
-        self.internal_brightness = self.brightness / 100.0  # Internal processing range 0-1
+        self.brightness = 0.5
         self.bass_threshold = 0.5
+        self.bass_lower_bound = 0
+        self.fade = 0.1
         self.last_position = 0
 
         # Initialize FPS tracking
@@ -112,14 +113,39 @@ class Display:
 
     def create_menu_structure(self):
         # Define get and set functions
+        
+        #configure Lighting options
         def get_brightness():
-            return self.brightness
+            return self.artnet_controller.get_brightness(self.brightness)
 
         def set_brightness(value):
             self.brightness = value
-            self.internal_brightness = self.brightness / 100.0
-            self.artnet_controller.set_brightness(self.internal_brightness)
+            self.artnet_controller.set_brightness(self.brightness)
+        
+        def get_fade():
+            return self.fade
+        
+        def set_fade(value):
+            self.fade = value
+            self.artnet_controller.set_fade(self.fade)
+            
+        def get_time_per_mode():
+            return "X"
+        
+        def set_time_per_mode(value):
+            pass
+        
+        
 
+        #Configure Audio options
+        def get_bass_lower_bound():
+            return self.bass_lower_bound
+        
+        def set_bass_lower_bound(value):
+            self.bass_lower_bound = value
+            #self.artnet_controller.set_bass_lower_bound(self.bass_lower_bound)
+            
+        
         def get_bass_threshold():
             return self.bass_threshold
 
@@ -133,6 +159,42 @@ class Display:
         def set_audio_sensitivity(value):
             self.audio_sensitivity = value
             self.audio_processor.set_sensitivity(self.audio_sensitivity)
+            
+        #Configure Controllers
+        def get_num_bars_1():
+            return self.esp_configs[0]['num_bars']
+        
+        def set_numbars_1(value):
+            self.esp_configs[0]['num_bars'] = value
+            #code to initalise the controller with new number of bars
+            
+        def get_num_bars_2():
+            return self.esp_configs[1]['num_bars']
+        
+        def set_numbars_2(value):
+            self.esp_configs[1]['num_bars'] = value
+            #code to initalise the controller with new number of bars
+        
+        def get_num_bars_3():
+            return self.esp_configs[2]['num_bars']
+        
+        def set_numbars_3(value):
+            self.esp_configs[2]['num_bars'] = value
+            #code to initalise the controller with new number of bars
+        
+        def get_num_bars_4():
+            return self.esp_configs[3]['num_bars']
+        
+        def set_numbars_4(value):
+            self.esp_configs[3]['num_bars'] = value
+            #code to initalise the controller with new number of bars
+        
+        def get_reinitialise():
+            return "X"
+        
+        def set_reinitialise(value):
+            pass
+        
 
         # Define action functions
         def show_fft_stats():
@@ -140,21 +202,30 @@ class Display:
 
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
-            AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=100, step=1),
+            AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             # Add other adjustable items...
             MenuItem("Back")
         ])
 
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
-            AdjustableMenuItem("Overall audio sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=2, step=0.1),
-            AdjustableMenuItem("Bass Threshold", get_bass_threshold, set_bass_threshold, min_value=0, max_value=2, step=0.1),
+            AdjustableMenuItem("Overall audio sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Bass Threshold", get_bass_threshold, set_bass_threshold, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Bass Lower Bound", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=1, step=0.1),
             # Add other adjustable items...
             MenuItem("Back")
         ])
 
         # Configure Controllers Menu
         configure_controllers_menu = Menu("Configure Controllers", items=[
+            AdjustableMenuItem("Controller 1: ", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller 2: ", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller 3: ", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
+            AdjustableMenuItem("Controller 4: ", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
+            #Menuitem to reinitialise the whole setup 
+            AdjustableMenuItem("Reinitialise", get_reinitialise, set_reinitialise, min_value=0, max_value=5, step=1),
             # Add adjustable items...
             MenuItem("Back")
         ])
@@ -249,7 +320,6 @@ class Display:
 
     def draw_fft_display(self):
         device = self.device
-        heading_offset = 15
 
         # Get latest FFT data
         results_buffer = []
@@ -279,7 +349,7 @@ class Display:
                 draw.rectangle([x, y_top, x + bar_width - 1, device.height], fill=255)
 
             # Display FFT FPS
-            draw.text((64, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
+            draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
 
             # Determine frequency resolution and find indices for 0-200 Hz
             fft_length = len(data)
