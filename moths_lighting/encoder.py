@@ -5,8 +5,8 @@ from gpiozero import Device
 Device.pin_factory = LGPIOFactory(chip=4)
 
 class Encoder:
-    def __init__(self, pin_A, pin_B, pin_button, callback, button_callback, display):
-        self.display = display
+    def __init__(self, pin_A, pin_B, pin_button, callback, button_callback):
+    
         self.callback = callback
         self.button_callback = button_callback
         self.position = 0
@@ -24,10 +24,10 @@ class Encoder:
             self.position -= 1
         else:
             self.position += 1
-        self.callback(self.display, self.position)
+        self.callback(self.position)
 
     def _button_callback(self):
-        self.button_callback(self.display)
+        self.button_callback()
 
     def cleanup(self):
         pass  # Add cleanup code if necessary
