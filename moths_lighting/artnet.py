@@ -92,6 +92,12 @@ class ArtnetController:
             for bar in bars:
                 bar.brightness = brightness
                 
+    def set_fade(self, fade):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.fade = fade
+                
     def get_brightness(self):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
