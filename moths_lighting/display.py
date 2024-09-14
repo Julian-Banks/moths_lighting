@@ -26,6 +26,7 @@ class Display:
         self.position = 0
         self.last_position = 0
         self.menu_items = ["Lighting Mode", "Brightness", "Audio Sensitivity", "FPS", "Options"]
+        self.options_menu_items = ["Configure Controllers", "Show FFT Stats", "Select Modes"]
         self.selected_mode = 0
         self.brightness = 50  # Display range 0-100
         self.internal_brightness = self.brightness / 100.0  # Internal processing range 0-1
@@ -42,9 +43,11 @@ class Display:
 
     def on_position_change(self, position):
         with self.lock:
-            if self.state == "MainScreen" or "Options":
+            if self.state == "MainScreen":
                 # Update menu position
                 self.position = position % len(self.menu_items)
+            elif self.state == "OptionsMenu":
+                self.position = position % len(self.options_menu_items)
             elif self.state == "Adjusting":
                 # Calculate position delta
                 delta = position - self.last_position
@@ -78,8 +81,7 @@ class Display:
                     self.state = "OptionsMenu"
                     self.position = 0
             elif self.state == "OptionsMenu":
-                options = ["Configure Controllers", "Show FFT Stats", "Select Modes"]
-                selected_option = options[self.position % len(options)]
+                selected_option = self.options_menu_items[self.position]
                 if selected_option == "Configure Controllers":
                     self.configure_controllers()
                 elif selected_option == "Show FFT Stats":
