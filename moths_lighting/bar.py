@@ -14,8 +14,13 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe]  # Add more modes as needed
         self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe"]
+        
+        self.fade = 0.1
         self.current_step = 0
         self.bass_threshold = 0.5
+        
+        self.fade_out_count = 0  # Initialize counter for fade_out calls
+        self.fade_out_threshold = 50  # Adjust this threshold based on the desired fading duration
 
     def update(self, fft_data):
         with self.lock:
@@ -59,6 +64,11 @@ class Bar:
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
+        # Increment current_step and reset if it exceeds the length of all_colours
+        self.current_step += 1
+        if self.current_step >= len(self.all_colours):
+            self.current_step = 0
+            
         bass_magnitude = self.compute_bass_magnitude(fft_data)
 
         # Check if the bass magnitude exceeds the threshold
@@ -68,12 +78,28 @@ class Bar:
             color = self.all_colours[self.current_step]
             brightened_color = tuple(int(c * self.brightness) for c in color)
             self.pixels = bytearray(brightened_color * self.num_leds)
+      
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
         else:
-            #
+            # If not strobing, apply fading effect
+            self.fade_out()
+
+
+
+    def fade_out(self):
+        # Only continue fading if the counter is below the threshold
+        if self.fade_out_count < self.fade_out_threshold:
+            # Apply fading effect to each pixel
+            for i in range(self.num_pixels):
+                # Reduce each channel (R, G, B) based on the fade parameter
+                self.pixels[i] = max(0, int(self.pixels[i] * (1 - self.fade)))
+            
+            # Increment the fade out counter
+            self.fade_out_count += 1
+        else:
+            # If the threshold is reached, set pixels to black directly for performance
             self.pixels = bytearray([0] * self.num_pixels)
-
-
-            # Increment current_step and reset if it exceeds the length of all_colours
             self.current_step += 1
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
