@@ -30,14 +30,11 @@ class Bar:
         self.mid_threshold  = 0.5
         self.mid_lower_bound = 800
         self.mid_upper_bound = 3000
-        
-
 
     def update(self, fft_data):
         with self.lock:
             # Call the current mode's update method
             self.modes[self.state](fft_data)
-
 
     def mode_static(self, fft_data):
         # Use self.current_step to select the current color
@@ -133,9 +130,6 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.fade_out()      
-            
-
-
 
     def fade_out(self):
         # Only continue fading if the counter is below the threshold
@@ -202,8 +196,6 @@ class Bar:
         mid_magnitude = np.mean(fft_data[mid_indices])
         return mid_magnitude
     
-        
-
     def map_level_to_color(self, level):
         # Map level (0 to 1) to a color gradient
         r = int(level * 255)
@@ -220,14 +212,11 @@ class Bar:
             if 0 <= mode_index < len(self.modes):
                 self.state = mode_index
 
-    
-    #Helper functions with colours
+    ##Helper functions with colours
     def interpolate_colour(self, colour1, colour2, steps):
         # This function will take two colours and return a list of colours that are interpolated between the two colours
         # The resulting colors are converted to integers
         return [list(map(int, (1 - t) * np.array(colour1) + t * np.array(colour2))) for t in np.linspace(0, 1, steps)]
-
-
 
     def cycle_colours(self, colours, steps_per_transition):
         """Cycle through a list of RGB colors smoothly with integer values."""

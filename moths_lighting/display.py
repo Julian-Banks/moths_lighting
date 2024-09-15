@@ -93,19 +93,6 @@ class Display:
         # Initialize state variables
         self.last_position = 0
         
-        #Lighting Related
-        self.brightness = 0.5
-        self.fade = 0.3
-        
-        #Audio related 
-        self.bass_threshold = 0.5
-        self.bass_lower_bound = 0
-        self.bass_upper_bound = 200
-        
-        self.mid_threshold = 0.5
-        self.mid_lower_bound = 800
-        self.mid_upper_bound = 3000
-        
         # Initialize FPS tracking
         self.artnet_fps = 0
         self.fft_fps = 0
@@ -119,121 +106,111 @@ class Display:
         self.stop_flag = threading.Event()
         self.thread = threading.Thread(target=self.update_display)
         self.thread.start()
-
-    def create_menu_structure(self):
-        # Define get and set functions
         
-        #configure Lighting options
+    #DEFINE ALL MENUS, SUBMENUS AND MENU ITEMS, AND THEIR GET and Set FUNCTIONS
+    def create_menu_structure(self):
+        
+        #DEFINE FUNCTIONS TO GET AND SET CONFIGURATIONS
+        #LIGHTING OPTIONS                
+        #Brightness options
         def get_brightness():
             return self.artnet_controller.get_brightness()
-
         def set_brightness(value):
-            self.brightness = value
-            self.artnet_controller.set_brightness(self.brightness)
-        
+            self.artnet_controller.set_brightness(value)
+       
+        #Fade options
         def get_fade():
-            return self.fade
-        
+            return self.artnet_controller.get_fade()
         def set_fade(value):
-            self.fade = value
-            self.artnet_controller.set_fade(self.fade)
-            
-        def get_time_per_mode():
-            return "X"
+            self.artnet_controller.set_fade(value)
         
+        #Time per mode  
+        def get_time_per_mode():
+            return "X"      
         def set_time_per_mode(value):
             pass
         
+        #Need to add Colour Cycle Speed
         
-
-        #Configure Audio options
-        #when i st
+        #Need to add Colour Picker
+        
+        #CONFIGURE AUDIO OPTIONS
+        #Bass options
         def get_bass_lower_bound():
             return self.artnet_controller.get_bass_lower_bound()
-        
         def set_bass_lower_bound(value):
-            self.bass_lower_bound = value
-            self.artnet_controller.set_bass_lower_bound(self.bass_lower_bound)
+            self.artnet_controller.set_bass_lower_bound(value)
             
         def get_bass_upper_bound():
             return self.artnet_controller.get_bass_upper_bound
-        
         def set_bass_upper_bound(value):
-            self.bass_upper_bound = value
-            self.artnet_controller.set_bass_upper_bound
-            
-        def set_mid_lower_bound(value):
-            self.mid_lower_bound = value
-            self.artnet_controller.set_mid_lower_bound(self.mid_lower_bound)
-        
-        def get_mid_lower_bound():
-            return self.artnet_controller.get_mid_lower_bound()
-        
-        def set_mid_upper_bound():
-            self.mid_upper_bound = value
-            self.artnet_controller.set_mid_upper_bound(self.mid_upper_bound)
-        def get_mid_upper_bound():
-            return self.artnet_controller.get_mid_upper_bound()
-        
-        
-        
-            
+            self.artnet_controller.set_bass_upper_bound(value)
         
         def get_bass_threshold():
             return self.artnet_controller.get_bass_threshold()
-
         def set_bass_threshold(value):
-            self.bass_threshold = value
-            self.artnet_controller.set_bass_threshold(self.bass_threshold)
+            self.artnet_controller.set_bass_threshold(value)     
+        
+        #Mid options
+        def set_mid_lower_bound(value):
+            self.artnet_controller.set_mid_lower_bound(value)
+        def get_mid_lower_bound():
+            return self.artnet_controller.get_mid_lower_bound()
+        
+        def set_mid_upper_bound(value):
+            self.artnet_controller.set_mid_upper_bound(value)
+        def get_mid_upper_bound():
+            return self.artnet_controller.get_mid_upper_bound()
             
         def get_mid_threshold():
-            return self.artnet_controller.get_mid_threshold()
-        
+            return self.artnet_controller.get_mid_threshold()     
         def set_mid_threshold(value):
-            self.mid_threshold = value
             self.artnet_controller.set_mid_threshold(value)
 
+        #Audio Sensitivity
         def get_audio_sensitivity():
-            return self.audio_sensitivity
-
+            return self.audio_processor.get_sensitivity()      
         def set_audio_sensitivity(value):
-            self.audio_sensitivity = value
-            self.audio_processor.set_sensitivity(self.audio_sensitivity)
+            self.audio_processor.set_sensitivity(value)
             
-        #Configure Controllers
+        #CONFIGURE CONTROLLERS
+        #Controller 1
         def get_num_bars_1():
             return self.esp_configs[0]['num_bars']
-        
         def set_numbars_1(value):
             self.esp_configs[0]['num_bars'] = value
             #code to initalise the controller with new number of bars
-            
+        
+        #Controller 2    
         def get_num_bars_2():
             return self.esp_configs[1]['num_bars']
-        
         def set_numbars_2(value):
             self.esp_configs[1]['num_bars'] = value
             #code to initalise the controller with new number of bars
         
+        #Controller 3
         def get_num_bars_3():
             return self.esp_configs[2]['num_bars']
-        
         def set_numbars_3(value):
             self.esp_configs[2]['num_bars'] = value
             #code to initalise the controller with new number of bars
         
+        #Controller 4
         def get_num_bars_4():
             return self.esp_configs[3]['num_bars']
-        
         def set_numbars_4(value):
             self.esp_configs[3]['num_bars'] = value
             #code to initalise the controller with new number of bars
         
-
+        # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
+        #Shows the fft_stats
+        def show_fft_stats():
+            self.show_fft_display()
+        #Reinitialise the whole setup (should I do this each time a controller is changed or make it something that is done at the end?) 
         def reinitialise():
             pass
         
-        #Define mode selector
+        #Add an action function for each mode to switch to that mode. 
         def set_static():
             self.artnet_controller.change_mode(0)          
         def set_wave():
@@ -246,10 +223,7 @@ class Display:
             self.artnet_controller.change_mode(4)
     
 
-        # Define action functions
-        def show_fft_stats():
-            self.show_fft_display()
-
+        #CONFIGURE MENU STRUCTURE
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
@@ -294,7 +268,8 @@ class Display:
             MenuItem("Back")
         ])
         
-
+        #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
+        
         # Options Menu
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
@@ -313,13 +288,8 @@ class Display:
 
         return main_menu
 
-    def get_audio_sensitivity(self):
-        return self.audio_sensitivity
 
-    def set_audio_sensitivity(self, value):
-        self.audio_sensitivity = value
-        self.audio_processor.set_sensitivity(self.audio_sensitivity)
-
+    #HANDLE CALLBACKS FROM THE ENCODER  
     def on_position_change(self, position):
         with self.lock:
             delta = position - self.last_position
@@ -334,6 +304,7 @@ class Display:
             else:
                 self.menu_manager.on_button_push()
 
+    #THE DISPLAY THREAD, RUNS CONTINUALLY AND MONTIORS/UPDATES THE DISPLAY
     def update_display(self):
         while not self.stop_flag.is_set():
             with self.lock:
@@ -345,19 +316,15 @@ class Display:
                 self.fft_fps = fft_fps if fft_fps is not None else self.fft_fps
 
                 if self.showing_fft:
-                    with Image.new("1", (self.device.width, self.device.height)) as img:
-                        draw = ImageDraw.Draw(img)
-                        # Display FFT FPS
-                        draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
-                        draw = self.draw_fft_display_inpicture(draw=draw)
-                        self.device.display(img)
-                    
+                    # Render FFT display
+                    self.draw_fft_display()
                 else:
                     # Render display based on current menu
                     self.draw_current_menu()
 
             time.sleep(0.1)
 
+    #DRAW THE CURRENT MENU, HANDLES THE LOGIC OF WHAT TO DISPLAY
     def draw_current_menu(self):
         menu = self.menu_manager.current_menu
         with Image.new("1", (self.device.width, self.device.height)) as img:
@@ -365,18 +332,19 @@ class Display:
             if self.menu_manager.adjusting and self.menu_manager.current_adjustable_item:
                 # Adjusting screen
                 item = self.menu_manager.current_adjustable_item
-                draw.text((0, 0), f"Adjust {item.name}", font=self.font, fill=255)
+                draw.text((0, 0), f"Adjust {item.name}:", font=self.font, fill=255)
                 value = item.get_value()
                 if isinstance(value, float):
-                    value_str = f"Value: {round(value, 2)}"
+                    value_str = f"{round(value, 2)}"
                 else:
-                    value_str = f"Value: {value}"
-                draw.text((0, 15), value_str, font=self.font, fill=255)
-                if item.name == "Bass Trigger":
+                    value_str = f"{value}"
+                draw.text((110, 0), value_str, font=self.font, fill=255)
+                if self.menu_manager.current_menu.name == "Audio Options":
                     draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
-                if item.name == "Mid Trigger":
-                    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
-                
+                    #if item.name == "Bass Trigger":
+                    #    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
+                    #if item.name == "Mid Trigger":
+                    #    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
             else:
                 # Header
                 draw.text((0, 0), menu.name, font=self.font, fill=255)
@@ -393,9 +361,19 @@ class Display:
                     else:
                         value_str = ""
                     draw.text((0, y), f"{prefix}{item.name}", font=self.font, fill=255)
-                    draw.text((115, y), f"{value_str}", font=self.font, fill=255)
+                    draw.text((110, y), f"{value_str}", font=self.font, fill=255)
             self.device.display(img)
-            
+    
+    #FOR SHOWING THE FFT DISPLAY
+    def draw_fft_display(self):
+        with Image.new("1", (self.device.width, self.device.height)) as img:
+            draw = ImageDraw.Draw(img)
+            # Display FFT FPS
+            draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
+            draw = self.draw_fft_display_inpicture(draw=draw)
+            self.device.display(img)
+    
+    #FOR SHOWING EMBEDDED FFT DISPLAYS.        
     def draw_fft_display_inpicture(self, height = None, width = None, draw = None , y = 0, x = 0):
         
         device = self.device
@@ -420,18 +398,18 @@ class Display:
             draw.rectangle([x_pos, y_top, x_pos + bar_width - 1, y + height], fill=255)
             
         # Draw the bass threshold line across this frequency range
-        threshold_y = y + height - int(self.bass_threshold * height)
-        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.bass_lower_bound, upper_bound=self.bass_upper_bound, width=width)
+        threshold_y = y + height - int(self.artnet_controller.get_bass_threshold()* height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_bass_lower_bound(), upper_bound=self.artnet_controller.get_bass_upper_bound(), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
         
         # Draw the mid threshold line across this frequency range
-        threshold_y = y + height - int(self.mid_threshold * height)
-        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.mid_lower_bound, upper_bound=self.mid_upper_bound, width=width)
+        threshold_y = y + height - int(self.artnet_controller.get_mid_threshold() * height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_mid_lower_bound(), upper_bound=self.artnet_controller.get_mid_upper_bound(), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
 
         return draw
 
-            
+    #HELPER FUNCTION TO CALCULATE THE LINE TO DISPLAY THRESHOLDS        
     def calculate_line(self, data, lower_bound, upper_bound, width):
         # Determine frequency resolution and find indices for 0-200 Hz
         fft_length = len(data)
@@ -445,6 +423,7 @@ class Display:
         
         return start_pixel, end_pixel
     
+    #GET THE AUDIO DATA FROM QUEUE
     def get_audio_data(self):
         # Get latest FFT data
         results_buffer = []
@@ -459,6 +438,7 @@ class Display:
             data = np.zeros(64)
         return data
 
+    #GET THE FPS FROM THE QUEUE
     def get_fps(self, fps_queue):
         fps = None
         while not fps_queue.empty():

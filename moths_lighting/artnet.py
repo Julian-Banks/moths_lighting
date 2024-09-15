@@ -86,18 +86,28 @@ class ArtnetController:
             artnet_device.send(packet)
         # Timing control is handled in the main loop
         
+    ##GET AND SET FUNCTIONS
+    #LIGHTING OPTIONS
+    #Update brightness
     def set_brightness(self, brightness):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.brightness = brightness
-                
+    def get_brightness(self):
+        brightness = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                brightness.append(bar.brightness)
+        return brightness[0]                
+    
+    #Updated Fade
     def set_fade(self, fade):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.fade = fade
-    
     def get_fade(self):
         fade = []
         for artnet_device in self.artnet_devices:
@@ -106,21 +116,13 @@ class ArtnetController:
                 fade.append(bar.fade)
         return fade[0]
             
-    def get_brightness(self):
-        brightness = []
-        for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map.get(artnet_device, [])
-            for bar in bars:
-                brightness.append(bar.brightness)
-        return brightness[0]
-    
-                
+    #AUDIO REACTIVITY OPTIONS
+    #Bass trigger
     def set_bass_threshold(self, base_threshold):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.bass_threshold = base_threshold  
-            
     def get_bass_threshold(self):
         bass_threshold = []
         for artnet_device in self.artnet_devices:
@@ -136,13 +138,12 @@ class ArtnetController:
             bars = self.device_bars_map.get(artnet_device, [])
             for bar in bars:
                 bass_lower_bound.append(bar.bass_lower_bound)
-        return bass_lower_bound[0]
-    
+        return bass_lower_bound[0]    
     def set_bass_lower_bound(self, bass_lower_bound):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.bass_lower_bound
+                bar.bass_lower_bound = bass_lower_bound
         
     #Get and set bass upper bound
     def get_bass_upper_bound(self):
@@ -152,20 +153,18 @@ class ArtnetController:
             for bar in bars:
                 bass_upper_bound.append(bar.bass_upper_bound)
         return bass_upper_bound[0]
-    
     def set_bass_upper_bound(self, bass_upper_bound):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.bass_upper_bound
+                bar.bass_upper_bound = bass_upper_bound
     
+    #Get and set the mid threshold
     def set_mid_threshold(self, mid_threshold):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.mid_threshold = mid_threshold  
-    
-    #I don't need to be able to return all of the thresholds at this point. But I have a feeling I may want to at a later stage so I am including it now. 
+                bar.mid_threshold = mid_threshold   
     def get_mid_threshold(self):
         thresholds = []
         for artnet_device in self.artnet_devices:
@@ -182,24 +181,22 @@ class ArtnetController:
             for bar in bars:
                 lower_bound.append(bar.mid_lower_bound)
         return lower_bound[0]
-    
     def set_mid_lower_bound(self, mid_lower_bound):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.mid_lower_bound
-    #Get and set mid upper bound
+                bar.mid_lower_bound = mid_lower_bound
     
+    #Get and set mid upper bound    
     def get_mid_upper_bound(self):
         upper_bound = []
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map.get(artnet_device, [])
             for bar in bars:
                 upper_bound.append(bar.mid_upper_bound)
-        return upper_bound[0]
-    
+        return upper_bound[0]    
     def set_mid_upper_bound(self, mid_upper_bound):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.mid_upper_bound
+                bar.mid_upper_bound = mid_upper_bound
