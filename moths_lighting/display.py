@@ -142,7 +142,7 @@ class Display:
             self.artnet_controller.set_bass_lower_bound(value)
             
         def get_bass_upper_bound():
-            return self.artnet_controller.get_bass_upper_bound
+            return self.artnet_controller.get_bass_upper_bound()
         def set_bass_upper_bound(value):
             self.artnet_controller.set_bass_upper_bound(value)
         
