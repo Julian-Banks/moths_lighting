@@ -71,7 +71,7 @@ class AudioProcessor:
     def normalise_to_global_max(self,fft_data):
         
         # Apply the decay to the global max magnitude
-        self.global_max_magnitude *= self.decay_factor
+        self.global_max_mag *= self.decay_factor
         
         #get the current max
         current_max = np.max(fft_data)
