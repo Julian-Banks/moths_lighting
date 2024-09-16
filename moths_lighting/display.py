@@ -368,7 +368,7 @@ class Display:
                     value_str = f"{round(value, 2)}"
                 else:
                     value_str = f"{value}"
-                draw.text((110, 0), value_str, font=self.font, fill=255)
+                draw.text((100, 0), value_str, font=self.font, fill=255)
                 if self.menu_manager.current_menu.name == "Audio Options":
                     draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
                     #if item.name == "Bass Trigger":
@@ -394,7 +394,7 @@ class Display:
                     else:
                         value_str = ""
                     draw.text((0, y), f"{prefix}{item.name}", font=self.font, fill=255)
-                    draw.text((110, y), f"{value_str}", font=self.font, fill=255)
+                    draw.text((100, y), f"{value_str}", font=self.font, fill=255)
             self.device.display(img)
     
     #FOR SHOWING THE FFT DISPLAY
