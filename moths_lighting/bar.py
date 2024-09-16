@@ -8,7 +8,7 @@ class Bar:
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
         self.brightness = brightness
-        self.state = 0  # Mode index
+        self.state = 4  # Mode index
         self.colours = [(255,0,0),(0,255,0),(0,0,255)]
         self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
@@ -24,7 +24,7 @@ class Bar:
         #audio related
         self.trigger_style = "max"
         
-        self.bass_threshold = 0.5
+        self.bass_threshold = 0.8
         self.bass_lower_bound = 0
         self.bass_upper_bound = 200
         
@@ -121,9 +121,17 @@ class Bar:
         if mid_magnitude > self.mid_threshold:
                     # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
-            color = self.all_colours[self.current_step]
+            color = (150,150,150)#self.all_colours[self.current_step]
             brightened_color = tuple(int(c * self.brightness) for c in color)
-            self.pixels = bytearray(brightened_color * self.num_leds)
+            
+            #for a length of 30 LEDs, somewhere random on the bars
+            strobe_idx = np.random.randint(0, self.num_leds - 30)
+            for i in range(strobe_idx,strobe_idx+30,1):
+                self.pixels[i] = brightened_color[0]
+                self.pixels[i+1] = brightened_color[1]
+                self.pixels[i+2] = brightened_color[2]
+                
+            #self.pixels = bytearray(brightened_color * self.num_leds)
       
             # Reset fading when strobe is active
             self.fade_out_count = 0

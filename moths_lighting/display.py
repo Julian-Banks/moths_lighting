@@ -300,6 +300,7 @@ class Display:
 
         # Main Menu
         main_menu = Menu("Main Screen", items=[
+            MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
             MenuItem("Options", submenu=options_menu),
             # Add other main menu items...
         ])
