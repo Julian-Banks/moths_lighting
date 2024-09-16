@@ -8,8 +8,8 @@ class AudioProcessor:
         self.format = pyaudio.paInt16
         self.channels = 1
         self.rate = 96200  # Increased sample rate
-        self.chunk = 2048  # Adjusted chunk size
-        self.num_bins = 2048  # Adjusted FFT size
+        self.chunk = 1024  # Adjusted chunk size
+        self.num_bins = 1024  # Adjusted FFT size
         self.fft_queue = fft_queue
         self.led_queue = led_queue
         self.audio_sensitivity = audio_sensitivity

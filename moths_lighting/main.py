@@ -16,7 +16,7 @@ artnet_fps_queue = Queue()
 fft_fps_queue = Queue()
 
 # Global variables
-FPS_target = 40
+FPS_target = 60
 audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
