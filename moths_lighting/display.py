@@ -80,7 +80,7 @@ class Display:
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
         try:
-            self.font = ImageFont.truetype("Roboto-Light.ttf", 8)  # Change to the path of a TTF font file on your system
+            self.font = ImageFont.truetype("Roboto-Light.ttf", 10)  # Change to the path of a TTF font file on your system
         except AttributeError as e:
             print(f"Error: {e}")
             self.font = ImageFont.load_default()
@@ -388,7 +388,7 @@ class Display:
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Display FFT FPS
-            draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
+            draw.text((60, 20), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
             draw = self.draw_fft_display_inpicture(draw=draw)
             self.device.display(img)
     
