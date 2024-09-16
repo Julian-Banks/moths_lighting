@@ -80,7 +80,7 @@ class Display:
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
         try:
-            self.font = ImageFont.truetype("arial.ttf", 8)  # Change to the path of a TTF font file on your system
+            self.font = ImageFont.truetype("Roboto-Light.ttf", 8)  # Change to the path of a TTF font file on your system
         except AttributeError as e:
             print(f"Error: {e}")
             self.font = ImageFont.load_default()
