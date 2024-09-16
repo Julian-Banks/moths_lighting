@@ -135,6 +135,19 @@ class Display:
         #Need to add Colour Picker
         
         #CONFIGURE AUDIO OPTIONS
+        #Trigger Style
+        def get_trigger_style():
+            trigger_style = self.artnet_controller.get_trigger_style()
+            if trigger_style == "max":
+                return 0
+            else:
+                return 1           
+        def set_trigger_style(value):
+            if value == 0:
+                self.artnet_controller.set_trigger_style("max")
+            elif value == 1:
+                self.artnet_controller.set_trigger_style("mean")
+        
         #Bass options
         def get_bass_lower_bound():
             return self.artnet_controller.get_bass_lower_bound()
@@ -236,6 +249,7 @@ class Display:
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
             AdjustableMenuItem("Sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Triger Style", get_trigger_style, set_trigger_style, min_value=0, max_value=1, step=1),
             AdjustableMenuItem("Bass Trigger", get_bass_threshold,  set_bass_threshold, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Bass LB", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=200, step=10),
             AdjustableMenuItem("Bass UB", get_bass_upper_bound, set_bass_upper_bound, min_value=0, max_value=200, step=10),

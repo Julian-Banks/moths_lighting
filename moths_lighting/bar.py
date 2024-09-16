@@ -19,10 +19,11 @@ class Bar:
         self.fade = 0.5
         self.fade_out_count = 0  # Initialize counter for fade_out calls
         self.fade_out_threshold = 40  # Adjust this threshold based on the desired fading duration
-        
         self.current_step = 0
         
         #audio related
+        self.trigger_style = "max"
+        
         self.bass_threshold = 0.5
         self.bass_lower_bound = 0
         self.bass_upper_bound = 200
@@ -147,8 +148,8 @@ class Bar:
             self.current_step += 1
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
-    '''                    
-    def mode_bass_strobe(self, fft_data):
+                        
+    def mode_colour_with_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
         bass_magnitude = self.compute_bass_magnitude(fft_data)
 
@@ -167,7 +168,7 @@ class Bar:
             self.current_step += 1
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
-        '''
+        
     def compute_bass_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
         # Extract indices corresponding to bass frequencies (20-200 Hz)
@@ -178,8 +179,12 @@ class Bar:
         # Find indices for the bass range (20-200 Hz)
         bass_indices = np.where((freqs >= self.bass_lower_bound) & (freqs <= self.bass_upper_bound))[0]
 
-        # Compute the average bass magnitude
-        bass_magnitude = np.mean(fft_data[bass_indices])
+        # Compute the  bass trigger magnitude
+        if self.trigger_style == "max":
+            bass_magnitude = np.max(fft_data[bass_indices])
+        elif self.trigger_style == "mean":
+            bass_magnitude = np.mean(fft_data[bass_indices])
+            
         return bass_magnitude
     
     def compute_mid_magnitude(self, fft_data):
@@ -192,8 +197,12 @@ class Bar:
         # Find indices for the bass range (20-200 Hz)
         mid_indices = np.where((freqs >= self.mid_lower_bound) & (freqs <= self.mid_upper_bound))[0]
 
-        # Compute the average bass magnitude
-        mid_magnitude = np.mean(fft_data[mid_indices])
+        # Compute the mid trigger magnitude
+        if self.trigger_style == "max":
+            mid_magnitude = np.max(fft_data[mid_indices])
+        elif self.trigger_style == "mean": 
+            mid_magnitude = np.mean(fft_data[mid_indices])
+            
         return mid_magnitude
     
     def map_level_to_color(self, level):

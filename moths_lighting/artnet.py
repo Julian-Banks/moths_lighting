@@ -117,6 +117,20 @@ class ArtnetController:
         return fade[0]
             
     #AUDIO REACTIVITY OPTIONS
+    #Trigger style
+    def set_trigger_style(self, trigger_style):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.trigger_style = trigger_style
+    def get_trigger_style(self):
+        trigger_style = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                trigger_style.append(bar.trigger_style)
+        return trigger_style[0]
+    
     #Bass trigger
     def set_bass_threshold(self, base_threshold):
         for artnet_device in self.artnet_devices:
