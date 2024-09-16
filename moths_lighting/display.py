@@ -388,7 +388,7 @@ class Display:
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Display FFT FPS
-            draw.text((60, 20), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
+            draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
             draw = self.draw_fft_display_inpicture(draw=draw)
             self.device.display(img)
     
@@ -428,8 +428,8 @@ class Display:
         start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_mid_lower_bound(), upper_bound=self.artnet_controller.get_mid_upper_bound(), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
 
-        draw.text((60, 0), f"max freq: {max_freq:.2f} Hz", font=self.font, fill=255)
-        draw.text((60, 10), f"max mag: {max_magnitude:.2f}", font=self.font, fill=255)
+        draw.text((60, 10), f"max freq: {max_freq:.2f} Hz", font=self.font, fill=255)
+        draw.text((60, 20), f"max mag: {max_magnitude:.2f}", font=self.font, fill=255)
 
         return draw
 
