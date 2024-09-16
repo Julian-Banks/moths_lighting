@@ -19,7 +19,9 @@ class AudioProcessor:
         # High-pass filter parameters
         self.highpass_cutoff = 20  # Hz
         self.b, self.a = butter(4, self.highpass_cutoff / (0.5 * self.rate), btype='high', analog=False)
-
+        self.global_max_mag = 0
+        self.decay_factor = 0.999 # Decay factor to reduce the max over time
+        
     def set_sensitivity(self, sensitivity):
         with self.lock:
             self.audio_sensitivity = sensitivity
@@ -55,6 +57,7 @@ class AudioProcessor:
         # Compute FFT
         fft_data = np.fft.rfft(audio_data, n=self.num_bins)
         fft_mag = np.abs(fft_data)
+        fft_mag = self.normalise_to_global_max(fft_mag)
         # Limit to max frequency
         max_freq = 5000
         freqs = np.fft.rfftfreq(self.num_bins, 1 / self.rate)
@@ -65,6 +68,22 @@ class AudioProcessor:
         if self.led_queue:
             self.led_queue.put(fft_mag)
 
+    def normalise_to_global_max(self,fft_data):
+        
+        # Apply the decay to the global max magnitude
+        self.global_max_magnitude *= self.decay_factor
+        
+        #get the current max
+        current_max = np.max(fft_data)
+        #update max if neccessary
+        if current_max > self.global_max_mag:
+            self.global_max_mag = current_max
+        #normalise
+        if self.global_max_mag > 0:
+            fft_data /= self.global_max_mag
+            
+        return fft_data
+            
     def stop_stream(self):
         if self.stream is not None:
             self.stream.stop_stream()
