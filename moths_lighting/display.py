@@ -25,6 +25,7 @@ class Menu:
         self.name = name
         self.items = items  # List of MenuItems
         self.position = 0  # Current selected item
+        self.scroll_offset = 0  # Index of the first visible item
 
 class MenuManager:
     def __init__(self, root_menu):
@@ -47,7 +48,17 @@ class MenuManager:
             # Move the menu selection
             menu = self.current_menu
             menu.position = (menu.position + delta) % len(menu.items)
+            # Update scroll_offset
+            visible_items_count = 4  # Number of items that can be displayed at once
+            if menu.position >= menu.scroll_offset + visible_items_count:
+                menu.scroll_offset = menu.position - visible_items_count + 1
+            elif menu.position < menu.scroll_offset:
+                menu.scroll_offset = menu.position
 
+            # Ensure scroll_offset stays within valid range
+            max_scroll_offset = max(0, len(menu.items) - visible_items_count)
+            menu.scroll_offset = max(0, min(menu.scroll_offset, max_scroll_offset))
+            
     def on_button_push(self):
         if self.adjusting:
             # Stop adjusting
@@ -368,9 +379,12 @@ class Display:
                 # Header
                 draw.text((0, 0), menu.name, font=self.font, fill=255)
                 # Menu items
-                for idx, item in enumerate(menu.items):
+                visible_items_count = 4  # Number of items that can be displayed at once
+                visible_items = menu.items[menu.scroll_offset:menu.scroll_offset + visible_items_count]
+                for idx, item in enumerate(visible_items):
                     y = 16 + idx * 10
-                    prefix = "-> " if idx == menu.position else "   "
+                    actual_idx = menu.scroll_offset + idx
+                    prefix = "-> " if actual_idx == menu.position else "   "
                     if isinstance(item, AdjustableMenuItem):
                         value = item.get_value()
                         if isinstance(value, float):
