@@ -79,7 +79,7 @@ class Display:
                  artnet_fps_queue, fft_fps_queue, fft_queue):
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
-        self.font = ImageFont.load_default()
+        self.font = ImageFont.ImageFont.truetype("arial.ttf", 8)
 
         # Initialize system components
         self.audio_processor = audio_processor
@@ -380,6 +380,7 @@ class Display:
     
     #FOR SHOWING THE FFT DISPLAY
     def draw_fft_display(self):
+        
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Display FFT FPS
@@ -400,12 +401,14 @@ class Display:
         data = self.get_audio_data()
 
         max_magnitude = max(data) if np.max(data) > 0 else 1
+        max_freq = self.get_max_freq(data)
+        
         scaled_magnitude = (data) * (height)
         scaled_magnitude = scaled_magnitude.astype(int)
 
-
         num_bars = min(width, len(scaled_magnitude))
         bar_width = max(1, width // num_bars)
+        
         for i in range(num_bars):
             x_pos = x + i * bar_width
             y_top = y + height - scaled_magnitude[i]
@@ -420,6 +423,9 @@ class Display:
         threshold_y = y + height - int(self.artnet_controller.get_mid_threshold() * height)
         start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_mid_lower_bound(), upper_bound=self.artnet_controller.get_mid_upper_bound(), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
+
+        draw.text((60, 0), f"max freq: {max_freq:.2f} Hz", font=self.font, fill=255)
+        draw.text((60, 10), f"max mag: {max_magnitude:.2f}", font=self.font, fill=255)
 
         return draw
 
@@ -452,6 +458,14 @@ class Display:
             data = np.zeros(64)
         return data
 
+    #GET THE MAX FREQUENCY FROM THE DATA
+    def get_max_freq(self, data):
+        
+        fft_length = len(data)
+        frequency_resolution = 5000 / fft_length
+        max_index = np.argmax(data)
+        max_freq = max_index * frequency_resolution
+        return max_freq
     #GET THE FPS FROM THE QUEUE
     def get_fps(self, fps_queue):
         fps = None
