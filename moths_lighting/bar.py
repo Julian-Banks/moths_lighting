@@ -20,7 +20,7 @@ class Bar:
         self.fade_out_count = 0  # Initialize counter for fade_out calls
         self.fade_out_threshold = 40  # Adjust this threshold based on the desired fading duration
         self.current_step = 0
-        
+        self.length_mid_strobe = 30
         #audio related
         self.trigger_style = "max"
         
@@ -125,8 +125,8 @@ class Bar:
             brightened_color = tuple(int(c * self.brightness) for c in color)
             
             #for a length of 30 LEDs, somewhere random on the bars
-            strobe_idx = np.random.randint(0, self.num_leds - 30)
-            for i in range(strobe_idx,strobe_idx+30,1):
+            strobe_idx = np.random.randint(0, self.num_pixels - self.length_mid_strobe*3)
+            for i in range(strobe_idx,strobe_idx+self.length_mid_strobe*3,3):
                 self.pixels[i] = brightened_color[0]
                 self.pixels[i+1] = brightened_color[1]
                 self.pixels[i+2] = brightened_color[2]

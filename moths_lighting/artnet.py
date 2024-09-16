@@ -32,7 +32,7 @@ class ArtnetController:
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.state = 0  # Set initial state if needed
+                bar.state = 4  # Set initial state if needed
                 
     def change_mode(self,mode = 0):
         for artnet_device in self.artnet_devices:
