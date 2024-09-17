@@ -21,13 +21,7 @@ class AudioProcessor:
         self.b, self.a = butter(4, self.highpass_cutoff / (0.5 * self.rate), btype='high', analog=False)
         self.global_max_mag = 0
         self.decay_factor = 0.999 # Decay factor to reduce the max over time
-        
-    def set_sensitivity(self, sensitivity):
-        with self.lock:
-            self.audio_sensitivity = sensitivity
-            
-    def get_sensitivity(self): 
-        return self.audio_sensitivity 
+
 
     def start_stream(self):
         try:
@@ -89,3 +83,16 @@ class AudioProcessor:
             self.stream.stop_stream()
             self.stream.close()
         self.p.terminate()
+    
+    #Helper Get and Set functions
+    
+    def get_scaler(self):
+        return self.global_max_mag
+    
+    
+    def set_sensitivity(self, sensitivity):
+        with self.lock:
+            self.audio_sensitivity = sensitivity
+            
+    def get_sensitivity(self): 
+        return self.audio_sensitivity 

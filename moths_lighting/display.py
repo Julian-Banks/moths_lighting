@@ -201,6 +201,8 @@ class Display:
         def set_audio_sensitivity(value):
             self.audio_processor.set_sensitivity(value)
             
+
+            
         #CONFIGURE CONTROLLERS
         #Controller 1
         def get_num_bars_1():
@@ -371,10 +373,6 @@ class Display:
                 draw.text((100, 0), value_str, font=self.font, fill=255)
                 if self.menu_manager.current_menu.name == "Audio Options":
                     draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
-                    #if item.name == "Bass Trigger":
-                    #    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
-                    #if item.name == "Mid Trigger":
-                    #    draw = self.draw_fft_display_inpicture(height=round(self.device.height/2), draw = draw,x = 0,y = round(self.device.height/2 ))
             else:
                 # Header
                 draw.text((0, 0), menu.name, font=self.font, fill=255)
@@ -403,6 +401,7 @@ class Display:
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             # Display FFT FPS
+            draw.text((0,0),f"Scaler: {self.get_scaler()}",font=self.font, fill = 255)
             draw.text((60, 0), f"fft per sec: {self.fft_fps}", font=self.font, fill=255)
             draw = self.draw_fft_display_inpicture(draw=draw)
             self.device.display(img)
@@ -477,6 +476,13 @@ class Display:
             data = np.zeros(64)
         return data
 
+    
+            #Dynamic Scaler
+    def get_scaler(self):
+        return self.audio_processor.get_scaler()
+    #def set_scaler(value):
+        #   self.audio_processor.set_scaler()
+        
     #GET THE MAX FREQUENCY FROM THE DATA
     def get_max_freq(self, data):
         
