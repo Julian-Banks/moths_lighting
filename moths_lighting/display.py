@@ -479,7 +479,7 @@ class Display:
     
             #Dynamic Scaler
     def get_scaler(self):
-        return self.audio_processor.get_scaler()
+        return round(self.audio_processor.get_scaler(),2)
     #def set_scaler(value):
         #   self.audio_processor.set_scaler()
         
