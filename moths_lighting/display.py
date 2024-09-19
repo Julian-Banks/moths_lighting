@@ -166,9 +166,9 @@ class Display:
         #Need to add Colour Picker
         #here comes the cavalery. IDK how much longer this file can get...
         def set_current_colour(idx, colour):
-            self.set_red(colour.red)
-            self.set_green(colour.green)
-            self.set_blue(colour.blue)
+            set_red(colour.red)
+            set_green(colour.green)
+            set_blue(colour.blue)
             self.updated_colour_idx = idx
         
         def set_red(value):
