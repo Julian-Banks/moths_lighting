@@ -29,6 +29,10 @@ class ArtnetController:
             bars = [Bar(self.colour_manager) for _ in range(num_bars)]
             self.device_bars_map[artnet_device] = bars
 
+    def update_bars(self, esp_configs):
+        self.esp_configs = esp_configs
+        self.initialize_devices()
+    
     def start_mode(self):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
@@ -62,7 +66,12 @@ class ArtnetController:
             for bar in bars:
                 static_colour.append(0 if bar.state != "static" else 1)
         return static_colour[0]
-
+    
+    def update_colours(self):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.update_colours()
     def end_mode(self):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]

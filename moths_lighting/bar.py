@@ -250,7 +250,9 @@ class Bar:
                 self.state = mode_index
 
     ##Helper functions with colours
-        
+    def update_colours(self):
+        self.colours = self.colour_manager.get_colour_list()
+        self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
     
     def interpolate_colour(self, colour1, colour2, steps):
         # This function will take two colours and return a list of colours that are interpolated between the two colours

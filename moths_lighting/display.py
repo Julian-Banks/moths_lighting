@@ -211,7 +211,13 @@ class Display:
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
             self.colour_manager.update_colour(idx, colour)
-            
+            self.artnet_controller.update_colours()
+            self.menu_manager.go_back()
+        
+        def remove_colour(idx):
+            self.colour_manager.remove_colour(idx)
+            self.menu_manager.go_back()
+        
         def edit_colour_list():
             items = [] 
             for idx, colour in enumerate(self.colour_manager.get_colour_list()):
@@ -223,7 +229,7 @@ class Display:
                     AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
-                    MenuItem("Remove Colour", action= self.colour_manager.remove_colour(idx)),
+                    MenuItem("Remove Colour", action= remove_colour(idx)),
                     MenuItem("Back", action = update_colour)
                 
                 ])
@@ -295,6 +301,7 @@ class Display:
             return self.esp_configs[0]['num_bars']
         def set_numbars_1(value):
             self.esp_configs[0]['num_bars'] = value
+            self.artnet_controller.update_bars(self.esp_configs)
             #code to initalise the controller with new number of bars
         
         #Controller 2    
@@ -324,7 +331,8 @@ class Display:
             self.show_fft_display()
         #Reinitialise the whole setup (should I do this each time a controller is changed or make it something that is done at the end?) 
         def reinitialise():
-            pass
+            self.artnet_controller.update_bars(self.esp_configs)
+            
         
         #Add an action function for each mode to switch to that mode. 
         def set_static():
