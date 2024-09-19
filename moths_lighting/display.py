@@ -218,10 +218,10 @@ class Display:
                 
                 colour_submenu = Menu(colour_name, items=[
                     
-                    AdjustableMenuItem("Red", self.get_red, self.set_red, min_value=0, max_value=255, step=1),
-                    AdjustableMenuItem("Green", self.get_green, self.set_green, min_value=0, max_value=255, step=1),
-                    AdjustableMenuItem("Blue", self.get_blue, self.set_blue, min_value=0, max_value=255, step=1),
-                    AdjustableMenuItem("Display Colour", self.get_display_colour, self.set_display_colour, min_value=0, max_value=1, step=1),
+                    AdjustableMenuItem("Red", get_red, set_red, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
                     MenuItem("Remove Colour", action= self.colour_manager.remove_colour(idx)),
                     MenuItem("Back", action = update_colour)
                 
