@@ -165,43 +165,53 @@ class Display:
         
         #Need to add Colour Picker
         #here comes the cavalery. IDK how much longer this file can get...
-        def set_current_colour(self,idx, colour):
+        def set_current_colour(idx, colour):
             self.set_red(colour.red)
             self.set_green(colour.green)
             self.set_blue(colour.blue)
             self.updated_colour_idx = idx
         
-        def set_red(self, value):
+        def set_red(value):
             self.red = value
-        def get_red(self):
+            if self.artnet_controller.get_display_colour() == 1:
+                colour = Colour(self.red, self.green, self.blue)
+                self.artnet_controller.set_display_colour(value = 1, colour = colour)
+                
+        def get_red():
             return self.red
-        def set_green(self,value):
+        def set_green(value):
             self.green = value
-        def get_green(self):
+            if self.artnet_controller.get_display_colour() == 1:
+                colour = Colour(self.red, self.green, self.blue)
+                self.artnet_controller.set_display_colour(value = 1, colour = colour)
+        def get_green():
             return self.green
-        def set_blue(self,value):
+        def set_blue(value):
             self.blue(value)
-        def get_blue(self):
+            if self.artnet_controller.get_display_colour() == 1:
+                colour = Colour(self.red, self.green, self.blue)
+                self.artnet_controller.set_display_colour(value = 1, colour = colour)
+        def get_blue():
             return self.blue
         
         
-        def get_display_colour(self):
+        def get_display_colour():
             return self.artnet_controller.get_display_colour()
             
-        def set_display_colour(self, value):
+        def set_display_colour(value):
             colour = Colour(self.red, self.green, self.blue)
             self.artnet_controller.set_display_colour(value = value, colour = colour)
         
-        def add_colour(self):
+        def add_colour():
             colour = Colour(self.red, self.green, self.blue)
             self.colour_manager.add_colour(colour)
             
-        def update_colour(self):
+        def update_colour():
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
             self.colour_manager.update_colour(idx, colour)
             
-        def edit_colour_list(self):
+        def edit_colour_list():
             items = [] 
             for idx, colour in self.colour_manager.get_colour_list():
                 colour_name = f"R:{colour.red} G:{colour.green} B:{colour.blue}"
@@ -213,7 +223,7 @@ class Display:
                     AdjustableMenuItem("Blue", self.get_blue, self.set_blue, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Display Colour", self.get_display_colour, self.set_display_colour, min_value=0, max_value=1, step=1),
                     MenuItem("Remove Colour", action= self.colour_manager.remove_colour(idx)),
-                    MenuItem("Back")
+                    MenuItem("Back", action = update_colour)
                 
                 ])
                 items.append(MenuItem(colour_name, action = set_current_colour(idx,colour), submenu = colour_submenu))
