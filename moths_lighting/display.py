@@ -77,10 +77,11 @@ class MenuManager:
                 # Start adjusting
                 self.adjusting = True
                 self.current_adjustable_item = selected_item
-            elif(isinstance(selected_item, DynamicMenuItem)):
+            elif(isinstance(selected_item, DynamicMenuItem) and selected_item.name != "Back"):
                 #generate submenu dynamically
                 submenu = selected_item.submenu_func()
                 self.menu_stack.append(submenu)
+                
             elif selected_item.submenu:
                 # Enter submenu
                 self.menu_stack.append(selected_item.submenu)
