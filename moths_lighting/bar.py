@@ -1,17 +1,26 @@
 import numpy as np
 import threading
 
+
 class Bar:
-    def __init__(self, num_leds=96, brightness=0.5):
+    def __init__(self,colour_manager, num_leds=96, brightness=0.5):
         self.lock = threading.Lock()
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
         self.brightness = brightness
         self.state = 4  # Mode index
-        self.colours = [(255,0,0),(0,255,0),(0,0,255)]
+        self.previous_state = 4  # Previous mode index
+        
+        #colours 
+        
+        self.colour = colour_manager.get_colour_list()[0]
+        self.colour_manager = colour_manager
+        self.colours = self.colour_manager.get_colour_list()
         self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
+        
+        #Modes
         self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe,self.mode_bass_mid_strobe]  # Add more modes as needed
         self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe", "Bass & Mid Strobe"]
         
@@ -35,7 +44,18 @@ class Bar:
     def update(self, fft_data):
         with self.lock:
             # Call the current mode's update method
-            self.modes[self.state](fft_data)
+            if self.state == "static":
+                self.mode_display_colour()
+            else:
+                self.modes[self.state](fft_data)
+            
+    def mode_display_colour(self):
+        colour =(self.colour.red, self.colour.green, self.colour.blue)
+        # Apply brightness to the color
+        brightened_color = tuple(int(c * self.brightness) for c in colour)
+        
+        # Update the pixels with the brightened color
+        self.pixels = bytearray(brightened_color * self.num_leds)
 
     def mode_static(self, fft_data):
         # Use self.current_step to select the current color
@@ -230,9 +250,13 @@ class Bar:
                 self.state = mode_index
 
     ##Helper functions with colours
+        
+    
     def interpolate_colour(self, colour1, colour2, steps):
         # This function will take two colours and return a list of colours that are interpolated between the two colours
         # The resulting colors are converted to integers
+        colour1 = (colour1.red, colour1.green, colour1.blue)
+        colour2 = (colour2.red, colour2.green, colour2.blue)
         return [list(map(int, (1 - t) * np.array(colour1) + t * np.array(colour2))) for t in np.linspace(0, 1, steps)]
 
     def cycle_colours(self, colours, steps_per_transition):

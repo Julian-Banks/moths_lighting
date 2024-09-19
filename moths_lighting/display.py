@@ -1,6 +1,8 @@
 import threading
 import time
 import numpy as np
+
+from colours import Colour
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
@@ -19,6 +21,11 @@ class AdjustableMenuItem(MenuItem):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
+        
+class DynamicMenuItem(MenuItem):
+    def __init__(self, name, submenu_func):
+        super().__init__(name)
+        self.submenu_func = submenu_func
 
 class Menu:
     def __init__(self, name, items=[]):
@@ -70,6 +77,10 @@ class MenuManager:
                 # Start adjusting
                 self.adjusting = True
                 self.current_adjustable_item = selected_item
+            elif(isinstance(selected_item, DynamicMenuItem)):
+                #generate submenu dynamically
+                submenu = selected_item.submenu_func()
+                self.menu_stack.append(submenu)
             elif selected_item.submenu:
                 # Enter submenu
                 self.menu_stack.append(selected_item.submenu)
@@ -86,7 +97,7 @@ class MenuManager:
             self.menu_stack.pop()
 
 class Display:
-    def __init__(self, audio_processor, artnet_controller, esp_configs, audio_sensitivity,
+    def __init__(self, audio_processor, artnet_controller, esp_configs,colour_manager,
                  artnet_fps_queue, fft_fps_queue, fft_queue):
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
@@ -99,8 +110,8 @@ class Display:
         # Initialize system components
         self.audio_processor = audio_processor
         self.artnet_controller = artnet_controller
+        self.colour_manager = colour_manager
         self.esp_configs = esp_configs
-        self.audio_sensitivity = audio_sensitivity
         self.artnet_fps_queue = artnet_fps_queue
         self.fft_fps_queue = fft_fps_queue
         self.fft_queue = fft_queue  # FFT data queue
@@ -111,7 +122,12 @@ class Display:
         # Initialize FPS tracking
         self.artnet_fps = 0
         self.fft_fps = 0
-
+        
+        #Colours
+        self.red = 100
+        self.green = 0
+        self.blue = 100
+        self.updated_colour_idx = 0
         # Initialize MenuManager
         self.showing_fft = False
         self.menu_manager = MenuManager(self.create_menu_structure())
@@ -148,6 +164,65 @@ class Display:
         #Need to add Colour Cycle Speed
         
         #Need to add Colour Picker
+        #here comes the cavalery. IDK how much longer this file can get...
+        def set_current_colour(self,idx, colour):
+            self.set_red(colour.red)
+            self.set_green(colour.green)
+            self.set_blue(colour.blue)
+            self.updated_colour_idx = idx
+        
+        def set_red(self, value):
+            self.red = value
+        def get_red(self):
+            return self.red
+        def set_green(self,value):
+            self.green = value
+        def get_green(self):
+            return self.green
+        def set_blue(self,value):
+            self.blue(value)
+        def get_blue(self):
+            return self.blue
+        
+        
+        def get_display_colour(self):
+            return self.artnet_controller.get_display_colour()
+            
+        def set_display_colour(self, value):
+            colour = Colour(self.red, self.green, self.blue)
+            self.artnet_controller.set_display_colour(value = value, colour = colour)
+        
+        def add_colour(self):
+            colour = Colour(self.red, self.green, self.blue)
+            self.colour_manager.add_colour(colour)
+            
+        def update_colour(self):
+            colour = Colour(self.red, self.green, self.blue)
+            idx = self.updated_colour_idx
+            self.colour_manager.update_colour(idx, colour)
+            
+        def edit_colour_list(self):
+            items = [] 
+            for idx, colour in self.colour_manager.get_colour_list():
+                colour_name = f"R:{colour.red} G:{colour.green} B:{colour.blue}"
+                
+                colour_submenu = Menu(colour_name, items=[
+                    
+                    AdjustableMenuItem("Red", self.get_red, self.set_red, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Green", self.get_green, self.set_green, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Blue", self.get_blue, self.set_blue, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Display Colour", self.get_display_colour, self.set_display_colour, min_value=0, max_value=1, step=1),
+                    MenuItem("Remove Colour", action= self.colour_manager.remove_colour(idx)),
+                    MenuItem("Back")
+                
+                ])
+                items.append(MenuItem(colour_name, action = set_current_colour(idx,colour), submenu = colour_submenu))
+            items.append(MenuItem("Add Colour", submenu = add_colour_menu))
+            items.append(MenuItem("Back"))
+            return Menu("Colour List", items = items)
+        
+
+        
         
         #CONFIGURE AUDIO OPTIONS
         #Trigger Style
@@ -260,9 +335,30 @@ class Display:
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             # Add other adjustable items...
+            DynamicMenuItem("Edit Colours", submenu_func=self.edit_colour_list),
             MenuItem("Back")
         ])
 
+        
+        #Colour Picker Menu
+        colour_picker_menu = Menu("Select Colour", items=[
+        AdjustableMenuItem("Red", self.get_red, self.set_red, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Green", self.get_green, self.set_green, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Blue", self.get_blue, self.set_blue, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Display Colour", self.get_display_colour, self.set_display_colour, min_value=0, max_value=1, step=1),
+        MenuItem("Add Colour", action=self.add_colour),
+        MenuItem("Back")
+        ])
+        
+        add_colour_menu = Menu("Select Colour", items=[
+        AdjustableMenuItem("Red", self.get_red, self.set_red, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Green", self.get_green, self.set_green, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Blue", self.get_blue, self.set_blue, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Display Colour", self.get_display_colour, self.set_display_colour, min_value=0, max_value=1, step=1),
+        MenuItem("Add Colour", action=self.add_colour),
+        MenuItem("Back")
+        ])
+              
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
             AdjustableMenuItem("Sensitivity", get_audio_sensitivity, set_audio_sensitivity, min_value=0, max_value=1, step=0.1),

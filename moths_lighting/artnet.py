@@ -5,9 +5,10 @@ from bar import Bar
 import queue
 
 class ArtnetController:
-    def __init__(self, esp_configs):
+    def __init__(self, esp_configs, colour_manager):
         self.device_bars_map = {}
         self.artnet_devices = []
+        self.colour_manager = colour_manager
         self.fps = esp_configs[0].get('fps', 40)
         self.esp_configs = esp_configs
         self.initialize_devices()
@@ -25,7 +26,7 @@ class ArtnetController:
             artnet_device = StupidArtnet(target_ip, universe, packet_size, fps, True, True)
             # Add the new Artnet device to the list
             self.artnet_devices.append(artnet_device)
-            bars = [Bar() for _ in range(num_bars)]
+            bars = [Bar(self.colour_manager) for _ in range(num_bars)]
             self.device_bars_map[artnet_device] = bars
 
     def start_mode(self):
@@ -39,6 +40,28 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.state = mode  # Set initial state if needed
+    
+    def set_display_colour(self, value, colour):
+        if value == 1:
+            for artnet_device in self.artnet_devices:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.previous_state = bar.state
+                    bar.state = "static"
+                    bar.colour = colour
+        else:
+            for artnet_device in self.artnet_devices:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.state = bar.previous_state
+
+    def get_display_colour(self):
+        static_colour = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                static_colour.append(bar.static_colour)
+        return static_colour[0]
 
     def end_mode(self):
         for artnet_device in self.artnet_devices:

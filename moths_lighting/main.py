@@ -6,6 +6,7 @@ from audio import AudioProcessor
 from artnet import ArtnetController
 from display import Display
 from encoder import Encoder
+from colours import Colour_Manager
 
 import pyaudio
 
@@ -78,19 +79,22 @@ def on_button_push():
     display.on_button_push()
 
 def main():
+    print('Initializing Colour Manager...')
+    colour_manager = Colour_Manager()
+    
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)
     audio_thread_instance = threading.Thread(target=audio_thread, args=(audio_processor,))
     audio_thread_instance.start()
 
     print('Initializing Artnet Controller...')
-    artnet_controller = ArtnetController(esp_configs=esp_configs)
+    artnet_controller = ArtnetController(esp_configs=esp_configs,colour_manager=colour_manager)
     artnet_thread_instance = threading.Thread(target=artnet_thread, args=(artnet_controller, led_queue))
     artnet_thread_instance.start()
 
     print('Initializing Display and Encoder...')
     global display
-    display = Display(audio_processor, artnet_controller, esp_configs, audio_sensitivity,
+    display = Display(audio_processor, artnet_controller, esp_configs, colour_manager,
                       artnet_fps_queue, fft_fps_queue, fft_queue)
     encoder = Encoder(pin_A=22, pin_B=27, pin_button=17,
                       callback=on_position_change,
