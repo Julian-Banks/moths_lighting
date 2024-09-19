@@ -213,7 +213,7 @@ class Display:
             
         def edit_colour_list():
             items = [] 
-            for idx, colour in self.colour_manager.get_colour_list():
+            for idx, colour in enumerate(self.colour_manager.get_colour_list()):
                 colour_name = f"R:{colour.red} G:{colour.green} B:{colour.blue}"
                 
                 colour_submenu = Menu(colour_name, items=[
