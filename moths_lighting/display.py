@@ -215,6 +215,7 @@ class Display:
             self.menu_manager.go_back()
         
         def remove_colour(idx):
+            print('removing colour')
             self.colour_manager.remove_colour(idx)
             self.menu_manager.go_back()
         

@@ -16,6 +16,7 @@ class Colour_Manager:
         self.colours.append(colour)
         
     def remove_colour(self, idx):
+        print(f"idx: {idx}, len: {len(self.colours)}")
         if 0 <= idx < len(self.colours):
             self.colours.pop(idx)
             
