@@ -176,9 +176,9 @@ class Display:
             if self.artnet_controller.get_display_colour() == 1:
                 colour = Colour(self.red, self.green, self.blue)
                 self.artnet_controller.set_display_colour(value = 1, colour = colour)
-                
         def get_red():
             return self.red
+        
         def set_green(value):
             self.green = value
             if self.artnet_controller.get_display_colour() == 1:
@@ -186,8 +186,9 @@ class Display:
                 self.artnet_controller.set_display_colour(value = 1, colour = colour)
         def get_green():
             return self.green
+        
         def set_blue(value):
-            self.blue(value)
+            self.blue = value
             if self.artnet_controller.get_display_colour() == 1:
                 colour = Colour(self.red, self.green, self.blue)
                 self.artnet_controller.set_display_colour(value = 1, colour = colour)
@@ -197,7 +198,6 @@ class Display:
         
         def get_display_colour():
             return self.artnet_controller.get_display_colour()
-            
         def set_display_colour(value):
             colour = Colour(self.red, self.green, self.blue)
             self.artnet_controller.set_display_colour(value = value, colour = colour)
