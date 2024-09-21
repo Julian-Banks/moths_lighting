@@ -31,11 +31,11 @@ class DynamicMenuItem(MenuItem):
         self.submenu_func = submenu_func
 
 class Menu:
-    def __init__(self, name, items=[], regenerate_func = None,position = 0):
+    def __init__(self, name, items=[], regenerate_func = None,position = 0,scroll_offset = 0):
         self.name = name
         self.items = items  # List of MenuItems
         self.position = position  # Current selected item
-        self.scroll_offset = 0  # Index of the first visible item
+        self.scroll_offset = scroll_offset # Index of the first visible item
         self.regenerate = regenerate_func
 
 class MenuManager:
@@ -275,7 +275,7 @@ class Display:
                 items.append(MenuItem(colour_name, action=set_current_colour, submenu = colour_submenu, option1 =idx,option2=  colour))
             items.append(MenuItem("Add Colour", submenu = add_colour_menu))
             items.append(MenuItem("Back"))
-            return Menu("Colour List", items = items,regenerate_func=edit_colour_list,position = self.menu_manager.current_menu.position)
+            return Menu("Colour List", items = items,regenerate_func=edit_colour_list,position = self.menu_manager.current_menu.position, scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
 
         def select_mode():
@@ -287,7 +287,7 @@ class Display:
                 else:
                     items.append(MenuItem(mode.name, action = self.artnet_controller.change_mode, option1 = idx))
             items.append(MenuItem("Back"))
-            return Menu("Select Mode", items = items, regenerate_func=select_mode,position = self.menu_manager.current_menu.position)
+            return Menu("Select Mode", items = items, regenerate_func=select_mode,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
 
             
@@ -300,7 +300,7 @@ class Display:
                 else:
                     items.append(MenuItem(mode.name, action= self.artnet_controller.add_auto_cycle_mode, option1 = idx))
             items.append(MenuItem("Back"))
-            return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes,position = self.menu_manager.current_menu.position)
+            return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
         def get_auto_cycle():
             return self.artnet_controller.get_auto_cycle()
