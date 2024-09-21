@@ -13,7 +13,11 @@ class mode_manager:
     def __init__(self):
         self.modes = []
         self.modes_menu = []
-            
+    
+    def add_mode(self,mode):
+        self.modes.append(mode)
+        self.modes_menu.append(mode.name)
+        
     def remove_auto_cycle_mode(self,idx):
         if 0 <= idx < len(self.modes):
             if self.modes[idx].auto_cycle:
