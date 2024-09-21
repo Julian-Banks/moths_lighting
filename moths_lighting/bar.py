@@ -97,8 +97,8 @@ class Bar:
             audio_reactive = config["audio_reactive"]
             mode_func = config["func"]
             auto_cycle = config["auto_cycle"]
-            mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
-            self.mode_manager.add_mode(mode)
+            new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
+            self.mode_manager.add_mode(new_mode)
         
         
         #want to delete these attributes
