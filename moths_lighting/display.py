@@ -8,9 +8,14 @@ from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
 
 class MenuItem:
-    def __init__(self, name, action=None, submenu=None):
+    def __init__(self, name, action=None, submenu=None, option1 =None, option2 = None):
         self.name = name
-        self.action = action  # Function to call when item is selected
+        if option1 and option2 is not None:
+           self.action = action(option1, option2)
+        elif option1 is not None:
+            self.action = action(option1)
+        else: 
+            self.action = action # Function to call when item is selected
         self.submenu = submenu  # Submenu if any
 
 class AdjustableMenuItem(MenuItem):
@@ -242,7 +247,7 @@ class Display:
                     MenuItem("Back", action = update_colour)
                 
                 ])
-                items.append(MenuItem(colour_name, action=lambda idx=idx, colour=colour: set_current_colour(idx, colour), submenu = colour_submenu))
+                items.append(MenuItem(colour_name, action=set_current_colour, submenu = colour_submenu, option1 =idx,option2=  colour))
             items.append(MenuItem("Add Colour", submenu = add_colour_menu))
             items.append(MenuItem("Back"))
             return Menu("Colour List", items = items)
