@@ -112,7 +112,7 @@ class MenuManager:
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
-            if self.menu_stack[-1].name == "Edit Colours":
+            if self.menu_stack[-1].name == "Colour List":
                 print("redrawing edit colours")
                 submenu = self.menu_stack[-1].submenu_func()
                 self.menu_stack[-1] = submenu
