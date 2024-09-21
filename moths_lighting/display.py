@@ -112,7 +112,7 @@ class MenuManager:
                 # Go back to previous menu
         if len(self.menu_stack) > 1:
             print(f"Menu name before pop: {self.menu_stack[-1].name}")
-            print(f"Menu stack: {self.menu_stack}")
+            print(f"Menu stack: {[menu_item.name for menu_item in self.menu_stack]}")
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
             if self.menu_stack[-1].regenerate is not None: 
