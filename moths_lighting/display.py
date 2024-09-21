@@ -86,9 +86,20 @@ class MenuManager:
                 self.menu_stack.append(submenu)
                 
             elif selected_item.submenu:
+                
                 # Enter submenu
                 self.menu_stack.append(selected_item.submenu)
-            elif selected_item.action:
+                
+            elif selected_item.name == "Back":
+                # Go back to previous menu
+                if len(self.menu_stack) > 1:
+                    self.menu_stack.pop()
+                    if self.menu_stack[-1].name == "Edit Colours":
+                        submenu = self.menu_stack[-1].submenu_func()
+                        self.menu_stack[-1] = submenu
+                        
+            #I want to call the submenu AND the action function if they exist
+            if selected_item.action:
                 option1 = selected_item.option1
                 option2 = selected_item.option2
                 
@@ -98,15 +109,7 @@ class MenuManager:
                     selected_item.action(option1)
                 else:
                     selected_item.action()
-                # Perform action
-                
-            elif selected_item.name == "Back":
-                # Go back to previous menu
-                if len(self.menu_stack) > 1:
-                    self.menu_stack.pop()
-                    if self.menu_stack[-1].name == "Edit Colours":
-                        submenu = self.menu_stack[-1].submenu_func()
-                        self.menu_stack[-1] = submenu
+            
 
     def go_back(self):
         if len(self.menu_stack) > 1:
