@@ -186,9 +186,9 @@ class Display:
         
         #Time per mode  
         def get_time_per_mode():
-            return "X"      
+            return self.artnet_controller.get_time_per_mode()
         def set_time_per_mode(value):
-            pass
+            self.artnet_controller.set_time_per_mode()
         
         #Need to add Colour Cycle Speed
         def get_time_per_colour():
@@ -300,8 +300,8 @@ class Display:
                 else:
                     items.append(MenuItem(mode.name, action= self.artnet_controller.add_auto_cycle_mode, option1 = idx))
             
-            AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
-            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
+            items.append(AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1)),
+            items.append(AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=600, step=30)),
             items.append(MenuItem("Back"))
             return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
