@@ -291,6 +291,9 @@ class Display:
             items.append(MenuItem("Back"))
             return Menu("Select Mode", items = items, regenerate_func=select_mode)
         
+
+            
+        
         def select_auto_cycle_modes():
             items = []
             for idx, mode in enumerate(self.artnet_controller.get_all_modes()):
@@ -533,6 +536,8 @@ class Display:
     #DRAW THE CURRENT MENU, HANDLES THE LOGIC OF WHAT TO DISPLAY
     def draw_current_menu(self):
         menu = self.menu_manager.current_menu
+        if menu.regenerate is not None:
+            menu = menu.regenerate()
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             if self.menu_manager.adjusting and self.menu_manager.current_adjustable_item:
