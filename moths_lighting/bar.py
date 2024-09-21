@@ -109,6 +109,8 @@ class Bar:
             auto_cycle = config["auto_cycle"]
             new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
             self.mode_manager.add_mode(new_mode)
+            
+        print(f'Modes added: {[mode for mode in self.mode_manager.modes]}')
         
         
         #want to delete these attributes
