@@ -92,13 +92,7 @@ class MenuManager:
                 
             elif selected_item.name == "Back":
                 # Go back to previous menu
-                if len(self.menu_stack) > 1:
-                    self.menu_stack.pop()
-                    print(f"current menu name: {self.menu_stack[-1].name}")
-                    if self.menu_stack[-1].name == "Edit Colours":
-                        print("redrawing edit colours")
-                        submenu = self.menu_stack[-1].submenu_func()
-                        self.menu_stack[-1] = submenu
+                self.go_back()
                         
             #I want to call the submenu AND the action function if they exist
             if selected_item.action:
@@ -114,8 +108,14 @@ class MenuManager:
             
 
     def go_back(self):
+                # Go back to previous menu
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
+            print(f"current menu name: {self.menu_stack[-1].name}")
+            if self.menu_stack[-1].name == "Edit Colours":
+                print("redrawing edit colours")
+                submenu = self.menu_stack[-1].submenu_func()
+                self.menu_stack[-1] = submenu
 
 class Display:
     def __init__(self, audio_processor, artnet_controller, esp_configs,colour_manager,
@@ -226,9 +226,10 @@ class Display:
         
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
+            print('calling adding colour')
             self.colour_manager.add_colour(colour)
             self.menu_manager.go_back()
-            print('calling adding colour')
+           
             
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
