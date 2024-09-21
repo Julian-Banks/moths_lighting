@@ -232,6 +232,7 @@ class Display:
             colour = Colour(self.red, self.green, self.blue)
             print('calling adding colour')
             self.colour_manager.add_colour(colour)
+            self.artnet_controller.update_colours()
             self.menu_manager.go_back()
            
             
@@ -246,6 +247,7 @@ class Display:
         def remove_colour(idx):
             print('removing colour')
             self.colour_manager.remove_colour(idx)
+            self.artnet_controller.update_colours()
             self.menu_manager.go_back()
             print('calling remove colour')
         

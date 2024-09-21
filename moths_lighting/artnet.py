@@ -51,7 +51,8 @@ class ArtnetController:
             for artnet_device in self.artnet_devices:
                 bars = self.device_bars_map[artnet_device]
                 for bar in bars:
-                    bar.previous_state = bar.state if bar.state != "static"else 0
+                    if bar.state != "static":
+                        bar.previous_state = bar.state
                     bar.state = "static"
                     bar.colour = colour
         else:
@@ -73,6 +74,7 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.update_colours()
+                
     def end_mode(self):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
