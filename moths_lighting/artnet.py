@@ -15,8 +15,8 @@ class ArtnetController:
         self.initialize_devices()
 
     def initialize_devices(self):
-        self.device_bars_map.clear()
-        self.artnet_devices.clear()
+        self.device_bars_map = {}
+        self.artnet_devices = []
         for config in self.esp_configs:
             target_ip = config['target_ip']
             universe = config['universe']
@@ -119,7 +119,12 @@ class ArtnetController:
                 pixels = bar.get_pixels()
                 packet[offset:offset + len(pixels)] = pixels
                 offset += len(pixels)
-            artnet_device.send(packet)
+
+            if len(packet) == artnet_device.packet_size: 
+                artnet_device.send(packet)
+            else:
+                print(f"packet size: {len(packet)}")
+                print(f"declared packet size: {artnet_device.packet_size}") 
         # Timing control is handled in the main loop
         
     ##GET AND SET FUNCTIONS
