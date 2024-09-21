@@ -54,7 +54,7 @@ class Bar:
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
         self.brightness = brightness
-        self.state = 4  # Mode index
+        self.state = 3  # Mode index
         self.auto_cycle = False 
         self.time_per_mode = 60
         self.previous_state = 4  # Previous mode index
@@ -110,7 +110,7 @@ class Bar:
             new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
             self.mode_manager.add_mode(new_mode)
             
-        print(f'Modes added: {[mode for mode in self.mode_manager.modes]}')
+        print(f'Modes added: {[mode.name for mode in self.mode_manager.modes]}')
         
         
         #want to delete these attributes
