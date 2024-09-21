@@ -3,7 +3,7 @@ import numpy as np
 from stupidArtnet import StupidArtnet
 from bar import Bar
 import queue
-
+import threading
 class ArtnetController:
     def __init__(self, esp_configs, colour_manager):
         self.device_bars_map = {}
@@ -11,6 +11,7 @@ class ArtnetController:
         self.colour_manager = colour_manager
         self.fps = esp_configs[0].get('fps', 40)
         self.esp_configs = esp_configs
+        self.lock = threading.Lock()
         self.initialize_devices()
 
     def initialize_devices(self):
@@ -31,7 +32,8 @@ class ArtnetController:
 
     def update_config(self, esp_configs):
         self.esp_configs = esp_configs
-        self.initialize_devices()
+        with self.lock:
+            self.initialize_devices()
     
     def start_mode(self):
         for artnet_device in self.artnet_devices:

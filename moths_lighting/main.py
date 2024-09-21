@@ -39,8 +39,9 @@ def artnet_thread(artnet_controller, led_queue):
 
     while not stop_flag.is_set():
         start_time_control = time.time()
-        artnet_controller.update_bars(led_queue)
-        artnet_controller.send_data()
+        with artnet_controller.lock:
+            artnet_controller.update_bars(led_queue)
+            artnet_controller.send_data()
         end_time_control = time.time()
         time.sleep(max(1/FPS_target - (end_time_control- start_time_control),0))
         send_count += 1
