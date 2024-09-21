@@ -31,11 +31,12 @@ class DynamicMenuItem(MenuItem):
         self.submenu_func = submenu_func
 
 class Menu:
-    def __init__(self, name, items=[]):
+    def __init__(self, name, items=[], regenerate_func = None):
         self.name = name
         self.items = items  # List of MenuItems
         self.position = 0  # Current selected item
         self.scroll_offset = 0  # Index of the first visible item
+        self.regenerate = regenerate_func
 
 class MenuManager:
     def __init__(self, root_menu):
@@ -112,10 +113,11 @@ class MenuManager:
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
-            if self.menu_stack[-1].name == "Colour List": #whole thing is messy and hardcoded and I don't like it. I would like to check if the menu was dynamically created and then recall the function if it is. 
+            if self.menu_stack[-1].regerate_func is not None: 
                 print("redrawing edit colours")
-                submenu = self.edit_colour_list() 
-                self.menu_stack[-1] = submenu
+                submenu = self.menu_stack[-1].regenerate_func()    #regenerate the menu
+                self.menu_stack.append(submenu)            #display it. 
+                
 
 class Display:
     def __init__(self, audio_processor, artnet_controller, esp_configs,colour_manager,
@@ -263,7 +265,7 @@ class Display:
                 items.append(MenuItem(colour_name, action=set_current_colour, submenu = colour_submenu, option1 =idx,option2=  colour))
             items.append(MenuItem("Add Colour", submenu = add_colour_menu))
             items.append(MenuItem("Back"))
-            return Menu("Colour List", items = items)
+            return Menu("Colour List", items = items,regenerate_func=edit_colour_list)
         
 
         
