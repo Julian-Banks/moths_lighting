@@ -258,7 +258,7 @@ class Display:
                     AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
-                    MenuItem("Remove Colour", action= remove_colour),
+                    MenuItem("Remove Colour", action= remove_colour, option1=idx),
                     MenuItem("Back", action = update_colour)
                 
                 ])
