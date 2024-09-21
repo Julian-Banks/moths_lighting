@@ -462,7 +462,7 @@ class Display:
         #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
         mode_menu = Menu("Mode Manager", items=[
             DynamicMenuItem("Select Mode", submenu_func=select_mode),
-            AdjustableMenuItem("Auto Cycle On/Off", set_auto_cycle, get_auto_cycle, min_value=0, max_value=1, step=1),
+            AdjustableMenuItem("Auto Cycle On/Off", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             DynamicMenuItem("Select Auto Cycle Modes", submenu_func=select_auto_cycle_modes),
             MenuItem("Back")
