@@ -58,8 +58,6 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes
-        self.mode_manager = mode_manager()
-        self.generate_mode_menu()
         self.modes = [
             {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
             {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
@@ -67,6 +65,8 @@ class Bar:
             {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
         ]
+        self.mode_manager = mode_manager()
+        self.generate_mode_menu()
         
         #modes for auto_cycle 
         self.cycle_modes = []
