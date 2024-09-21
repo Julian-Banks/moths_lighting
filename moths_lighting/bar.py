@@ -58,7 +58,8 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes
- 
+        self.mode_manager = mode_manager()
+        self.generate_mode_menu()
         self.modes = [
             {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
             {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
@@ -66,6 +67,7 @@ class Bar:
             {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
         ]
+        
         #modes for auto_cycle 
         self.cycle_modes = []
         self.cycle_modes_menu = [] 
@@ -90,15 +92,14 @@ class Bar:
         self.mid_upper_bound = 3000
         
     def generate_mode_menu(self):
-        mode_manager = mode_manager()
         for config in self.modes:
             name = config["name"]
             audio_reactive = config["audio_reactive"]
             mode_func = config["func"]
             auto_cycle = config["auto_cycle"]
             mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
-            mode_manager.add_mode(mode)
-        self.mode_manager = mode_manager
+            self.mode_manager.add_mode(mode)
+        
         
         #want to delete these attributes
         self.cycle_modes = mode_manager.get_auto_cycle_modes()
