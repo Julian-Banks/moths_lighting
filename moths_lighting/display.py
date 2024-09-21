@@ -93,6 +93,9 @@ class MenuManager:
                 # Go back to previous menu
                 if len(self.menu_stack) > 1:
                     self.menu_stack.pop()
+                    if self.menu_stack[-1].name == "Edit Colours":
+                        submenu = self.menu_stack[-1].submenu_func()
+                        self.menu_stack[-1] = submenu
 
     def go_back(self):
         if len(self.menu_stack) > 1:
