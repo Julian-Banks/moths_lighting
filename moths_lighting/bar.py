@@ -13,20 +13,26 @@ class mode_manager:
     def __init__(self):
         self.modes = []
         self.modes_menu = []
+        self.auto_cycle_modes = []
     
     def add_mode(self,mode):
         self.modes.append(mode)
         self.modes_menu.append(mode.name)
         
+    def generate_auto_cycle_modes(self):
+        self.auto_cycle_modes = self.get_auto_cycle_modes()
+        
     def remove_auto_cycle_mode(self,idx):
         if 0 <= idx < len(self.modes):
             if self.modes[idx].auto_cycle:
                 self.modes[idx].auto_cycle = False
+        self.generate_auto_cycle_modes()
                 
     def add_auto_cycle_mode(self,idx):
         if 0 <= idx < len(self.modes):
             if not self.modes[idx].auto_cycle:
                 self.modes[idx].auto_cycle = True
+        self.generate_auto_cycle_modes()
             
     def get_all_modes(self):
         return self.modes
@@ -106,10 +112,10 @@ class Bar:
         
         
         #want to delete these attributes
-        self.cycle_modes = mode_manager.get_auto_cycle_modes()
-        self.cycle_modes_menu = mode_manager.get_auto_cycle_menu()
-        self.all_modes = mode_manager.get_all_modes()
-        self.all_modes_menu = mode_manager.get_all_mode_menu()
+        #self.cycle_modes = self.mode_manager.get_auto_cycle_modes()
+        #self.cycle_modes_menu = self.mode_manager.get_auto_cycle_menu()
+        #self.all_modes = self.mode_manager.get_all_modes()
+        #self.all_modes_menu = self.mode_manager.get_all_mode_menu()
         
 
     def update(self, fft_data):
@@ -136,11 +142,12 @@ class Bar:
             self.start_time = time.time()
 
         # If the current mode is the last mode, reset to the first mode
-        if self.state >= len(self.cycle_modes):
+        if self.state >= len(self.mode_manager.auto_cycle_modes):
             self.state = 0
 
         # Call the current mode's update method
-        self.cycle_modes[self.state].mode_func(fft_data)
+        self.mode_manager.auto_cycle_modes[self.state].mode_func(fft_data)
+
             
     def mode_display_colour(self):
         colour =(self.colour.red, self.colour.green, self.colour.blue)
