@@ -125,7 +125,7 @@ class Bar:
             # Call the current mode's update method
             if self.state == "static":
                 self.mode_display_colour()
-            elif self.auto_cycle:
+            elif self.auto_cycle and (len(self.mode_manager.auto_cycle_modes) > 0):
                 self.update_auto_cycle(fft_data)
             else:
                 if self.state < len(self.mode_manager.get_all_modes()):
