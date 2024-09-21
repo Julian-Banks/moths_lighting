@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 class MenuItem:
     def __init__(self, name, action=None, submenu=None, option1 =None, option2 = None):
         self.name = name
-        if option1 and option2 is not None:
+        if option2 is not None: #be careful, don't pass and option 2 unless you are passing an option 1 as well. 
            self.action = action(option1, option2)
         elif option1 is not None:
             self.action = action(option1)
