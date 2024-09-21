@@ -150,7 +150,23 @@ class ArtnetController:
             for bar in bars:
                 fade.append(bar.fade)
         return fade[0]
-            
+    
+    #Time per colour
+    def get_time_per_colour(self):
+        steps_per_transisiton = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                steps_per_transisiton.append(bar.steps_per_transition)
+        time_per_colour = int(steps_per_transisiton[0]/self.fps)
+        return time_per_colour
+    def set_time_per_colour(self,value):
+        steps_per_transition = value*self.fps
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.steps_per_transition  = steps_per_transition
+        self.update_colours()
     #AUDIO REACTIVITY OPTIONS
     #Trigger style
     def set_trigger_style(self, trigger_style):

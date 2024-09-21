@@ -187,6 +187,12 @@ class Display:
             pass
         
         #Need to add Colour Cycle Speed
+        def get_time_per_colour():
+            return self.artnet_controller.get_time_per_colour()
+        def set_time_per_colour(value):
+            self.artnet_controller.set_time_per_colour(value)
+
+        
         
         #Need to add Colour Picker
         #here comes the cavalery. IDK how much longer this file can get...
@@ -230,27 +236,20 @@ class Display:
         
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
-            print('calling adding colour')
             self.colour_manager.add_colour(colour)
             self.artnet_controller.update_colours()
-            self.menu_manager.go_back()
-           
-            
+            self.menu_manager.go_back()   
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
             self.colour_manager.update_colour(idx, colour)
             self.artnet_controller.update_colours()
-            self.menu_manager.go_back()
-            print('calling update colour')
-        
+            self.menu_manager.go_back() 
         def remove_colour(idx):
-            print('removing colour')
             self.colour_manager.remove_colour(idx)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()
-            print('calling remove colour')
-        
+        #Function for generating the colour list!  
         def edit_colour_list():
             items = [] 
             for idx, colour in enumerate(self.colour_manager.get_colour_list()):
@@ -386,6 +385,7 @@ class Display:
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=0.4, step=0.04),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
+            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5)
             # Add other adjustable items...
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
             MenuItem("Back")
