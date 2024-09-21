@@ -112,7 +112,10 @@ class Bar:
             elif self.auto_cycle:
                 self.update_auto_cycle(fft_data)
             else:
-                self.all_modes[self.state].mode_func(fft_data)
+                if self.state in enumerate(self.mode_manager.get_all_modes()):
+                    self.mode_manager.mode[self.state].mode_func(fft_data)
+                else: 
+                    print(f'Mode {self.state} not found')
 
     def update_auto_cycle(self, fft_data):
         # Calculate the time elapsed since the start of the current mode
