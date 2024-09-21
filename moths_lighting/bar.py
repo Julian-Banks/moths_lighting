@@ -59,7 +59,7 @@ class Bar:
         
         #Modes
  
-        self.modes[
+        self.modes = [
             {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
             {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
             {"name": "Pulse", "func": self.mode_pulse, "audio_reactive": True, "auto_cycle": False},
