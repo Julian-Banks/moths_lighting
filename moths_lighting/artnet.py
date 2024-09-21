@@ -30,6 +30,7 @@ class ArtnetController:
             self.device_bars_map[artnet_device] = bars
 
     def update_bars(self, esp_configs):
+        
         self.esp_configs = esp_configs
         self.initialize_devices()
     

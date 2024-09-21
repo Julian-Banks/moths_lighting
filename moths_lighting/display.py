@@ -25,6 +25,7 @@ class AdjustableMenuItem(MenuItem):
 class DynamicMenuItem(MenuItem):
     def __init__(self, name, submenu_func):
         super().__init__(name)
+        self.name = name
         self.submenu_func = submenu_func
 
 class Menu:
@@ -171,6 +172,7 @@ class Display:
             set_green(colour.green)
             set_blue(colour.blue)
             self.updated_colour_idx = idx
+            print('setting current idx, colour')
         
         def set_red(value):
             self.red = value
@@ -206,6 +208,7 @@ class Display:
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
             self.colour_manager.add_colour(colour)
+            print('calling adding colour')
             
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
@@ -213,11 +216,13 @@ class Display:
             self.colour_manager.update_colour(idx, colour)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()
+            print('calling update colour')
         
         def remove_colour(idx):
             print('removing colour')
             self.colour_manager.remove_colour(idx)
             self.menu_manager.go_back()
+            print('calling remove colour')
         
         def edit_colour_list():
             items = [] 
@@ -230,7 +235,7 @@ class Display:
                     AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
-                    MenuItem("Remove Colour", action= remove_colour(idx)),
+                    MenuItem("Remove Colour", action= remove_colour),
                     MenuItem("Back", action = update_colour)
                 
                 ])
@@ -352,7 +357,7 @@ class Display:
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
-            AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=0.4, step=0.04),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             # Add other adjustable items...
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),

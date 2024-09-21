@@ -25,7 +25,7 @@ class Bar:
         self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe", "Bass & Mid Strobe"]
         
         #lighting related
-        self.fade = 0.5
+        self.fade = 0.2
         self.fade_out_count = 0  # Initialize counter for fade_out calls
         self.fade_out_threshold = 40  # Adjust this threshold based on the desired fading duration
         self.current_step = 0
