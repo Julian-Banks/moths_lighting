@@ -94,7 +94,9 @@ class MenuManager:
                 # Go back to previous menu
                 if len(self.menu_stack) > 1:
                     self.menu_stack.pop()
+                    print(f"current menu name: {self.menu_stack[-1].name}")
                     if self.menu_stack[-1].name == "Edit Colours":
+                        print("redrawing edit colours")
                         submenu = self.menu_stack[-1].submenu_func()
                         self.menu_stack[-1] = submenu
                         
@@ -225,6 +227,7 @@ class Display:
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
             self.colour_manager.add_colour(colour)
+            self.menu_manager.go_back()
             print('calling adding colour')
             
         def update_colour():
@@ -392,12 +395,12 @@ class Display:
         MenuItem("Back")
         ])'''
         
-        add_colour_menu = Menu("Select Colour", items=[
+        add_colour_menu = Menu("Select Colour to Add", items=[
         AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=1),
         AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
         AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
         AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
-        MenuItem("Add Colour", action=add_colour),
+        MenuItem("Confirm Colour", action=add_colour),
         MenuItem("Back")
         ])
               

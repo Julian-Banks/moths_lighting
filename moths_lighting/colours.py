@@ -11,7 +11,6 @@ class Colour_Manager:
     def __init__(self):
         self.colours = [Colour(255, 0, 0), Colour(0, 0, 255)] #Colour(255,255,0),Colour(255, 0, 255), 
         
-        
     def add_colour(self, colour):
         print('in add colour')
         print(f"len: {len(self.colours)}")
