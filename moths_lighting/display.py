@@ -301,7 +301,7 @@ class Display:
                     items.append(MenuItem(mode.name, action= self.artnet_controller.add_auto_cycle_mode, option1 = idx))
             
             items.append(AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1)),
-            items.append(AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=600, step=30)),
+            items.append(AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=600, step=10)),
             items.append(MenuItem("Back"))
             return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
@@ -375,7 +375,7 @@ class Display:
             return self.esp_configs[0]['num_bars']
         def set_numbars_1(value):
             self.esp_configs[0]['num_bars'] = value
-            self.artnet_controller.update_bars(self.esp_configs)
+            self.artnet_controller.update_config(self.esp_configs)
             #code to initalise the controller with new number of bars
         
         #Controller 2    
@@ -405,19 +405,7 @@ class Display:
             self.show_fft_display()
         #Reinitialise the whole setup (should I do this each time a controller is changed or make it something that is done at the end?) 
         def reinitialise():
-            self.artnet_controller.update_bars(self.esp_configs)
-            
-        
-        #Add an action function for each mode to switch to that mode. 
-        def set_static():
-            self.artnet_controller.change_mode(0)          
-        def set_wave():
-            self.artnet_controller.change_mode(1)
-        def set_pulse():
-            self.artnet_controller.change_mode(2)
-        def set_bass_strobe():
-            self.artnet_controller.change_mode(3)
-        def set_bass_mid_strobe():
+            self.artnet_controller.update_config(self.esp_configs)
             self.artnet_controller.change_mode(4)
 
 
