@@ -98,6 +98,9 @@ class Bar:
             auto_cycle = config["auto_cycle"]
             mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
             mode_manager.add_mode(mode)
+        self.mode_manager = mode_manager
+        
+        #want to delete these attributes
         self.cycle_modes = mode_manager.get_auto_cycle_modes()
         self.cycle_modes_menu = mode_manager.get_auto_cycle_menu()
         self.all_modes = mode_manager.get_all_modes()
