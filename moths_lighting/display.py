@@ -112,9 +112,9 @@ class MenuManager:
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
-            if self.menu_stack[-1].name == "Colour List":
+            if self.menu_stack[-1].name == "Colour List": #whole thing is messy and hardcoded and I don't like it. I would like to check if the menu was dynamically created and then recall the function if it is. 
                 print("redrawing edit colours")
-                submenu = self.menu_stack[-1].submenu_func()
+                submenu = self.edit_colour_list() 
                 self.menu_stack[-1] = submenu
 
 class Display:
