@@ -535,9 +535,14 @@ class Display:
 
     #DRAW THE CURRENT MENU, HANDLES THE LOGIC OF WHAT TO DISPLAY
     def draw_current_menu(self):
+        
+        if self.menu_manager.current_menu.regenerate is not None: 
+                print("redrawing edit colours")
+                submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
+                self.menu_stack[-1] = submenu          #display it. 
+                
         menu = self.menu_manager.current_menu
-        if menu.regenerate is not None:
-            menu = menu.regenerate()
+            
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
             if self.menu_manager.adjusting and self.menu_manager.current_adjustable_item:
