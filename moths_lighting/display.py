@@ -117,14 +117,12 @@ class MenuManager:
     def go_back(self):
                 # Go back to previous menu
         if len(self.menu_stack) > 1:
-            print(f"Menu name before pop: {self.menu_stack[-1].name}")
-            print(f"Menu stack: {[menu_item.name for menu_item in self.menu_stack]}")
             self.menu_stack.pop()
-            print(f"current menu name: {self.menu_stack[-1].name}")
-            if self.menu_stack[-1].regenerate is not None: 
-                print("redrawing edit colours")
-                submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
-                self.menu_stack[-1] = submenu          #display it. 
+            #print(f"current menu name: {self.menu_stack[-1].name}")
+            #if self.menu_stack[-1].regenerate is not None: 
+            #    print("redrawing edit colours")
+            #    submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
+            #    self.menu_stack[-1] = submenu          #display it. 
                 
 
 class Display:
@@ -538,8 +536,8 @@ class Display:
         
         if self.menu_manager.current_menu.regenerate is not None: 
                 print("redrawing edit colours")
-                submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
-                self.menu_stack[-1] = submenu          #display it. 
+                submenu = self.menu_manager.menu_stack[-1].regenerate()    #regenerate the menu
+                self.menu_manager.menu_stack[-1] = submenu          #display it. 
                 
         menu = self.menu_manager.current_menu
             
