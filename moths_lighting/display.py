@@ -385,7 +385,7 @@ class Display:
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=0.4, step=0.04),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
-            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5)
+            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
             # Add other adjustable items...
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
             MenuItem("Back")
