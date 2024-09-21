@@ -113,9 +113,9 @@ class MenuManager:
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
-            if self.menu_stack[-1].regerate_func is not None: 
+            if self.menu_stack[-1].regenerate is not None: 
                 print("redrawing edit colours")
-                submenu = self.menu_stack[-1].regenerate_func()    #regenerate the menu
+                submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
                 self.menu_stack.append(submenu)            #display it. 
                 
 
