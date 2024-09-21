@@ -129,7 +129,7 @@ class ArtnetController:
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map.get(artnet_device, [])
             for bar in bars:
-                modes.append(bar.mode_manger.get_all_modes())
+                modes.append(bar.mode_manager.get_all_modes())
         return modes[0]
     
     def get_current_mode(self):
@@ -144,13 +144,13 @@ class ArtnetController:
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.mode_manger.remove_auto_cycle_mode(idx)
+                bar.mode_manager.remove_auto_cycle_mode(idx)
     
     def add_auto_cycle_mode(self,idx):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.mode_manger.add_auto_cycle_mode(idx)
+                bar.mode_manager.add_auto_cycle_mode(idx)
     
     def get_auto_cycle(self):
         auto_cycle = []
