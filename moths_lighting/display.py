@@ -53,6 +53,12 @@ class MenuManager:
             # Adjust the value
             current_value = self.current_adjustable_item.get_value()
             new_value = current_value + delta * self.current_adjustable_item.step
+            #Code to wrap the value if it goes above or below the min and max values
+            if new_value > self.current_adjustable_item.max_value:
+                new_value = self.current_adjustable_item.min_value
+            elif new_value < self.current_adjustable_item.min_value:
+                new_value = self.current_adjustable_item.max_value
+            #Code to clamp the value if it goes above or below the min and max values
             new_value = max(self.current_adjustable_item.min_value, min(self.current_adjustable_item.max_value, new_value))
             self.current_adjustable_item.set_value(new_value)
         else:
@@ -297,6 +303,8 @@ class Display:
         
         def get_auto_cycle():
             return self.artnet_controller.get_auto_cycle()
+       
+            
         
         def set_auto_cycle(value):
             self.artnet_controller.set_auto_cycle(value)
@@ -462,7 +470,7 @@ class Display:
         #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
         mode_menu = Menu("Mode Manager", items=[
             DynamicMenuItem("Select Mode", submenu_func=select_mode),
-            AdjustableMenuItem("Auto Cycle On/Off", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
+            AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
             AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             DynamicMenuItem("Select Auto Cycle Modes", submenu_func=select_auto_cycle_modes),
             MenuItem("Back")
