@@ -281,6 +281,7 @@ class Display:
         def select_mode():
             items = []
             current_mode = self.artnet_controller.get_current_mode()
+            
             for idx, mode in enumerate(self.artnet_controller.get_all_modes()):
                 if idx == current_mode:
                     items.append(MenuItem(f"{mode.name} - Selected"))
@@ -290,7 +291,6 @@ class Display:
             return Menu("Select Mode", items = items, regenerate_func=select_mode,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
 
-            
         
         def select_auto_cycle_modes():
             items = []
@@ -299,6 +299,9 @@ class Display:
                     items.append(MenuItem(f"{mode.name} - In Cycle", action= self.artnet_controller.remove_auto_cycle_mode, option1 = idx))
                 else:
                     items.append(MenuItem(mode.name, action= self.artnet_controller.add_auto_cycle_mode, option1 = idx))
+            
+            AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
+            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             items.append(MenuItem("Back"))
             return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
         
@@ -470,10 +473,8 @@ class Display:
 
         #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
         mode_menu = Menu("Mode Manager", items=[
-            DynamicMenuItem("Select Mode", submenu_func=select_mode),
-            AdjustableMenuItem("Auto Cycle", get_auto_cycle,set_auto_cycle, min_value=0, max_value=1, step=1),
-            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
-            DynamicMenuItem("Select Auto Cycle Modes", submenu_func=select_auto_cycle_modes),
+            DynamicMenuItem("Config Auto Cycle Modes", submenu_func=select_auto_cycle_modes),
+            DynamicMenuItem("Select Static Mode", submenu_func=select_mode),
             MenuItem("Back")
         ])
         # Options Menu

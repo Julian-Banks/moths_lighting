@@ -137,7 +137,7 @@ class ArtnetController:
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map.get(artnet_device, [])
             for bar in bars:
-                modes.append(bar.state)
+                modes.append(bar.get_mode())
         return modes[0]
     
     def remove_auto_cycle_mode(self,idx):

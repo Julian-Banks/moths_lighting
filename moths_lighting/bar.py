@@ -132,6 +132,17 @@ class Bar:
                     self.mode_manager.modes[self.state].mode_func(fft_data)
                 else: 
                     print(f'Mode {self.state} not found')
+                    
+    #Github copilot where are you? 
+    
+    def get_mode(self):
+        if self.auto_cycle:
+            auto_cycle_idx = self.mode_manager.auto_cycle_modes[self.state].name
+            #find the idx of the mode in all modes
+            idx = [mode.name for mode in self.mode_manager.get_all_modes()].index(auto_cycle_idx)
+            return idx
+        else:
+            return self.state
 
     def update_auto_cycle(self, fft_data):
         # Calculate the time elapsed since the start of the current mode
