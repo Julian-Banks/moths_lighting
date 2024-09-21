@@ -239,7 +239,7 @@ class Display:
                     MenuItem("Back", action = update_colour)
                 
                 ])
-                items.append(MenuItem(colour_name, action = set_current_colour(idx,colour), submenu = colour_submenu))
+                items.append(MenuItem(colour_name, action=lambda idx=idx, colour=colour: set_current_colour(idx, colour), submenu = colour_submenu))
             items.append(MenuItem("Add Colour", submenu = add_colour_menu))
             items.append(MenuItem("Back"))
             return Menu("Colour List", items = items)
