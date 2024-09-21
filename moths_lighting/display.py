@@ -188,7 +188,7 @@ class Display:
         def get_time_per_mode():
             return self.artnet_controller.get_time_per_mode()
         def set_time_per_mode(value):
-            self.artnet_controller.set_time_per_mode()
+            self.artnet_controller.set_time_per_mode(value)
         
         #Need to add Colour Cycle Speed
         def get_time_per_colour():
