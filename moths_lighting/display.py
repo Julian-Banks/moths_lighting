@@ -111,6 +111,7 @@ class MenuManager:
     def go_back(self):
                 # Go back to previous menu
         if len(self.menu_stack) > 1:
+            print(f"Menu name before pop: {self.menu_stack[-1].name}")
             self.menu_stack.pop()
             print(f"current menu name: {self.menu_stack[-1].name}")
             if self.menu_stack[-1].regenerate is not None: 
@@ -254,9 +255,9 @@ class Display:
                 
                 colour_submenu = Menu(colour_name, items=[
                     
-                    AdjustableMenuItem("Red", get_red, set_red, min_value=0, max_value=255, step=1),
-                    AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
-                    AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
+                    AdjustableMenuItem("Red", get_red, set_red, min_value=0, max_value=255, step=5),
+                    AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=5),
+                    AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=5),
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
                     MenuItem("Remove Colour", action= remove_colour, option1=idx),
                     MenuItem("Back", action = update_colour)
@@ -399,9 +400,9 @@ class Display:
         ])'''
         
         add_colour_menu = Menu("Select Colour to Add", items=[
-        AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=1),
-        AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
-        AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
+        AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=5),
+        AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=5),
+        AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=5),
         AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
         MenuItem("Confirm Colour", action=add_colour),
         MenuItem("Back")
