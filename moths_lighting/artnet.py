@@ -122,6 +122,51 @@ class ArtnetController:
         # Timing control is handled in the main loop
         
     ##GET AND SET FUNCTIONS
+    #MODE OPTIONS
+    #Get all modes
+    def get_all_modes(self):
+        modes = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                modes.append(bar.menu_manger.get_all_modes())
+        return modes[0]
+    
+    def get_current_mode(self):
+        modes = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                modes.append(bar.state)
+        return modes[0]
+    
+    def remove_auto_cycle_mode(self,idx):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.menu_manger.remove_auto_cycle_mode(idx)
+    
+    def add_auto_cycle_mode(self,idx):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.menu_manger.add_auto_cycle_mode(idx)
+    
+    def get_auto_cycle(self):
+        auto_cycle = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                auto_cycle.append(bar.auto_cycle)
+        return auto_cycle[0]
+    
+    def set_auto_cycle(self, auto_cycle):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.auto_cycle = auto_cycle
+        
+    
     #LIGHTING OPTIONS
     #Update brightness
     def set_brightness(self, brightness):

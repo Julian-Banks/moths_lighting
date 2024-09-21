@@ -237,16 +237,19 @@ class Display:
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
             self.colour_manager.add_colour(colour)
+            self.artnet_controller.set_display_colour(value = 0)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()   
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
             self.colour_manager.update_colour(idx, colour)
+            self.artnet_controller.set_display_colour(value = 0)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back() 
         def remove_colour(idx):
             self.colour_manager.remove_colour(idx)
+            self.artnet_controller.set_display_colour(value = 0)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()
         #Function for generating the colour list!  
@@ -271,7 +274,34 @@ class Display:
             return Menu("Colour List", items = items,regenerate_func=edit_colour_list)
         
 
+        def select_mode():
+            items = []
+            current_mode = self.artnet_controller.get_current_mode()
+            for idx, mode in enumerate(self.artnet_controller.get_all_modes()):
+                if idx == current_mode:
+                    items.append(MenuItem(f"->{mode.name}"))
+                else:
+                    items.append(MenuItem(mode.name, action = self.artnet_controller.change_mode, option1 = idx))
+            items.append(MenuItem("Back"))
+            return Menu("Select Mode", items = items, regenerate_func=select_mode)
         
+        def select_auto_cycle_modes():
+            items = []
+            for idx, mode in enumerate(self.artnet_controller.get_all_modes()):
+                if mode.auto_cycle:
+                    items.append(MenuItem(f"{mode.name} - In Cycle", action= self.artnet_controller.remove_auto_cycle_mode, option1 = idx))
+                else:
+                    items.append(MenuItem(mode.name, action= self.artnet_controller.add_auto_cycle_mode, option1 = idx))
+            items.append(MenuItem("Back"))
+            return Menu("Select Auto Cycle Modes", items = items, regenerate_func=select_auto_cycle_modes)
+        
+        def get_auto_cycle():
+            return self.artnet_controller.get_auto_cycle()
+        
+        def set_auto_cycle(value):
+            self.artnet_controller.set_auto_cycle(value)
+            
+                
         
         #CONFIGURE AUDIO OPTIONS
         #Trigger Style
@@ -377,31 +407,22 @@ class Display:
             self.artnet_controller.change_mode(3)
         def set_bass_mid_strobe():
             self.artnet_controller.change_mode(4)
-    
+
+
 
         #CONFIGURE MENU STRUCTURE
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0, max_value=0.4, step=0.04),
-            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
+            #AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
             # Add other adjustable items...
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
             MenuItem("Back")
         ])
 
-        
-        '''#Colour Picker Menu
-        colour_picker_menu = Menu("Select Colour", items=[
-        AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=1),
-        AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=1),
-        AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=1),
-        AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
-        MenuItem("Add Colour", action= add_colour),
-        MenuItem("Back")
-        ])'''
-        
+
         add_colour_menu = Menu("Select Colour to Add", items=[
         AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=5),
         AdjustableMenuItem("Green", get_green, set_green, min_value=0, max_value=255, step=5),
@@ -421,6 +442,7 @@ class Display:
             AdjustableMenuItem("Mid Trigger", get_mid_threshold, set_mid_threshold, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Mid LB", get_mid_lower_bound, set_mid_lower_bound, min_value=200, max_value=5000, step=100),
             AdjustableMenuItem("Mid UB", get_mid_upper_bound, set_mid_upper_bound, min_value=200, max_value=5000, step=100),
+            MenuItem("Show FFT Stats", action=show_fft_stats),
             # Add other adjustable items...
             MenuItem("Back")
         ])
@@ -436,29 +458,25 @@ class Display:
             # Add adjustable items...
             MenuItem("Back")
         ])
-        
-        #choose modes menu
-        choose_modes_menu = Menu("Choose Modes", items=[
-            MenuItem("Static", action = set_static),
-            MenuItem("Wave", action = set_wave),
-            MenuItem("Pulse", action = set_pulse),
-            MenuItem("Bass Strobe", action =  set_bass_strobe),
-            MenuItem("Bass & Mid Strobe", action = set_bass_mid_strobe),
+
+        #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
+        mode_menu = Menu("Mode Manager", items=[
+            DynamicMenuItem("Select Mode", submenu_func=select_mode),
+            AdjustableMenuItem("Auto Cycle On/Off", set_auto_cycle, get_auto_cycle, min_value=0, max_value=1, step=1),
+            AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
+            DynamicMenuItem("Select Auto Cycle Modes", submenu_func=select_auto_cycle_modes),
             MenuItem("Back")
         ])
-        
-        #Need to create a menu that allows you to choose which modes to cycle through. Maybe the timing setting can move down here. 
-        
         # Options Menu
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
+            MenuItem("Modes Manager", submenu=mode_menu),
             MenuItem("Controller Config.", submenu=configure_controllers_menu),
-            MenuItem("Choose Modes", submenu=choose_modes_menu),
-            MenuItem("Show FFT Stats", action=show_fft_stats),
+            
             MenuItem("Back")
         ])
-
+        
         # Main Menu
         main_menu = Menu("Main Screen", items=[
             MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),

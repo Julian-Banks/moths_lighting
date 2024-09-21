@@ -1,6 +1,41 @@
 import numpy as np
 import threading
+import time
 
+class mode:
+    def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
+        self.name = name
+        self.audio_reactive = audio_reactive
+        self.auto_cycle = auto_cycle
+        self.mode_func = mode_func
+
+class mode_manager:
+    def __init__(self):
+        self.modes = []
+        self.modes_menu = []
+            
+    def remove_auto_cycle_mode(self,idx):
+        if 0 <= idx < len(self.modes):
+            if self.modes[idx].auto_cycle:
+                self.modes[idx].auto_cycle = False
+                
+    def add_auto_cycle_mode(self,idx):
+        if 0 <= idx < len(self.modes):
+            if not self.modes[idx].auto_cycle:
+                self.modes[idx].auto_cycle = True
+            
+    def get_all_modes(self):
+        return self.modes
+    
+    def get_all_mode_menu(self):
+        return self.modes_menu
+    
+    def get_auto_cycle_modes(self):
+        return [mode for mode in self.modes if mode.auto_cycle]
+    def get_auto_cycle_menu(self):
+        return [mode.name for mode in self.modes if mode.auto_cycle]
+    
+    
 
 class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
@@ -10,8 +45,10 @@ class Bar:
         self.pixels = bytearray([0] * self.num_pixels)
         self.brightness = brightness
         self.state = 4  # Mode index
+        self.auto_cycle = False 
+        self.time_per_mode = 60
         self.previous_state = 4  # Previous mode index
-        
+        self.start_time = time.time()
         #colours 
         
         self.colour = colour_manager.get_colour_list()[0]
@@ -21,8 +58,19 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes
-        self.modes = [self.mode_static, self.mode_wave, self.mode_pulse, self.mode_bass_strobe,self.mode_bass_mid_strobe]  # Add more modes as needed
-        self.modes_menu = ["Static", "Wave", "Pulse", "Bass Strobe", "Bass & Mid Strobe"]
+ 
+        self.modes[
+            {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
+            {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
+            {"name": "Pulse", "func": self.mode_pulse, "audio_reactive": True, "auto_cycle": False},
+            {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
+            {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
+        ]
+        #modes for auto_cycle 
+        self.cycle_modes = []
+        self.cycle_modes_menu = [] 
+        self.all_modes = []
+        self.all_modes_menu = []
         
         #lighting related
         self.fade = 0.2
@@ -40,14 +88,48 @@ class Bar:
         self.mid_threshold  = 0.5
         self.mid_lower_bound = 800
         self.mid_upper_bound = 3000
+        
+    def generate_mode_menu(self):
+        mode_manager = mode_manager()
+        for config in self.modes:
+            name = config["name"]
+            audio_reactive = config["audio_reactive"]
+            mode_func = config["func"]
+            auto_cycle = config["auto_cycle"]
+            mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
+            mode_manager.add_mode(mode)
+        self.cycle_modes = mode_manager.get_auto_cycle_modes()
+        self.cycle_modes_menu = mode_manager.get_auto_cycle_menu()
+        self.all_modes = mode_manager.get_all_modes()
+        self.all_modes_menu = mode_manager.get_all_mode_menu()
+        
 
     def update(self, fft_data):
         with self.lock:
             # Call the current mode's update method
             if self.state == "static":
                 self.mode_display_colour()
+            elif self.auto_cycle:
+                self.update_auto_cycle(fft_data)
             else:
-                self.modes[self.state](fft_data)
+                self.all_modes[self.state].mode_func(fft_data)
+
+    def update_auto_cycle(self, fft_data):
+        # Calculate the time elapsed since the start of the current mode
+        elapsed_time = time.time() - self.start_time
+
+        # If the time elapsed exceeds the time per mode, switch to the next mode
+        if elapsed_time > self.time_per_mode:
+            
+            self.state += 1
+            self.start_time = time.time()
+
+        # If the current mode is the last mode, reset to the first mode
+        if self.state >= len(self.cycle_modes):
+            self.state = 0
+
+        # Call the current mode's update method
+        self.cycle_modes[self.state].mode_func(fft_data)
             
     def mode_display_colour(self):
         colour =(self.colour.red, self.colour.green, self.colour.blue)
@@ -241,13 +323,24 @@ class Bar:
         return (r, g, b)
 
     def get_pixels(self):
+        
+    #helper functions with modes
         with self.lock:
             return self.pixels
 
-    def set_mode(self, mode_index):
-        with self.lock:
-            if 0 <= mode_index < len(self.modes):
-                self.state = mode_index
+    def set_auto_cycle(self, auto_cycle):
+        self.auto_cycle = auto_cycle
+        if auto_cycle:
+            self.start_time = time.time()
+        
+    def get_auto_cycle(self):
+        return self.auto_cycle
+
+    def set_time_per_mode(self, time_per_mode):
+        self.time_per_mode = time_per_mode
+    
+    def get_time_per_mode(self):
+        return self.time_per_mode
 
     ##Helper functions with colours
     def update_colours(self):
