@@ -128,7 +128,7 @@ class Bar:
             elif self.auto_cycle:
                 self.update_auto_cycle(fft_data)
             else:
-                if self.state in enumerate(self.mode_manager.get_all_modes()):
+                if self.state < len(self.mode_manager.get_all_modes()):
                     self.mode_manager.modes[self.state].mode_func(fft_data)
                 else: 
                     print(f'Mode {self.state} not found')
