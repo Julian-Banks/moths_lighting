@@ -118,7 +118,7 @@ class MenuManager:
             if self.menu_stack[-1].regenerate is not None: 
                 print("redrawing edit colours")
                 submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
-                self.menu_stack.append(submenu)            #display it. 
+                self.menu_stack[-1] = submenu          #display it. 
                 
 
 class Display:
