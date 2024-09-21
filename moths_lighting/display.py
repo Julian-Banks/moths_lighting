@@ -10,12 +10,9 @@ from PIL import Image, ImageDraw, ImageFont
 class MenuItem:
     def __init__(self, name, action=None, submenu=None, option1 =None, option2 = None):
         self.name = name
-        if option2 is not None: #be careful, don't pass and option 2 unless you are passing an option 1 as well. 
-           self.action = action(option1, option2)
-        elif option1 is not None:
-            self.action = action(option1)
-        else: 
-            self.action = action # Function to call when item is selected
+        self.option1 = option1
+        self.option2 = option2  
+        self.action = action  # Function to call when selected
         self.submenu = submenu  # Submenu if any
 
 class AdjustableMenuItem(MenuItem):
@@ -92,8 +89,17 @@ class MenuManager:
                 # Enter submenu
                 self.menu_stack.append(selected_item.submenu)
             elif selected_item.action:
+                option1 = selected_item.option1
+                option2 = selected_item.option2
+                
+                if option2 is not None:
+                    selected_item.action(option1, option2)
+                elif option1 is not None:
+                    selected_item.action(option1)
+                else:
+                    selected_item.action()
                 # Perform action
-                selected_item.action()
+                
             elif selected_item.name == "Back":
                 # Go back to previous menu
                 if len(self.menu_stack) > 1:
