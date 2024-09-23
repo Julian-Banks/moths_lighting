@@ -20,7 +20,7 @@ class ArtnetManager:
         
     def send(self, data):
         for universe, artnet_instance in enumerate(self.artnet_instances):
-            start = universe * 1
+            start = universe * self.pixels_per_universe
             end = (universe + 1) * self.pixels_per_universe if universe < self.num_universes - 1 else len(data)
             
             print(f'Sending {end-start} pixels to universe {universe}')
