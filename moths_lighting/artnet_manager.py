@@ -14,13 +14,20 @@ class ArtnetManager:
         
         self.num_universes = self.packet_size // self.pixels_per_universe + 1
         
-        for universe in range(self.num_universes):
-            packet_size = self.pixels_per_universe if universe < self.num_universes - 1 else self.packet_size % self.pixels_per_universe
-            self.artnet_instances.append(StupidArtnet(self.target_ip, universe, packet_size ,self.fps,True, True))
+        if self.packet_size == 0:
+            print('Packet size must be greater than 0')
+        else:
+            for universe in range(self.num_universes):
+                packet_size = self.pixels_per_universe if universe < self.num_universes - 1 else self.packet_size % self.pixels_per_universe
+                self.artnet_instances.append(StupidArtnet(self.target_ip, universe, packet_size ,self.fps,True, True))
         
     def send(self, data):
+        if self.packet_size == 0:
+            print('Packet size must be greater than 0')
+            return
+        
         for universe, artnet_instance in enumerate(self.artnet_instances):
-            start = universe * self.pixels_per_universe
+            start = universe * self.pixels_per_universe + 1
             end = (universe + 1) * self.pixels_per_universe if universe < self.num_universes - 1 else len(data)
             
             print(f'Sending {end-start} pixels to universe {universe}')
