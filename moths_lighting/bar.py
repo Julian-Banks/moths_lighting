@@ -54,10 +54,10 @@ class Bar:
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
-        self.state = 3  # Mode index
+        self.state = 0  # Mode index
         self.auto_cycle = False 
         self.time_per_mode = 60
-        self.previous_state = 4  # Previous mode index
+        self.previous_state = 0  # Previous mode index
         self.start_time = time.time()
         #colours 
         
