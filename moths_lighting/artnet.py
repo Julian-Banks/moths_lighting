@@ -35,6 +35,17 @@ class ArtnetController:
     def update_config(self, esp_configs):
         self.esp_configs = esp_configs
         with self.lock:
+            #first clear the bars. Should definitely write a function in Bar's to do this. 
+            for artnet_device in self.artnet_devices:
+                packet = bytearray(artnet_device.packet_size)
+                bars = self.device_bars_map[artnet_device]
+                offset = 0
+                for bar in bars:
+                    pixels = bytearray(bar.num_leds)
+                    packet[offset:offset + len(pixels)] = pixels
+                    offset += len(pixels)
+                    artnet_device.send(packet)
+            #then reinitialize the devices      
             self.initialize_devices()
     
     def start_mode(self):

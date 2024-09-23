@@ -23,4 +23,6 @@ class ArtnetManager:
             start = universe * 1
             end = (universe + 1) * self.pixels_per_universe if universe < self.num_universes - 1 else len(data)
             
+            print(f'Sending {end-start} pixels to universe {universe}')
             artnet_instance.send(data[start:end])
+            
