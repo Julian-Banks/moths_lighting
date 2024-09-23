@@ -32,12 +32,12 @@ class ArtnetManager:
             if universe == 0:
                 start = 0
                 end = (universe + 1) * self.pixels_per_universe
-            elif universe < self.num_universes - 1:
-                start = universe * self.pixels_per_universe + 1
-                end = (universe + 1) * self.pixels_per_universe +1
+            elif universe < self.num_universes:
+                start = universe * self.pixels_per_universe 
+                end = (universe + 1) * self.pixels_per_universe 
             else:
-                start = universe * self.pixels_per_universe + 1
-                end = len(data)
+                start = universe * self.pixels_per_universe
+                end = len(data) 
             
             #end = (universe + 1) * self.pixels_per_universe if universe < self.num_universes - 1 else len(data)
             
