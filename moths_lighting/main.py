@@ -6,7 +6,7 @@ from audio import AudioProcessor
 from artnet import ArtnetController
 from display import Display
 from encoder import Encoder
-from colours import Colour_Manager
+from colour_manager import ColourManager
 
 import pyaudio
 
@@ -83,7 +83,7 @@ def on_button_push():
 
 def main():
     print('Initializing Colour Manager...')
-    colour_manager = Colour_Manager()
+    colour_manager = ColourManager()
     
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)

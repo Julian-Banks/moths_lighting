@@ -49,11 +49,11 @@ class mode_manager:
 
 class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
+        
         self.lock = threading.Lock()
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
-        self.brightness = brightness
         self.state = 3  # Mode index
         self.auto_cycle = False 
         self.time_per_mode = 60
@@ -85,18 +85,18 @@ class Bar:
         self.all_modes_menu = []
         
         #lighting related
+        self.brightness = brightness
         self.fade = 0.2
         self.fade_out_count = 0  # Initialize counter for fade_out calls
         self.fade_out_threshold = 40  # Adjust this threshold based on the desired fading duration
         self.current_step = 0
         self.length_mid_strobe = 30
+        
         #audio related
         self.trigger_style = "max"
-        
         self.bass_threshold = 0.8
         self.bass_lower_bound = 0
         self.bass_upper_bound = 200
-        
         self.mid_threshold  = 0.5
         self.mid_lower_bound = 800
         self.mid_upper_bound = 3000

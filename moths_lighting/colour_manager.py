@@ -7,7 +7,7 @@ class Colour:
 
         
 #A class that stores a list of colours and has functions to remove, add, get and set them.
-class Colour_Manager:
+class ColourManager:
     def __init__(self):
         self.colours = [Colour(255, 0, 0), Colour(0, 0, 255)] #Colour(255,255,0),Colour(255, 0, 255), 
         

@@ -2,7 +2,7 @@ import threading
 import time
 import numpy as np
 
-from colours import Colour
+from colour_manager import Colour
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
@@ -383,6 +383,7 @@ class Display:
             return self.esp_configs[1]['num_bars']
         def set_numbars_2(value):
             self.esp_configs[1]['num_bars'] = value
+            self.esp_configs[1]['universe'] = max(value - 1,0)
             #code to initalise the controller with new number of bars
         
         #Controller 3

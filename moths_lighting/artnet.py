@@ -1,6 +1,7 @@
 import time
 import numpy as np
 from stupidArtnet import StupidArtnet
+from artnet_manager import ArtnetManager
 from bar import Bar
 import queue
 import threading
@@ -24,10 +25,11 @@ class ArtnetController:
             packet_size = num_bars * 96 * 3
             fps = config.get('fps', 40)
             # Create new Artnet device
-            artnet_device = StupidArtnet(target_ip, universe, packet_size, fps, True, True)
+            artnet_device = ArtnetManager(target_ip, packet_size, fps)
             # Add the new Artnet device to the list
             self.artnet_devices.append(artnet_device)
             bars = [Bar(self.colour_manager) for _ in range(num_bars)]
+            
             self.device_bars_map[artnet_device] = bars
 
     def update_config(self, esp_configs):
