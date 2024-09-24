@@ -36,7 +36,7 @@ class ColourManager:
         return self.colours
     
     def update_yaml(self):
-        with open('config/lighting_config.yaml', 'w') as file:
+        with open('/moths_lighting/config/lighting_config.yaml', 'w') as file:
             yaml.dump(self.colours, file)
         
         

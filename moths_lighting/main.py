@@ -84,7 +84,7 @@ def on_button_push():
     display.on_button_push()
 
 def get_lighting_config():
-    with open('config/lighting_config.yaml', 'r') as file:
+    with open('moths_lighting/config/lighting_config.yaml', 'r') as file:
         return yaml.safe_load(file)
 
 def main():
