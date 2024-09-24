@@ -31,7 +31,10 @@ class ArtnetManager:
             
             if universe == 0:
                 start = 0
-                end = (universe + 1) * self.pixels_per_universe
+                if self.packet_size>self.pixels_per_universe:
+                    end = (universe + 1) * self.pixels_per_universe
+                else:
+                    end = len(data)
             elif universe < self.num_universes-1:
                 start = universe * self.pixels_per_universe - universe*2
                 end = (universe + 1) * self.pixels_per_universe - universe*2
@@ -41,6 +44,6 @@ class ArtnetManager:
             
             #end = (universe + 1) * self.pixels_per_universe if universe < self.num_universes - 1 else len(data)
             
-            print(f'Sending {end-start} pixels to universe {universe}, size is supposed to be {artnet_instance.packet_size}')
+            #print(f'Sending {end-start} pixels to universe {universe}, size is supposed to be {artnet_instance.packet_size}')
             artnet_instance.send(data[start:end])
             

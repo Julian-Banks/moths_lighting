@@ -244,6 +244,7 @@ class Display:
             self.artnet_controller.set_display_colour(value = 0)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()   
+            
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx

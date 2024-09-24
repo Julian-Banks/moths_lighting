@@ -2,8 +2,9 @@ lighting_config:
   brightness: 0.5
   fade: 0.2
   colours:
-    - [255, 0, 0]   # This is a valid list (or tuple) in YAML
+    - [255, 0, 0]   
     - [0, 0, 255]
+    - [0, 255, 0]
   steps_per_transistion: 1000
 
 
