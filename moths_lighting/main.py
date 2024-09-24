@@ -90,7 +90,7 @@ def get_lighting_config():
 def main():
     lighting_config = get_lighting_config()
     print('Initializing Colour Manager...')
-    colour_manager = ColourManager(lighting_config['colours'])
+    colour_manager = ColourManager(lighting_config['lighting_config']['colours'])
     
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)
