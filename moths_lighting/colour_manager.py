@@ -51,6 +51,12 @@ class ColourManager:
         if os.path.exists(target_file):
             with open(target_file, 'w') as file:
                 yaml.dump(self.colours, file)
+        else:
+            print(f"File does not exist: {target_file}")
+            print("creating file")
+            os.makedirs(os.path.dirname(target_file), exist_ok=True)
+            with open(target_file, 'w') as file:
+                yaml.dump(self.colours, file)
         
         
     
