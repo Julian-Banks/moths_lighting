@@ -241,7 +241,7 @@ class Display:
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
             self.colour_manager.add_colour(colour)
-            self.artnet_controller.set_display_colour(value = 0)
+            self.artnet_controller.set_display_colour(value = 0, colour = colour)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()   
             
@@ -249,12 +249,13 @@ class Display:
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
             self.colour_manager.update_colour(idx, colour)
-            self.artnet_controller.set_display_colour(value = 0)
+            self.artnet_controller.set_display_colour(value = 0, colour = colour)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back() 
+            
         def remove_colour(idx):
             self.colour_manager.remove_colour(idx)
-            self.artnet_controller.set_display_colour(value = 0)
+            self.artnet_controller.set_display_colour(value = 0, colour = Colour(0,0,0))
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()
         #Function for generating the colour list!  
