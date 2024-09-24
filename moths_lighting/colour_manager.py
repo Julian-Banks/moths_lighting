@@ -45,7 +45,7 @@ class ColourManager:
     def update_yaml(self):
 
         # Get the current working directory
-        target_file = '/moths_lighting/config/lighting_config.yaml'
+        target_file = '/moths_lighting/config/colours_config.yaml'
         current_directory = os.getcwd()
         print(f"Current working directory: {current_directory}")
         if os.path.exists(target_file):
