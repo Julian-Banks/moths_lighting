@@ -11,6 +11,7 @@ class Colour:
 #A class that stores a list of colours and has functions to remove, add, get and set them.
 class ColourManager:
     def __init__(self, colours):
+        print(f"in colour manager: {colours}")
         self.colours = []
         for colour in colours:
             print(f"colour: {colour}")
