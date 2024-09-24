@@ -1,7 +1,7 @@
 lighting_config: 
   brightness: 0.5
   fade: 0.2
-  colors: [(255, 0, 0), (255, 0, 0)]
+  colours: [(255, 0, 0), (255, 0, 0)]
   steps_per_transistion: 1000
 
 
