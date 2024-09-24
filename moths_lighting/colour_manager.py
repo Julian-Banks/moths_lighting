@@ -1,5 +1,6 @@
 
 import yaml
+import os
 
 class Colour:
     def __init__(self, red, green, blue):
@@ -42,8 +43,14 @@ class ColourManager:
         return self.colours
     
     def update_yaml(self):
-        with open('/moths_lighting/config/lighting_config.yaml', 'w') as file:
-            yaml.dump(self.colours, file)
+
+        # Get the current working directory
+        target_file = '/moths_lighting/config/lighting_config.yaml'
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
+        if os.path.exists(target_file):
+            with open(target_file, 'w') as file:
+                yaml.dump(self.colours, file)
         
         
     
