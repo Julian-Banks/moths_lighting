@@ -1,4 +1,6 @@
-# Add this class inside your Display class
+
+import yaml
+
 class Colour:
     def __init__(self, red, green, blue):
         self.red = red
@@ -8,8 +10,11 @@ class Colour:
         
 #A class that stores a list of colours and has functions to remove, add, get and set them.
 class ColourManager:
-    def __init__(self):
-        self.colours = [Colour(255, 0, 0), Colour(0, 0, 255)] #Colour(255,255,0),Colour(255, 0, 255), 
+    def __init__(self, colours):
+        self.colours = []
+        for i in colours:
+            self.colours.append(Colour(i[0], i[1], i[2]))
+        
         
     def add_colour(self, colour):
         print('in add colour')
@@ -29,6 +34,10 @@ class ColourManager:
             
     def get_colour_list(self):
         return self.colours
+    
+    def update_yaml(self):
+        with open('config/lighting_config.yaml', 'w') as file:
+            yaml.dump(self.colours, file)
         
         
     

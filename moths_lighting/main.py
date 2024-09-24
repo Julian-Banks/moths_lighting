@@ -1,6 +1,8 @@
 import threading
 import time
 from queue import Queue
+import yaml
+import pyaudio
 
 from audio import AudioProcessor
 from artnet import ArtnetController
@@ -8,7 +10,7 @@ from display import Display
 from encoder import Encoder
 from colour_manager import ColourManager
 
-import pyaudio
+
 
 # Queues for inter-thread communication
 fft_queue = Queue()
@@ -81,9 +83,14 @@ def on_position_change(position):
 def on_button_push():
     display.on_button_push()
 
+def get_lighting_config():
+    with open('config/lighting_config.yaml', 'r') as file:
+        return yaml.safe_load(file)
+
 def main():
+    lighting_config = get_lighting_config()
     print('Initializing Colour Manager...')
-    colour_manager = ColourManager()
+    colour_manager = ColourManager(lighting_config['colours'])
     
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)
