@@ -13,6 +13,7 @@ class ColourManager:
     def __init__(self, colours):
         self.colours = []
         for colour in colours:
+            print(f"colour: {colour}")
             red, green, blue = colour
             self.colours.append(Colour(red, green, blue))
         
