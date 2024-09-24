@@ -23,17 +23,20 @@ class ColourManager:
         print('in add colour')
         print(f"len: {len(self.colours)}")
         self.colours.append(colour)
+        self.update_yaml()
         
     def remove_colour(self, idx):
         print('in remove colour')
         print(f"idx: {idx}, len: {len(self.colours)}")
         if 0 <= idx < len(self.colours):
             self.colours.pop(idx)
+            self.update_yaml()
             
     def update_colour(self, index, colour):
         print('in update colour')
         print(f"index: {index}, len: {len(self.colours)}")
         self.colours[index] = colour
+        self.update_yaml()
             
     def get_colour_list(self):
         return self.colours
