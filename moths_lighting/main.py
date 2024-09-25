@@ -83,15 +83,10 @@ def on_position_change(position):
 def on_button_push():
     display.on_button_push()
 
-def get_lighting_config():
-    with open('moths_lighting/config/lighting_config.yaml', 'r') as file:
-        return yaml.safe_load(file)
-
 def main():
-    lighting_config = get_lighting_config()
+    
     print('Initializing Colour Manager...')
-    print(lighting_config['lighting_config']['colours'])
-    colour_manager = ColourManager(lighting_config['lighting_config']['colours'])
+    colour_manager = ColourManager()
     
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)

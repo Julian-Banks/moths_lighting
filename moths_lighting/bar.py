@@ -1,6 +1,7 @@
 import numpy as np
 import threading
 import time
+import yaml
 
 class mode:
     def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
@@ -50,24 +51,24 @@ class mode_manager:
 class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
         
+        self.config_file = 'moths_lighting/config/bar_config.yaml'
+        #standard, always the same properties
         self.lock = threading.Lock()
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
         self.state = 0  # Mode index
-        self.auto_cycle = False 
-        self.time_per_mode = 60
         self.previous_state = 0  # Previous mode index
         self.start_time = time.time()
-        #colours 
         
+        #colours 
         self.colour = colour_manager.get_colour_list()[0]
         self.colour_manager = colour_manager
         self.colours = self.colour_manager.get_colour_list()
         self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
-        #Modes
+        #Modes also want to move this into mode manager class
         self.modes = [
             {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
             {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
@@ -78,17 +79,16 @@ class Bar:
         self.mode_manager = mode_manager()
         self.generate_mode_menu()
         
-        #modes for auto_cycle 
-        self.cycle_modes = []
-        self.cycle_modes_menu = [] 
-        self.all_modes = []
-        self.all_modes_menu = []
+        #modes for auto_cycle I want to get these from mode manager so it is handled in one place
+        self.auto_cycle = False 
+        self.time_per_mode = 60
         
         #lighting related
         self.brightness = brightness
         self.fade = 0.2
+        
         self.fade_out_count = 0  # Initialize counter for fade_out calls
-        self.fade_out_threshold = 40  # Adjust this threshold based on the desired fading duration
+        self.fade_out_threshold = 60  # Adjust this threshold based on the desired fading duration
         self.current_step = 0
         self.length_mid_strobe = 30
         
@@ -100,7 +100,21 @@ class Bar:
         self.mid_threshold  = 0.5
         self.mid_lower_bound = 800
         self.mid_upper_bound = 3000
-        
+
+    def get_config(self):
+        with open(self.config_file, 'r') as file:
+            return yaml.safe_load(file)
+    
+    def update_config(self,config):
+        with open(self.config_file, 'w') as file:
+            yaml.dump(config, file)
+    
+    #write a function to get all of the correct properties in the correct format.
+    def dictify(self):
+        pass 
+    
+            
+    #also want to move this into mode manager class. 
     def generate_mode_menu(self):
         for config in self.modes:
             name = config["name"]
