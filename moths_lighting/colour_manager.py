@@ -12,32 +12,40 @@ class Colour:
 #A class that stores a list of colours and has functions to remove, add, get and set them.
 class ColourManager:
     def __init__(self, colours):
-        print(f"in colour manager: {colours}")
+        config = self.get_config()
+        print(f"in colour manager: {config}")
         self.colours = []
-        for colour in colours:
+        self.target_file = 'moths_lighting/config/colour_config.yaml'
+        
+        for colour in config:
             print(f"colour: {colour}")
             red, green, blue = colour
             self.colours.append(Colour(red, green, blue))
+            
+            
+    def get_config(self):
+        with open('moths_lighting/config/colour_config.yaml', 'r') as file:
+            return yaml.safe_load(file)
         
         
     def add_colour(self, colour):
         print('in add colour')
         print(f"len: {len(self.colours)}")
         self.colours.append(colour)
-        self.update_yaml()
+        self.update_config()
         
     def remove_colour(self, idx):
         print('in remove colour')
         print(f"idx: {idx}, len: {len(self.colours)}")
         if 0 <= idx < len(self.colours):
             self.colours.pop(idx)
-            self.update_yaml()
+            self.update_config()
             
     def update_colour(self, index, colour):
         print('in update colour')
         print(f"index: {index}, len: {len(self.colours)}")
         self.colours[index] = colour
-        self.update_yaml()
+        self.update_config()
             
     def get_colour_list(self):
         return self.colours
@@ -48,7 +56,7 @@ class ColourManager:
             colour_list.append([colour.red, colour.green, colour.blue])
         return colour_list
     
-    def update_yaml(self):
+    def update_config(self):
 
         # Get the current working directory
         target_file = 'moths_lighting/config/colour_config.yaml'
