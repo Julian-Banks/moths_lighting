@@ -42,21 +42,28 @@ class ColourManager:
     def get_colour_list(self):
         return self.colours
     
+    def dictify(self):
+        colour_list = []
+        for colour in self.colours:
+            colour_list.append([colour.red, colour.green, colour.blue])
+        return colour_list
+    
     def update_yaml(self):
 
         # Get the current working directory
-        target_file = '/moths_lighting/config/colours_config.yaml'
+        target_file = 'moths_lighting/config/colour_config.yaml'
+        to_print = self.dictify()
         current_directory = os.getcwd()
         print(f"Current working directory: {current_directory}")
         if os.path.exists(target_file):
             with open(target_file, 'w') as file:
-                yaml.dump(self.colours, file)
+                yaml.dump(to_print, file)
         else:
             print(f"File does not exist: {target_file}")
             print("creating file")
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
             with open(target_file, 'w') as file:
-                yaml.dump(self.colours, file)
+                yaml.dump(to_print, file)
         
         
     
