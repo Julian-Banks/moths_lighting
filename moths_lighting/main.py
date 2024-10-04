@@ -72,8 +72,8 @@ def artnet_thread(artnet_controller, led_queue):
             send_duration = send_end_time - send_start_time
 
             # Log the statistics
-            print(f"FPS: {send_count}, Avg Loop Duration: {avg_loop_duration:.4f}s, Max: {max_loop_duration:.4f}s, Min: {min_loop_duration:.4f}s")
-            print(f"Update Duration: {update_duration:.4f}s, Send Duration: {send_duration:.4f}s")
+            #print(f"FPS: {send_count}, Avg Loop Duration: {avg_loop_duration:.4f}s, Max: {max_loop_duration:.4f}s, Min: {min_loop_duration:.4f}s")
+            #print(f"Update Duration: {update_duration:.4f}s, Send Duration: {send_duration:.4f}s")
 
             artnet_fps_queue.put(send_count)  # Send FPS to the display
             send_count = 0
