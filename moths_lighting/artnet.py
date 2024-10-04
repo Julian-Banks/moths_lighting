@@ -102,7 +102,7 @@ class ArtnetController:
                 bar.update(fft_data)
         end_time = time.time()
         duration = end_time - start_time
-        print(f"Update duration: {duration:.4f}s")
+        #print(f"Update duration: {duration:.4f}s")
 
     def process_audio(self, led_queue):
         fft_data_list = []

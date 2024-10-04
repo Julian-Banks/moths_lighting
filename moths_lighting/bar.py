@@ -356,7 +356,7 @@ class Bar:
             self.fade_out()   
             
     def mode_sine_wave(self, fft_data):
-
+        start_time = time.time()
         # Initialize time variable if not already present
         if not hasattr(self, 'time'):
             self.time = 0
@@ -402,6 +402,9 @@ class Bar:
 
         # Update the LED pixels
         self.pixels = pixels
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"Mode Duration: {duration:.4f}s")
 
 
     def fade_out(self):
