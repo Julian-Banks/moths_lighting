@@ -25,13 +25,13 @@ class AudioProcessor:
         self.decay_factor = 0.999 # Decay factor to reduce the max over time
         
         #BPM variables
-        self.energy_history = np.zeros(int(self.rate * 0.5))
+        self.energy_history = np.zeros(int(self.rate))
         self.beat_interval_history = []  # Stores intervals between beats
         self.bpm = 0                  # Current BPM
         self.last_beat_time = None    # Timestamp of the last detected beat
         self.min_bpm = 40            # Minimum BPM to consider
         self.max_bpm = 240            # Maximum BPM to consider
-        self.beat_threshold = 0.5     # Threshold for beat detection
+        self.beat_threshold = 0.8     # Threshold for beat detection
 
     def start_stream(self):
         try:
@@ -87,7 +87,7 @@ class AudioProcessor:
         self.energy_history[-len(energy):] = energy
 
         # Use find_peaks to detect peaks in the energy signal
-        peaks, properties = find_peaks(self.energy_history, height=np.mean(self.energy_history) * self.beat_threshold, distance=int(self.rate * 0.3))
+        peaks, properties = find_peaks(self.energy_history, height=np.mean(self.energy_history) * self.beat_threshold, distance=int(self.chunk))
 
         current_time = time.time()
 
