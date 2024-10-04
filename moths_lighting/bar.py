@@ -107,9 +107,7 @@ class Bar:
         
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
-        self.amplitude_scale = 0.5 # Scale factor for amplitude modulation
-        self.sine_frequency = 2  # Base frequency of the sine wave
-        self.frequency_scale = 3.0 # Scale factor for frequency modulation`
+        self.sine_frequency = 1  # Base frequency of the sine wave
         self.last_time_change = 0.005
         
         #colours 
@@ -367,17 +365,15 @@ class Bar:
         # Initialize time variable if not already present
         if not hasattr(self, 'time'):
             self.time = 0
-
-
-
+            
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
         # Increment time to animate the wave
         this_time_change = 0
         if magnitude > self.bass_threshold:
-            this_time_change =  0.1 #min(self.last_time_change*1.05, 0.1)
+            this_time_change =  0.08 #min(self.last_time_change*1.05, 0.1)
         else:
-            this_time_change += max(0.005 , self.last_time_change * 0.9)
+            this_time_change += max(0.003 , self.last_time_change * 0.9)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
@@ -397,11 +393,9 @@ class Bar:
         # Create the pixels bytearray
         pixels = bytearray()
         for i in range(self.num_leds):
-            # Compute the normalized position along the LED strip
-
+            
             # Calculate the sine wave value at this position and time
-            # Corrected to represent a traveling wave
-            position = i / (self.num_leds -1)
+            position = i / (self.num_leds)
             angle = math.pi * (frequency * position +   self.time)
             value = math.sin(angle)
 
