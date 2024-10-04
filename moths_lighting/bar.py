@@ -369,8 +369,8 @@ class Bar:
         self.time += 0.005 + magnitude*0.01 # Adjust this value to control the wave's speed
         
         # Map magnitude to amplitude and frequency for the sine wave
-        amplitude = self.brightness #max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
-        frequency = self.sine_frequency  + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
+        amplitude = self.brightness 
+        frequency = self.sine_frequency 
 
         # Cycle through colors using current_step
         self.current_step += 1
