@@ -68,7 +68,7 @@ class AudioProcessor:
         audio_data *= self.audio_sensitivity
                 
         #Detect beat
-        self.detect_beat(audio_data)
+        #self.detect_beat(audio_data)
         
         # Apply window function
         window = np.hanning(len(audio_data))
