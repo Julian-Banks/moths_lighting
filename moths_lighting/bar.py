@@ -137,7 +137,7 @@ class Bar:
         self.mid_threshold = config['mid_threshold']
         self.mid_lower_bound = config['mid_lower_bound']
         self.mid_upper_bound = config['mid_upper_bound']
-        self.mid_debounce = 100
+        self.mid_debounce = 0.1
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
