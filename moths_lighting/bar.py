@@ -139,7 +139,7 @@ class Bar:
         self.mid_lower_bound = config['mid_lower_bound']
         self.mid_upper_bound = config['mid_upper_bound']
         self.mid_debounce = config['mid_debounce']
-        self.bass_debounce = config['bass_debounce']
+        self.bass_debounce = 0.1#config['bass_debounce']
     
     def get_config(self):
         with open(self.config_file, 'r') as file:

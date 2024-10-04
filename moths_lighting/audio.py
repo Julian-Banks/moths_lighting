@@ -1,6 +1,7 @@
 import pyaudio
 import numpy as np
 import threading
+import time
 from scipy.signal import butter, lfilter
 from scipy.signal import find_peaks
 
