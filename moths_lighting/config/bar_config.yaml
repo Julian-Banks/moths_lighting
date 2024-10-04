@@ -8,7 +8,6 @@ fade: 0.06
 fade_out_threshold: 60
 length_mid_strobe: 30
 mid_debounce: 0.49999999999999994
-bass_debounce: 0.3
 mid_lower_bound: 500
 mid_threshold: 0.20000000000000004
 mid_upper_bound: 3000
