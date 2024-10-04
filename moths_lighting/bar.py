@@ -375,7 +375,7 @@ class Bar:
         # Increment time to animate the wave
         this_time_change = 0
         if magnitude > self.bass_threshold:
-            this_time_change =  min(self.last_time_change*1.05, 0.1)
+            this_time_change =  0.1 #min(self.last_time_change*1.05, 0.1)
         else:
             this_time_change += max(0.005 , self.last_time_change * 0.99)
         
