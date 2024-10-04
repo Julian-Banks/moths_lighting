@@ -377,7 +377,7 @@ class Bar:
         if magnitude > self.bass_threshold:
             this_time_change =  0.1 #min(self.last_time_change*1.05, 0.1)
         else:
-            this_time_change += max(0.005 , self.last_time_change * 0.99)
+            this_time_change += max(0.005 , self.last_time_change * 0.9)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
@@ -402,7 +402,7 @@ class Bar:
             # Calculate the sine wave value at this position and time
             # Corrected to represent a traveling wave
             position = i / (self.num_leds -1)
-            angle = 2 * math.pi * (frequency * position -   self.time)
+            angle = math.pi * (frequency * position +   self.time)
             value = math.sin(angle)
 
             # Normalize the sine value to a brightness level between 0 and 1
