@@ -24,13 +24,13 @@ audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
 esp_configs = [
-    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 60, 'num_bars': 2},
-    {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 60, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
+    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 40, 'num_bars': 2},
+    {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 40, 'num_bars': 0},
+    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 40, 'num_bars': 0},
+    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 40, 'num_bars': 0},
 ]
 
-FPS_target = esp_configs[0].get('fps', 60)
+FPS_target = esp_configs[0].get('fps', 40)
 
 def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
