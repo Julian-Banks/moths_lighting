@@ -333,7 +333,9 @@ class Bar:
             brightened_color = tuple(int(c * self.brightness) for c in color)
             
             #for a length of 30 LEDs, somewhere random on the bars
-            strobe_idx = np.random.randint(0, self.num_pixels - self.length_mid_strobe*3)
+            max_value = (self.num_pixels - self.length_mid_strobe * 3) // 3
+            strobe_idx = np.random.randint(0, max_value + 1) * 3
+            
             for i in range(strobe_idx,strobe_idx+self.length_mid_strobe*3,3):
                 self.pixels[i] = brightened_color[0]
                 self.pixels[i+1] = brightened_color[1]
