@@ -1,0 +1,15 @@
+- audio_reactive: false
+  auto_cycle: true
+  name: Static
+- audio_reactive: true
+  auto_cycle: false
+  name: Wave
+- audio_reactive: true
+  auto_cycle: false
+  name: Pulse
+- audio_reactive: true
+  auto_cycle: true
+  name: Bass Strobe
+- audio_reactive: true
+  auto_cycle: false
+  name: Bass & Mid Strobe
