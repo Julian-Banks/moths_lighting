@@ -108,7 +108,7 @@ class Bar:
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
         self.amplitude_scale = 0.5 # Scale factor for amplitude modulation
-        self.sine_frequency = 1  # Base frequency of the sine wave
+        self.sine_frequency = 2  # Base frequency of the sine wave
         self.frequency_scale = 3.0 # Scale factor for frequency modulation`
         self.last_time_change = 0.005
         
@@ -375,7 +375,7 @@ class Bar:
         # Increment time to animate the wave
         this_time_change = 0
         if magnitude > self.bass_threshold:
-            this_time_change =  min(self.last_time_change*1.01, 0.2)
+            this_time_change =  min(self.last_time_change*1.01, 0.1)
         else:
             this_time_change += max(0.005 , self.last_time_change * 0.99)
         
