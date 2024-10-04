@@ -194,7 +194,8 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.time_per_mode = time_per_mode
-            bars[0].update_config()
+            if len(bars) > 0:
+                bars[0].update_config()
     
     #LIGHTING OPTIONS
     #Update brightness
@@ -203,7 +204,9 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.brightness = brightness
-            bars[0].update_config()           
+            if len(bars) > 0:
+                bars[0].update_config()
+                    
     def get_brightness(self):
         brightness = []
         for artnet_device in self.artnet_devices:
