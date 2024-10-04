@@ -160,13 +160,17 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.mode_manager.remove_auto_cycle_mode(idx)
+            if len(bars) > 0:
+                bars[0].mode_manager.update_mode_config()
     
     def add_auto_cycle_mode(self,idx):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.mode_manager.add_auto_cycle_mode(idx)
-    
+            if len(bars) > 0:
+                bars[0].mode_manager.update_mode_config()
+                
     def get_auto_cycle(self):
         auto_cycle = []
         for artnet_device in self.artnet_devices:

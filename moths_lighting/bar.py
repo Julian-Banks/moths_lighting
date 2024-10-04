@@ -13,9 +13,12 @@ class mode:
 
 class mode_manager:
     def __init__(self):
+        self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
         self.modes = []
         self.modes_menu = []
         self.auto_cycle_modes = []
+        self.set_mode_config()
+        
     
     def add_mode(self,mode):
         self.modes.append(mode)
@@ -47,13 +50,46 @@ class mode_manager:
     def get_auto_cycle_menu(self):
         return [mode.name for mode in self.modes if mode.auto_cycle]
     
+    def dictify_modes(self): 
+        return [{'name': mode.name, 'audio_reactive': mode.audio_reactive, 'auto_cycle': mode.auto_cycle} for mode in self.modes]
     
+    def update_mode_config(self):
+        target_file = self.mode_config_file
+        to_print = self.dictify_modes()
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
+        if os.path.exists(target_file):
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+            print(f"Config updated: {target_file}")
+        else:
+            print(f"File does not exist: {target_file}")
+            print("creating file")
+            os.makedirs(os.path.dirname(target_file), exist_ok=True)
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+            
+    def set_mode_config(self): 
+        with open(self.mode_config_file, 'r') as file:
+            data = yaml.safe_load(file)
+        self.generate_mode_menu(data)
+    
+    #also want to move this into mode manager class. 
+    def generate_mode_menu(self,data):
+        for config in data:
+            name = config["name"]
+            audio_reactive = config["audio_reactive"]
+            mode_func = Bar.get_mode_func(name)
+            auto_cycle = config["auto_cycle"]
+            new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
+            self.mode_manager.add_mode(new_mode)
+        print(f'Modes added: {[mode.name for mode in self.mode_manager.modes]}')
+
 
 class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
-        self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
         self.set_config()
         #standard, always the same properties
         self.lock = threading.Lock()
@@ -71,18 +107,14 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes also want to move this into mode manager class
-        self.modes = [
+        '''self.modes = [
             {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
             {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
             {"name": "Pulse", "func": self.mode_pulse, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
-        ]
-        self.update_mode_config()
+        ]'''
         self.mode_manager = mode_manager()
-        self.generate_mode_menu()
- 
-
 
     def set_config(self):
         config = self.get_config()
@@ -148,30 +180,6 @@ class Bar:
         }
         return config 
     
-    def dictify_modes(self): 
-        return [{'name': mode['name'], 'audio_reactive': mode['audio_reactive'], 'auto_cycle': mode['auto_cycle']} for mode in self.modes]
-    
-    def update_mode_config(self):
-        target_file = self.mode_config_file
-        to_print = self.dictify_modes()
-        current_directory = os.getcwd()
-        print(f"Current working directory: {current_directory}")
-        if os.path.exists(target_file):
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-            print(f"Config updated: {target_file}")
-        else:
-            print(f"File does not exist: {target_file}")
-            print("creating file")
-            os.makedirs(os.path.dirname(target_file), exist_ok=True)
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-    
-    def set_mode_config(self): 
-         with open(self.mode_config_file, 'r') as file:
-            data = yaml.safe_load(file)
-            self.modes = [{'name': mode['name'], 'func': self.get_mode_func(mode['name']), 'audio_reactive': mode['audio_reactive'], 'auto_cycle': mode['auto_cycle']} for mode in data]
-    
     ##ADD MODES HERE ONCE YOU MAKE THEM##
     def get_mode_func(self, mode_name):
         return {
@@ -181,27 +189,7 @@ class Bar:
             "Bass Strobe": self.mode_bass_strobe,
             "Bass & Mid Strobe": self.mode_bass_mid_strobe
         }.get(mode_name)
-    
-    
-            
-    #also want to move this into mode manager class. 
-    def generate_mode_menu(self):
-        for config in self.modes:
-            name = config["name"]
-            audio_reactive = config["audio_reactive"]
-            mode_func = config["func"]
-            auto_cycle = config["auto_cycle"]
-            new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
-            self.mode_manager.add_mode(new_mode)
-            
-        print(f'Modes added: {[mode.name for mode in self.mode_manager.modes]}')
-        
-        
-        #want to delete these attributes
-        #self.cycle_modes = self.mode_manager.get_auto_cycle_modes()
-        #self.cycle_modes_menu = self.mode_manager.get_auto_cycle_menu()
-        #self.all_modes = self.mode_manager.get_all_modes()
-        #self.all_modes_menu = self.mode_manager.get_all_mode_menu()
+
         
 
     def update(self, fft_data):
