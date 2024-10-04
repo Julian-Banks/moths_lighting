@@ -1,3 +1,4 @@
+state: 0
 auto_cycle: false
 steps_per_transition: 1000
 time_per_mode: 60
