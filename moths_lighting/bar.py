@@ -99,6 +99,7 @@ class Bar:
         self.pixels = bytearray([0] * self.num_pixels)
         
         self.previous_state = 0  # Previous mode index
+        self.fade_out_count = 0
         self.start_time = time.time()
         self.debounce_time = time.time()
         
@@ -126,7 +127,6 @@ class Bar:
         self.time_per_mode = config['time_per_mode']
         self.brightness = config['brightness']
         self.fade = config['fade']
-        self.fade_out_count = config['fade_out_count']
         self.fade_out_threshold = config['fade_out_threshold']
         self.current_step = config['current_step']
         self.length_mid_strobe = config['length_mid_strobe']
@@ -137,7 +137,7 @@ class Bar:
         self.mid_threshold = config['mid_threshold']
         self.mid_lower_bound = config['mid_lower_bound']
         self.mid_upper_bound = config['mid_upper_bound']
-        self.mid_debounce = 0.1
+        self.mid_debounce = config['mid_debounce']
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
@@ -169,7 +169,6 @@ class Bar:
             'time_per_mode': self.time_per_mode,
             'brightness': self.brightness,
             'fade': self.fade,
-            'fade_out_count': self.fade_out_count,
             'fade_out_threshold': self.fade_out_threshold,
             'current_step': self.current_step,
             'length_mid_strobe': self.length_mid_strobe,
@@ -314,25 +313,12 @@ class Bar:
             
         bass_magnitude = self.compute_bass_magnitude(fft_data)
         mid_magnitude = self.compute_mid_magnitude(fft_data)
-        # Check if the bass magnitude exceeds the threshold
-        if bass_magnitude > self.bass_threshold:
-            # Apply the strobe effect (turn on all LEDs)
-            # Use the current step color when not in strobe mode
-            color = self.all_colours[self.current_step]
-            brightened_color = tuple(int(c * self.brightness) for c in color)
-            self.pixels = bytearray(brightened_color * self.num_leds)
-      
-            # Reset fading when strobe is active
-            self.fade_out_count = 0
-        
-        else:
-            # If not strobing, apply fading effect
-            self.fade_out()   
+
         
         if (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_debounce):
+            
             self.debounce_time = time.time()
-            # Apply the strobe effect (turn on all LEDs)
-            # Use the current step color when not in strobe mode
+       
             halfway_index = (self.current_step + len(self.all_colours) // 2) % len(self.all_colours)
             color = self.all_colours[halfway_index]
 
@@ -347,18 +333,31 @@ class Bar:
                 self.pixels[i+1] = brightened_color[1]
                 self.pixels[i+2] = brightened_color[2]
                 
-            #self.pixels = bytearray(brightened_color * self.num_leds)
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
+        else:
+            # If not strobing, apply fading effect
+            self.fade_out()      
+            
+        # Check if the bass magnitude exceeds the threshold
+        if bass_magnitude > self.bass_threshold:
+            # Apply the strobe effect (turn on all LEDs)
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
       
             # Reset fading when strobe is active
             self.fade_out_count = 0
         
         else:
             # If not strobing, apply fading effect
-            self.fade_out()      
+            self.fade_out()   
 
     def fade_out(self):
         # Only continue fading if the counter is below the threshold
-        if self.fade_out_count < self.fade_out_threshold:
+        fade_out_threshold = (5/self.fade)
+        if self.fade_out_count < fade_out_threshold:
             # Apply fading effect to each pixel
             for i in range(self.num_pixels):
                 # Reduce each channel (R, G, B) based on the fade parameter
