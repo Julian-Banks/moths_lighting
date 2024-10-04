@@ -25,12 +25,12 @@ class AudioProcessor:
         self.decay_factor = 0.999 # Decay factor to reduce the max over time
         
         #BPM variables
-        self.beat_times = []          # Stores timestamps of detected beats
+        self.energy_history = np.zeros(int(self.rate * 0.5))
         self.beat_interval_history = []  # Stores intervals between beats
         self.bpm = 0                  # Current BPM
         self.last_beat_time = None    # Timestamp of the last detected beat
-        self.min_bpm = 60             # Minimum BPM to consider
-        self.max_bpm = 180            # Maximum BPM to consider
+        self.min_bpm = 40            # Minimum BPM to consider
+        self.max_bpm = 240            # Maximum BPM to consider
         self.beat_threshold = 0.5     # Threshold for beat detection
 
     def start_stream(self):
@@ -77,34 +77,35 @@ class AudioProcessor:
         if self.led_queue:
             self.led_queue.put(fft_mag)
             
+   
     def detect_beat(self, audio_data):
         # Calculate the energy of the audio signal
-        energy = np.sum(audio_data ** 2) / len(audio_data)
+        energy = audio_data ** 2
 
-        # Apply a moving average filter to smooth the energy signal
-        window_size = int(self.rate * 0.1)  # 100ms window
-        if not hasattr(self, 'energy_history'):
-            self.energy_history = np.zeros(window_size)
-        self.energy_history = np.roll(self.energy_history, -1)
-        self.energy_history[-1] = energy
-        average_energy = np.mean(self.energy_history)
+        # Update energy history
+        self.energy_history = np.roll(self.energy_history, -len(energy))
+        self.energy_history[-len(energy):] = energy
 
-        # Detect a beat if the energy exceeds a threshold above the average energy
-        threshold = average_energy * self.beat_threshold
-        if energy > threshold:
-            current_time = time.time()
-            if self.last_beat_time is not None:
-                interval = current_time - self.last_beat_time
-                bpm = 60 / interval
-                if self.min_bpm <= bpm <= self.max_bpm:
-                    self.beat_interval_history.append(interval)
-                    # Keep the last few intervals
-                    if len(self.beat_interval_history) > 5:
-                        self.beat_interval_history.pop(0)
-                    # Calculate average BPM
-                    avg_interval = np.mean(self.beat_interval_history)
-                    self.bpm = 60 / avg_interval
-            self.last_beat_time = current_time
+        # Use find_peaks to detect peaks in the energy signal
+        peaks, properties = find_peaks(self.energy_history, height=np.mean(self.energy_history) * self.beat_threshold, distance=int(self.rate * 0.3))
+
+        current_time = time.time()
+
+        # Process detected peaks
+        for peak in peaks:
+            # Convert peak index to time
+            peak_time = current_time - (len(self.energy_history) - peak) / self.rate
+            with self.lock:
+                if self.last_beat_time is not None:
+                    interval = peak_time - self.last_beat_time
+                    bpm = 60 / interval
+                    if self.min_bpm <= bpm <= self.max_bpm:
+                        self.beat_interval_history.append(interval)
+                        if len(self.beat_interval_history) > 5:
+                            self.beat_interval_history.pop(0)
+                        avg_interval = np.mean(self.beat_interval_history)
+                        self.bpm = 60 / avg_interval
+                self.last_beat_time = peak_time
             # You can add code here to trigger visual effects on beat
             print(f"Beat detected! BPM: {self.bpm:.2f}")
 
