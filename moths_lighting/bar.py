@@ -12,11 +12,12 @@ class mode:
         self.mode_func = mode_func
 
 class mode_manager:
-    def __init__(self):
+    def __init__(self, get_mode_func):
         self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
         self.modes = []
         self.modes_menu = []
         self.auto_cycle_modes = []
+        self.get_mode_func = get_mode_func
         self.set_mode_config()
         
     
@@ -79,7 +80,7 @@ class mode_manager:
         for config in data:
             name = config["name"]
             audio_reactive = config["audio_reactive"]
-            mode_func = Bar.get_mode_func(name)
+            mode_func = self.get_mode_func(name)
             auto_cycle = config["auto_cycle"]
             new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
             self.add_mode(new_mode)
@@ -114,7 +115,7 @@ class Bar:
             {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
         ]'''
-        self.mode_manager = mode_manager()
+        self.mode_manager = mode_manager(self.get_mode_func)
 
     def set_config(self):
         config = self.get_config()
@@ -181,14 +182,14 @@ class Bar:
         return config 
     
     ##ADD MODES HERE ONCE YOU MAKE THEM##
-    @classmethod
-    def get_mode_func(cls, mode_name):
+
+    def get_mode_func(self, mode_name):
         mode_funcs = {
-            "Static": cls.mode_static,
-            "Wave": cls.mode_wave,
-            "Pulse": cls.mode_pulse,
-            "Bass Strobe": cls.mode_bass_strobe,
-            "Bass & Mid Strobe": cls.mode_bass_mid_strobe
+            "Static": self.mode_static,
+            "Wave": self.mode_wave,
+            "Pulse": self.mode_pulse,
+            "Bass Strobe": self.mode_bass_strobe,
+            "Bass & Mid Strobe": self.mode_bass_mid_strobe
         }
         return mode_funcs.get(mode_name)
 
