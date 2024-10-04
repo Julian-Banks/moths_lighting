@@ -13,3 +13,6 @@
 - audio_reactive: true
   auto_cycle: false
   name: Bass & Mid Strobe
+- audio_reactive: true
+  auto_cycle: false
+  name: Sine Wave

@@ -3,6 +3,7 @@ import threading
 import time
 import yaml
 import os 
+import math
 
 class mode:
     def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
@@ -103,6 +104,12 @@ class Bar:
         self.start_time = time.time()
         self.debounce_time = time.time()
         
+        #Sine mode settings
+        self.time = 0              # Initialize time for the animation
+        self.amplitude_scale = 0.5 # Scale factor for amplitude modulation
+        self.sine_frequency = 2.0  # Base frequency of the sine wave
+        self.frequency_scale = 3.0 # Scale factor for frequency modulation`
+        
         #colours 
         self.colour = colour_manager.get_colour_list()[0]
         self.colour_manager = colour_manager
@@ -110,13 +117,6 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes also want to move this into mode manager class
-        '''self.modes = [
-            {"name": "Static", "func": self.mode_static, "audio_reactive": False, "auto_cycle": False},
-            {"name": "Wave", "func": self.mode_wave, "audio_reactive": True, "auto_cycle": False},
-            {"name": "Pulse", "func": self.mode_pulse, "audio_reactive": True, "auto_cycle": False},
-            {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
-            {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
-        ]'''
         self.mode_manager = mode_manager(self.get_mode_func)
 
     def set_config(self):
@@ -191,7 +191,8 @@ class Bar:
             "Wave": self.mode_wave,
             "Pulse": self.mode_pulse,
             "Bass Strobe": self.mode_bass_strobe,
-            "Bass & Mid Strobe": self.mode_bass_mid_strobe
+            "Bass & Mid Strobe": self.mode_bass_mid_strobe,
+            "Sine Wave" :self.mode_sine_wave
         }
         return mode_funcs.get(mode_name)
 
@@ -353,6 +354,53 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.fade_out()   
+            
+    def mode_sine_wave(self, fft_data):
+
+        # Initialize time variable if not already present
+        if not hasattr(self, 'time'):
+            self.time = 0
+
+        # Increment time to animate the wave
+        self.time += 0.1  # Adjust this value to control the wave's speed
+
+        # Compute the overall magnitude from fft_data
+        magnitude = self.compute_bass_magnitude(fft_data)
+
+        # Map magnitude to amplitude and frequency for the sine wave
+        amplitude = max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
+        frequency = self.sine_frequency + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
+
+        # Cycle through colors using current_step
+        self.current_step += 1
+        if self.current_step >= len(self.all_colours):
+            self.current_step = 0
+
+        base_color = self.all_colours[self.current_step]
+        brightened_color = tuple(int(c * self.brightness) for c in base_color)
+
+        # Create the pixels bytearray
+        pixels = bytearray()
+        for i in range(self.num_leds):
+            # Compute the normalized position along the LED strip
+            position = i / self.num_leds
+
+            # Calculate the sine wave value at this position and time
+            # Corrected to represent a traveling wave
+            value = math.sin(2 * math.pi * (frequency * self.time - position))
+
+            # Normalize the sine value to a brightness level between 0 and 1
+            brightness = (value * amplitude + amplitude) / (2 * amplitude)
+
+            # Apply brightness to the base color
+            pixel_color = tuple(int(c * brightness) for c in brightened_color)
+
+            # Append the color to the pixels array
+            pixels.extend(pixel_color)
+
+        # Update the LED pixels
+        self.pixels = pixels
+
 
     def fade_out(self):
         # Only continue fading if the counter is below the threshold

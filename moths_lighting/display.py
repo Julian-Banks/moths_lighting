@@ -411,10 +411,7 @@ class Display:
         #Shows the fft_stats
         def show_fft_stats():
             self.show_fft_display()
-        #Reinitialise the whole setup (should I do this each time a controller is changed or make it something that is done at the end?) 
-        def reinitialise():
-            self.artnet_controller.update_config(self.esp_configs)
-            self.artnet_controller.change_mode(4)
+ 
 
 
 
@@ -422,9 +419,8 @@ class Display:
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
-            AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0.02, max_value=0.3, step=0.02),
+            AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0.02, max_value=0.2, step=0.01),
             AdjustableMenuItem("Mid Debounce",get_mid_debounce, set_mid_debounce, min_value=0, max_value=0.5, step=0.05),
-            #AdjustableMenuItem("Time per mode", get_time_per_mode, set_time_per_mode, min_value=0, max_value=100, step=1),
             AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
             # Add other adjustable items...
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
@@ -462,8 +458,6 @@ class Display:
             AdjustableMenuItem("ESP Two", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
             AdjustableMenuItem("ESP Three", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
             AdjustableMenuItem("ESP Four", get_num_bars_4, set_numbars_4, min_value=0, max_value=5, step=1),
-            #Menuitem to reinitialise the whole setup 
-            MenuItem("Reinitialise", reinitialise),
             # Add adjustable items...
             MenuItem("Back")
         ])
