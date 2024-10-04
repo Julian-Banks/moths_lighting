@@ -257,6 +257,21 @@ class ArtnetController:
                 mid_debounce.append(bar.mid_debounce)
         return mid_debounce[0]
     
+    def set_bass_debounce(self, bass_debounce):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.bass_debounce = bass_debounce
+            if len(bars) > 0:
+                bars[0].update_config()
+    def get_bass_debounce(self):
+        bass_debounce = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                bass_debounce.append(bar.bass_debounce)
+        return bass_debounce[0]
+    
     
     #Time per colour
     def get_time_per_colour(self):
