@@ -366,7 +366,7 @@ class Bar:
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
         # Increment time to animate the wave
-        self.time += 0.01 #+ magnitude*0.1# Adjust this value to control the wave's speed
+        self.time += 0.005 #+ magnitude*0.1# Adjust this value to control the wave's speed
         
         # Map magnitude to amplitude and frequency for the sine wave
         amplitude = self.brightness #max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
@@ -387,16 +387,14 @@ class Bar:
 
             # Calculate the sine wave value at this position and time
             # Corrected to represent a traveling wave
-            position = i / (self.num_leds)
+            position = i / (self.num_leds -1)
             angle = 2 * math.pi * (frequency * position -   self.time)
             value = math.sin(angle)
 
             # Normalize the sine value to a brightness level between 0 and 1
-            brightness = (value * amplitude + amplitude) / (2 * amplitude)
-
+            brightness = (value * amplitude)
             # Apply brightness to the base color
             pixel_color = tuple(int(c * brightness) for c in brightened_color)
-
             # Append the color to the pixels array
             pixels.extend(pixel_color)
 
