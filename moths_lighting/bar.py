@@ -404,7 +404,7 @@ class Bar:
         self.pixels = pixels
         end_time = time.time()
         duration = end_time - start_time
-        print(f"Mode Duration: {duration:.4f}s")
+        #print(f"Mode Duration: {duration:.4f}s")
 
 
     def fade_out(self):
