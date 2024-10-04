@@ -25,6 +25,7 @@ class AudioProcessor:
         self.decay_factor = 0.999 # Decay factor to reduce the max over time
         
         #BPM variables
+        '''
         self.energy_history = np.zeros(int(self.rate))
         self.beat_interval_history = []  # Stores intervals between beats
         self.bpm = 0                  # Current BPM
@@ -32,6 +33,16 @@ class AudioProcessor:
         self.min_bpm = 40            # Minimum BPM to consider
         self.max_bpm = 240            # Maximum BPM to consider
         self.beat_threshold = 0.8     # Threshold for beat detection
+        '''
+                # Beat detection parameters
+        self.beat_interval_history = []
+        self.bpm = 0
+        self.last_beat_time = None
+        self.min_bpm = 60
+        self.max_bpm = 180
+        self.beat_threshold = 1.5  # Adjust as needed
+        self.energy_history = np.zeros(43)  # Store energies of recent chunks
+        self.energy_index = 0
 
     def start_stream(self):
         try:
@@ -77,7 +88,7 @@ class AudioProcessor:
         if self.led_queue:
             self.led_queue.put(fft_mag)
             
-   
+    '''
     def detect_beat(self, audio_data):
         # Calculate the energy of the audio signal
         energy = audio_data ** 2
@@ -107,7 +118,41 @@ class AudioProcessor:
                         self.bpm = 60 / avg_interval
                 self.last_beat_time = peak_time
             # You can add code here to trigger visual effects on beat
-            print(f"Beat detected! BPM: {self.bpm:.2f}")
+            print(f"Beat detected! BPM: {self.bpm:.2f}")'''
+            
+    
+    def detect_beat(self, audio_data):
+        # Calculate the energy of the audio chunk
+        energy = np.sum(audio_data ** 2) / len(audio_data)
+
+        # Update energy history
+        self.energy_history[self.energy_index % len(self.energy_history)] = energy
+        self.energy_index += 1
+        average_energy = np.mean(self.energy_history)
+
+        # Beat detection logic
+        if energy > self.beat_threshold * average_energy:
+            current_time = time.time()
+            with self.lock:
+                min_interval = 60 / self.max_bpm  # Minimum interval between beats
+                if self.last_beat_time is not None:
+                    interval = current_time - self.last_beat_time
+                    if interval < min_interval:
+                        # Ignore this beat; too soon after previous beat
+                        return
+                    bpm = 60 / interval
+                    if self.min_bpm <= bpm <= self.max_bpm:
+                        self.beat_interval_history.append(interval)
+                        if len(self.beat_interval_history) > 5:
+                            self.beat_interval_history.pop(0)
+                        avg_interval = np.mean(self.beat_interval_history)
+                        self.bpm = 60 / avg_interval
+                else:
+                    # First beat detected
+                    self.bpm = 0  # Initialize BPM
+                self.last_beat_time = current_time
+                print(f"Beat detected! BPM: {self.bpm:.2f}")
+
 
 
     def normalise_to_global_max(self,fft_data):
