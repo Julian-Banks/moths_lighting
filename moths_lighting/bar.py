@@ -361,15 +361,16 @@ class Bar:
         if not hasattr(self, 'time'):
             self.time = 0
 
-        # Increment time to animate the wave
-        self.time += 0.01  # Adjust this value to control the wave's speed
+
 
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
-
+        # Increment time to animate the wave
+        self.time += 0.01 + magnitude*0.001# Adjust this value to control the wave's speed
+        
         # Map magnitude to amplitude and frequency for the sine wave
         amplitude = 0.5#max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
-        frequency = self.sine_frequency #+ magnitude * self.frequency_scale  # Adjust frequency based on magnitude
+        frequency = self.sine_frequency # + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
 
         # Cycle through colors using current_step
         self.current_step += 1
