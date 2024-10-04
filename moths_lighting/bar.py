@@ -372,7 +372,10 @@ class Bar:
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
         # Increment time to animate the wave
-        self.time += 0.005 + magnitude*0.2 # Adjust this value to control the wave's speed
+        if magnitude > self.bass_threshold:
+            self.time += 0.005 + magnitude*0.2 # Adjust this value to control the wave's speed
+        else:
+            self.time += 0.005
         
         # Map magnitude to amplitude and frequency for the sine wave
         amplitude = self.brightness 
