@@ -107,7 +107,7 @@ class Bar:
         
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
-        self.sine_frequency = 1  # Base frequency of the sine wave
+        self.sine_frequency = 4  # Base frequency of the sine wave
         self.last_time_change = 0.005
         
         #colours 
