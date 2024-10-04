@@ -362,7 +362,7 @@ class Bar:
             self.time = 0
 
         # Increment time to animate the wave
-        self.time += 0.1  # Adjust this value to control the wave's speed
+        self.time += 0.01  # Adjust this value to control the wave's speed
 
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
