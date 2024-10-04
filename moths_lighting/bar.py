@@ -107,7 +107,7 @@ class Bar:
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
         self.amplitude_scale = 0.5 # Scale factor for amplitude modulation
-        self.sine_frequency = 2.0  # Base frequency of the sine wave
+        self.sine_frequency = 100.0  # Base frequency of the sine wave
         self.frequency_scale = 3.0 # Scale factor for frequency modulation`
         
         #colours 
@@ -362,7 +362,7 @@ class Bar:
             self.time = 0
 
         # Increment time to animate the wave
-        self.time += 0.1  # Adjust this value to control the wave's speed
+        self.time += 0.01  # Adjust this value to control the wave's speed
 
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
