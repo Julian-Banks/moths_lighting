@@ -24,7 +24,7 @@ audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
 esp_configs = [
-    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 60, 'num_bars': 1},
+    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 60, 'num_bars': 3},
     {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 60, 'num_bars': 0},
     {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
     {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
