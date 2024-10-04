@@ -181,14 +181,16 @@ class Bar:
         return config 
     
     ##ADD MODES HERE ONCE YOU MAKE THEM##
-    def get_mode_func(self, mode_name):
-        return {
-            "Static": self.mode_static,
-            "Wave": self.mode_wave,
-            "Pulse": self.mode_pulse,
-            "Bass Strobe": self.mode_bass_strobe,
-            "Bass & Mid Strobe": self.mode_bass_mid_strobe
-        }.get(mode_name)
+    @classmethod
+    def get_mode_func(cls, mode_name):
+        mode_funcs = {
+            "Static": cls.mode_static,
+            "Wave": cls.mode_wave,
+            "Pulse": cls.mode_pulse,
+            "Bass Strobe": cls.mode_bass_strobe,
+            "Bass & Mid Strobe": cls.mode_bass_mid_strobe
+        }
+        return mode_funcs.get(mode_name)
 
         
 
