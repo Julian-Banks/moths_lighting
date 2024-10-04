@@ -149,10 +149,7 @@ class Bar:
         return config 
     
     def dictify_modes(self): 
-        modes = []
-        for mode in self.modes:
-            modes.append({'name': mode.name, 'audio_reactive': mode.audio_reactive, 'auto_cycle': mode.auto_cycle})
-        return modes
+        return [{'name': mode['name'], 'audio_reactive': mode['audio_reactive'], 'auto_cycle': mode['auto_cycle']} for mode in self.modes]
     
     def update_mode_config(self):
         target_file = self.mode_config_file
