@@ -3,6 +3,7 @@ import time
 from queue import Queue
 import yaml
 import pyaudio
+from collections import deque
 
 from audio import AudioProcessor
 from artnet import ArtnetController
@@ -24,10 +25,10 @@ audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
 esp_configs = [
-    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 20, 'num_bars': 2},
-    {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 20, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 20, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 20, 'num_bars': 0},
+    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 40, 'num_bars': 2},
+    {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 40, 'num_bars': 0},
+    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 40, 'num_bars': 0},
+    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 40, 'num_bars': 0},
 ]
 
 FPS_target = esp_configs[0].get('fps', 40)
@@ -36,19 +37,44 @@ def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
     send_count = 0
     start_time = time.time()
-
+    loop_durations = deque(maxlen=1000)  # Adjust maxlen as needed
+    
     while not stop_flag.is_set():
-        start_time_control = time.time()
+        iteration_start_time = time.time()
+        
         with artnet_controller.lock:
+            update_start_time = time.time()
             artnet_controller.update_bars(led_queue)
+            update_end_time = time.time()
+            
+            send_start_time = time.time()
             artnet_controller.send_data()
-        end_time_control = time.time()
-        time.sleep(max(1/FPS_target - (end_time_control- start_time_control),0))
+            send_end_time = time.time()
+
+        iteration_end_time = time.time()
+        loop_duration = iteration_end_time - iteration_start_time
+        loop_durations.append(loop_duration)
+        
+        computation_time = iteration_end_time - iteration_start_time
+        sleep_time = max(1/FPS_target - computation_time, 0)
+        time.sleep(sleep_time)
+        
         send_count += 1
 
         # Calculate FPS every second
         current_time = time.time()
         if current_time - start_time >= 1.0:
+            # Calculate statistics
+            avg_loop_duration = sum(loop_durations) / len(loop_durations)
+            max_loop_duration = max(loop_durations)
+            min_loop_duration = min(loop_durations)
+            update_duration = update_end_time - update_start_time
+            send_duration = send_end_time - send_start_time
+
+            # Log the statistics
+            print(f"FPS: {send_count}, Avg Loop Duration: {avg_loop_duration:.4f}s, Max: {max_loop_duration:.4f}s, Min: {min_loop_duration:.4f}s")
+            print(f"Update Duration: {update_duration:.4f}s, Send Duration: {send_duration:.4f}s")
+
             artnet_fps_queue.put(send_count)  # Send FPS to the display
             send_count = 0
             start_time = current_time
