@@ -392,9 +392,11 @@ class Bar:
             value = math.sin(angle)
 
             # Normalize the sine value to a brightness level between 0 and 1
-            brightness = (abs(value) * amplitude)
+            brightness = (value * amplitude + amplitude) / (2 * amplitude)
+
             # Apply brightness to the base color
             pixel_color = tuple(int(c * brightness) for c in brightened_color)
+
             # Append the color to the pixels array
             pixels.extend(pixel_color)
 
