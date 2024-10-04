@@ -34,8 +34,6 @@ FPS_target = esp_configs[0].get('fps', 60)
 
 def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
-    #artnet_controller.start_mode()
-
     send_count = 0
     start_time = time.time()
 

@@ -53,6 +53,7 @@ class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
+        self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
         self.set_config()
         #standard, always the same properties
         self.lock = threading.Lock()
@@ -77,31 +78,10 @@ class Bar:
             {"name": "Bass Strobe", "func": self.mode_bass_strobe, "audio_reactive": True, "auto_cycle": False},
             {"name": "Bass & Mid Strobe", "func": self.mode_bass_mid_strobe, "audio_reactive": True, "auto_cycle": False},
         ]
+        self.update_mode_config()
         self.mode_manager = mode_manager()
         self.generate_mode_menu()
-        
-        '''
-        #modes for auto_cycle I want to get these from mode manager so it is handled in one place
-        self.auto_cycle = False 
-        self.time_per_mode = 60
-        
-        #lighting related
-        self.brightness = brightness
-        self.fade = 0.2
-        
-        self.fade_out_count = 0  # Initialize counter for fade_out calls
-        self.fade_out_threshold = 60  # Adjust this threshold based on the desired fading duration
-        self.current_step = 0
-        self.length_mid_strobe = 30
-        
-        #audio related
-        self.trigger_style = "max"
-        self.bass_threshold = 0.8
-        self.bass_lower_bound = 0
-        self.bass_upper_bound = 200
-        self.mid_threshold  = 0.5
-        self.mid_lower_bound = 800
-        self.mid_upper_bound = 3000'''
+ 
 
 
     def set_config(self):
@@ -167,6 +147,44 @@ class Bar:
             'mid_upper_bound': self.mid_upper_bound
         }
         return config 
+    
+    def dictify_modes(self): 
+        modes = []
+        for mode in self.modes:
+            modes.append({'name': mode.name, 'audio_reactive': mode.audio_reactive, 'auto_cycle': mode.auto_cycle})
+        return modes
+    
+    def update_mode_config(self):
+        target_file = self.mode_config_file
+        to_print = self.dictify_modes()
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
+        if os.path.exists(target_file):
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+            print(f"Config updated: {target_file}")
+        else:
+            print(f"File does not exist: {target_file}")
+            print("creating file")
+            os.makedirs(os.path.dirname(target_file), exist_ok=True)
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+    
+    def set_mode_config(self): 
+         with open(self.mode_config_file, 'r') as file:
+            data = yaml.safe_load(file)
+            self.modes = [{'name': mode['name'], 'func': self.get_mode_func(mode['name']), 'audio_reactive': mode['audio_reactive'], 'auto_cycle': mode['auto_cycle']} for mode in data]
+    
+    ##ADD MODES HERE ONCE YOU MAKE THEM##
+    def get_mode_func(self, mode_name):
+        return {
+            "Static": self.mode_static,
+            "Wave": self.mode_wave,
+            "Pulse": self.mode_pulse,
+            "Bass Strobe": self.mode_bass_strobe,
+            "Bass & Mid Strobe": self.mode_bass_mid_strobe
+        }.get(mode_name)
+    
     
             
     #also want to move this into mode manager class. 
@@ -423,7 +441,6 @@ class Bar:
         return (r, g, b)
 
     def get_pixels(self):
-        
     #helper functions with modes
         with self.lock:
             return self.pixels
