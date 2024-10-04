@@ -93,12 +93,16 @@ class ArtnetController:
                 bar.state = "off"
 
     def update_bars(self, led_queue):
+        start_time = time.time()
         fft_data = self.process_audio(led_queue)
 
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.update(fft_data)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(f"Update duration: {duration:.4f}s")
 
     def process_audio(self, led_queue):
         fft_data_list = []
