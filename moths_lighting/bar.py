@@ -368,8 +368,8 @@ class Bar:
         magnitude = self.compute_bass_magnitude(fft_data)
 
         # Map magnitude to amplitude and frequency for the sine wave
-        amplitude = max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
-        frequency = self.sine_frequency + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
+        amplitude = 0.5#max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
+        frequency = self.sine_frequency #+ magnitude * self.frequency_scale  # Adjust frequency based on magnitude
 
         # Cycle through colors using current_step
         self.current_step += 1
