@@ -1,17 +1,16 @@
-lighting_config:
-  brightness: 0.5
-  fade: 0.2
-  steps_per_transistion: 1000
-
-audio_config:
-  trigger_style: "max"
-  bass_threshold: 0.8
-  bass_lower_bound: 0
-  bass_upper_bound: 200
-  mid_threshold: 0.5
-  mid_lower_bound: 800
-  mid_upper_bound: 3000
-
-
-
-  
+auto_cycle: false
+steps_per_transition: 1000
+time_per_mode: 60
+brightness: 0.3
+fade: 0.2
+fade_out_count: 0
+fade_out_threshold: 60
+current_step: 0
+length_mid_strobe: 30
+trigger_style: "max"
+bass_threshold: 0.8
+bass_lower_bound: 0
+bass_upper_bound: 200
+mid_threshold: 0.5
+mid_lower_bound: 800
+mid_upper_bound: 3000

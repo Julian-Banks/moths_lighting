@@ -57,7 +57,6 @@ class ColourManager:
         return colour_list
     
     def update_config(self):
-
         # Get the current working directory
         target_file = 'moths_lighting/config/colour_config.yaml'
         to_print = self.dictify()

@@ -2,6 +2,7 @@ import numpy as np
 import threading
 import time
 import yaml
+import os 
 
 class mode:
     def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
@@ -52,12 +53,13 @@ class Bar:
     def __init__(self,colour_manager, num_leds=96, brightness=0.5):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
+        self.set_config()
         #standard, always the same properties
         self.lock = threading.Lock()
         self.num_leds = num_leds
         self.num_pixels = num_leds * 3
         self.pixels = bytearray([0] * self.num_pixels)
-        self.state = 0  # Mode index
+        
         self.previous_state = 0  # Previous mode index
         self.start_time = time.time()
         
@@ -65,7 +67,6 @@ class Bar:
         self.colour = colour_manager.get_colour_list()[0]
         self.colour_manager = colour_manager
         self.colours = self.colour_manager.get_colour_list()
-        self.steps_per_transition = 1000 
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes also want to move this into mode manager class
@@ -79,6 +80,7 @@ class Bar:
         self.mode_manager = mode_manager()
         self.generate_mode_menu()
         
+        '''
         #modes for auto_cycle I want to get these from mode manager so it is handled in one place
         self.auto_cycle = False 
         self.time_per_mode = 60
@@ -99,19 +101,72 @@ class Bar:
         self.bass_upper_bound = 200
         self.mid_threshold  = 0.5
         self.mid_lower_bound = 800
-        self.mid_upper_bound = 3000
+        self.mid_upper_bound = 3000'''
 
+
+    def set_config(self):
+        config = self.get_config()
+        self.state = config['state']
+        self.steps_per_transition = config['steps_per_transition']
+        self.auto_cycle = config['auto_cycle']
+        self.time_per_mode = config['time_per_mode']
+        self.brightness = config['brightness']
+        self.fade = config['fade']
+        self.fade_out_count = config['fade_out_count']
+        self.fade_out_threshold = config['fade_out_threshold']
+        self.current_step = config['current_step']
+        self.length_mid_strobe = config['length_mid_strobe']
+        self.trigger_style = config['trigger_style']
+        self.bass_threshold = config['bass_threshold']
+        self.bass_lower_bound = config['bass_lower_bound']
+        self.bass_upper_bound = config['bass_upper_bound']
+        self.mid_threshold = config['mid_threshold']
+        self.mid_lower_bound = config['mid_lower_bound']
+        self.mid_upper_bound = config['mid_upper_bound']
+    
     def get_config(self):
         with open(self.config_file, 'r') as file:
             return yaml.safe_load(file)
     
-    def update_config(self,config):
-        with open(self.config_file, 'w') as file:
-            yaml.dump(config, file)
+    def update_config(self):
+                # Get the current working directory
+        target_file = self.config_file
+        to_print = self.dictify()
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
+        if os.path.exists(target_file):
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+            print(f"Config updated: {target_file}")
+        else:
+            print(f"File does not exist: {target_file}")
+            print("creating file")
+            os.makedirs(os.path.dirname(target_file), exist_ok=True)
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
     
     #write a function to get all of the correct properties in the correct format.
     def dictify(self):
-        pass 
+        config = {
+            'state': self.state,
+            'steps_per_transition': self.steps_per_transition,
+            'auto_cycle': self.auto_cycle,
+            'time_per_mode': self.time_per_mode,
+            'brightness': self.brightness,
+            'fade': self.fade,
+            'fade_out_count': self.fade_out_count,
+            'fade_out_threshold': self.fade_out_threshold,
+            'current_step': self.current_step,
+            'length_mid_strobe': self.length_mid_strobe,
+            'trigger_style': self.trigger_style,
+            'bass_threshold': self.bass_threshold,
+            'bass_lower_bound': self.bass_lower_bound,
+            'bass_upper_bound': self.bass_upper_bound,
+            'mid_threshold': self.mid_threshold,
+            'mid_lower_bound': self.mid_lower_bound,
+            'mid_upper_bound': self.mid_upper_bound
+        }
+        return config 
     
             
     #also want to move this into mode manager class. 
