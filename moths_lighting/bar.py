@@ -103,6 +103,7 @@ class Bar:
         self.fade_out_count = 0
         self.start_time = time.time()
         self.debounce_time = time.time()
+        self.bass_debounce_time = time.time()
         
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
@@ -138,6 +139,7 @@ class Bar:
         self.mid_lower_bound = config['mid_lower_bound']
         self.mid_upper_bound = config['mid_upper_bound']
         self.mid_debounce = config['mid_debounce']
+        self.bass_debounce = config['bass_debounce']
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
@@ -179,7 +181,8 @@ class Bar:
             'mid_threshold': self.mid_threshold,
             'mid_lower_bound': self.mid_lower_bound,
             'mid_upper_bound': self.mid_upper_bound,
-            'mid_debounce': self.mid_debounce
+            'mid_debounce': self.mid_debounce,
+            'bass_debounce': self.bass_debounce
         }
         return config 
     
@@ -292,7 +295,8 @@ class Bar:
         bass_magnitude = self.compute_bass_magnitude(fft_data)
 
         # Check if the bass magnitude exceeds the threshold
-        if bass_magnitude > self.bass_threshold:
+        if (bass_magnitude > self.bass_threshold) and (time.time() - self.bass_debounce_time > self.bass_debounce):
+            self.bass_debounce_time = time.time()
             # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
             color = self.all_colours[self.current_step]
@@ -341,7 +345,9 @@ class Bar:
             self.fade_out()      
             
         # Check if the bass magnitude exceeds the threshold
-        if bass_magnitude > self.bass_threshold:
+        if (bass_magnitude > self.bass_threshold) and (time.time() - self.bass_debounce_time > self.bass_debounce):
+            
+            self.bass_debounce_time = time.time()
             # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
             color = self.all_colours[self.current_step]
@@ -366,7 +372,7 @@ class Bar:
         # Compute the overall magnitude from fft_data
         magnitude = self.compute_bass_magnitude(fft_data)
         # Increment time to animate the wave
-        self.time += 0.005 + magnitude*0.015 # Adjust this value to control the wave's speed
+        self.time += 0.005 + magnitude*0.05 # Adjust this value to control the wave's speed
         
         # Map magnitude to amplitude and frequency for the sine wave
         amplitude = self.brightness 
