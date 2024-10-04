@@ -107,7 +107,7 @@ class Bar:
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
         self.amplitude_scale = 0.5 # Scale factor for amplitude modulation
-        self.sine_frequency = 100.0  # Base frequency of the sine wave
+        self.sine_frequency = 2.0  # Base frequency of the sine wave
         self.frequency_scale = 3.0 # Scale factor for frequency modulation`
         
         #colours 
