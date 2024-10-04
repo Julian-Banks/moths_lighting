@@ -329,7 +329,7 @@ class Bar:
             # If not strobing, apply fading effect
             self.fade_out()   
         
-        if (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_strobe_debounce):
+        if (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_debounce):
             self.debounce_time = time.time()
             # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
