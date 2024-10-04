@@ -100,6 +100,7 @@ class Bar:
         
         self.previous_state = 0  # Previous mode index
         self.start_time = time.time()
+        self.debounce_time = time.time()
         
         #colours 
         self.colour = colour_manager.get_colour_list()[0]
@@ -136,6 +137,7 @@ class Bar:
         self.mid_threshold = config['mid_threshold']
         self.mid_lower_bound = config['mid_lower_bound']
         self.mid_upper_bound = config['mid_upper_bound']
+        self.mid_debounce = 100
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
@@ -177,7 +179,8 @@ class Bar:
             'bass_upper_bound': self.bass_upper_bound,
             'mid_threshold': self.mid_threshold,
             'mid_lower_bound': self.mid_lower_bound,
-            'mid_upper_bound': self.mid_upper_bound
+            'mid_upper_bound': self.mid_upper_bound,
+            'mid_debounce': self.mid_debounce
         }
         return config 
     
@@ -326,10 +329,13 @@ class Bar:
             # If not strobing, apply fading effect
             self.fade_out()   
         
-        if mid_magnitude > self.mid_threshold:
-                    # Apply the strobe effect (turn on all LEDs)
+        if (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_strobe_debounce):
+            self.debounce_time = time.time()
+            # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
-            color = (150,150,150)#self.all_colours[self.current_step]
+            halfway_index = (self.current_step + len(self.all_colours) // 2) % len(self.all_colours)
+            color = self.all_colours[halfway_index]
+
             brightened_color = tuple(int(c * self.brightness) for c in color)
             
             #for a length of 30 LEDs, somewhere random on the bars

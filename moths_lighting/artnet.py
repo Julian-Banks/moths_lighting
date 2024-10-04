@@ -236,6 +236,23 @@ class ArtnetController:
                 fade.append(bar.fade)
         return fade[0]
     
+    #Update mid debounce
+    def set_mid_debounce(self, mid_debounce):
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map[artnet_device]
+            for bar in bars:
+                bar.mid_debounce = mid_debounce
+            if len(bars) > 0:
+                bars[0].update_config()
+    def get_mid_debounce(self):
+        mid_debounce = []
+        for artnet_device in self.artnet_devices:
+            bars = self.device_bars_map.get(artnet_device, [])
+            for bar in bars:
+                mid_debounce.append(bar.mid_debounce)
+        return mid_debounce[0]
+    
+    
     #Time per colour
     def get_time_per_colour(self):
         steps_per_transisiton = []
