@@ -370,7 +370,7 @@ class Bar:
         
         # Map magnitude to amplitude and frequency for the sine wave
         amplitude = self.brightness #max(min(magnitude * self.amplitude_scale, 1.0), 0.1)  # Clamp between 0.1 and 1.0
-        frequency = self.sine_frequency # + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
+        frequency = self.sine_frequency  + magnitude * self.frequency_scale  # Adjust frequency based on magnitude
 
         # Cycle through colors using current_step
         self.current_step += 1
