@@ -88,7 +88,7 @@ class mode_manager:
 
 
 class Bar:
-    def __init__(self,colour_manager, num_leds=96, brightness=0.5):
+    def __init__(self,colour_manager, num_leds=96):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
         self.set_config()

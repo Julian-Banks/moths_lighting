@@ -18,17 +18,18 @@ class ArtnetController:
     def initialize_devices(self):
         self.device_bars_map = {}
         self.artnet_devices = []
+        self.num_leds = 144
         for config in self.esp_configs:
             target_ip = config['target_ip']
             universe = config['universe']
             num_bars = config.get('num_bars', 1)
-            packet_size = num_bars * 96 * 3
+            packet_size = num_bars * self.num_leds * 3
             fps = config.get('fps', 40)
             # Create new Artnet device
             artnet_device = ArtnetManager(target_ip, packet_size, fps)
             # Add the new Artnet device to the list
             self.artnet_devices.append(artnet_device)
-            bars = [Bar(self.colour_manager) for _ in range(num_bars)]
+            bars = [Bar(self.colour_manager,self.num_leds) for _ in range(num_bars)]
             
             self.device_bars_map[artnet_device] = bars
 
