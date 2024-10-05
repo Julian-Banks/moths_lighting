@@ -545,7 +545,7 @@ class Bar:
 
         # Use find_peaks with suitable parameters
         peaks, _ = find_peaks(normalized_energy, prominence=0.5)  # Adjust 'prominence' as needed
-
+        print(peaks)
         # The last sample is at index -1
         last_index = len(normalized_energy) - 1
 
