@@ -1,0 +1,12 @@
+- fps: 50
+  num_bars: 2
+  target_ip: 255.255.255.255
+- fps: 50
+  num_bars: 0
+  target_ip: 192.168.1.102
+- fps: 50
+  num_bars: 0
+  target_ip: 192.168.1.103
+- fps: 50
+  num_bars: 0
+  target_ip: 192.168.1.103
