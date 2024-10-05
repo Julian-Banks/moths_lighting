@@ -446,13 +446,10 @@ class Bar:
         for i in range(self.num_leds):
             # Calculate the brightness for this pixel
             position = i / self.num_leds
-            wave = math.sin(math.pi * (position * 5 + self.time)) * math.cos(math.pi * (position * 6 - self.time))
+            wave = math.sin(math.pi * (position * 5 + self.time)) * math.cos(math.pi * (position * 6 - self.time)) + math.sin(math.pi * (position  + self.time)) * math.cos(math.pi * (position * 2 - self.time))
 
             # Normalize the wave value to be between 0 and 1
-            brightness = (wave + 1) / 2
-            #brightened_color = tuple(int(c * brightness) for c in brightened_color)
-            # Decide whether to turn the pixel on or off to have about half of the pixels on
-            #pixels.extend(brightened_color)
+            brightness = (wave + 2) / 4
             
                     # Decide whether to turn the pixel on or off to have about half of the pixels on
             new_pixels = tuple(int(c*brightness) for c in brightened_color)
