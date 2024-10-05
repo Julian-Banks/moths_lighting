@@ -455,7 +455,8 @@ class Bar:
             #pixels.extend(brightened_color)
             
                     # Decide whether to turn the pixel on or off to have about half of the pixels on
-            pixels.extend(brightened_color*brightness)
+            new_pixels = tuple(int(c*brightness) for c in brightened_color)
+            pixels.extend(new_pixels)
             #if brightness > 0.5:
             #    pixels.extend(brightened_color*brightness)
             #else:
