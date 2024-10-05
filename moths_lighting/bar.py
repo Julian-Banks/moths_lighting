@@ -309,6 +309,7 @@ class Bar:
         # If current magnitude is less than the previous magnitude, apply the fade
         if magnitude < self.previous_magnitude:
             self.fade_out()  # Apply fade to the LEDs
+            self.fade_out_count = 0  # Reset the fade out count to allow further fading
         
         # Create a byte array for the LEDs that will light up based on the current magnitude
         # This array will maintain the faded LEDs and increase the brightness of the relevant ones
