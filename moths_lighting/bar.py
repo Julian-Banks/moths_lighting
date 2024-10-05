@@ -442,7 +442,7 @@ class Bar:
         if magnitude > self.bass_threshold:
             this_time_change =  min(self.last_time_change*2, 0.09)
         else:
-            this_time_change += max(0.003 , self.last_time_change * 0.98)
+            this_time_change += max(0.003 , self.last_time_change * 0.96)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
