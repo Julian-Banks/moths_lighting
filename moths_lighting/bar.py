@@ -456,9 +456,9 @@ class Bar:
 
             # Bias brightness towards lower values
             brightness = brightness ** 2  # Square to bias towards dimmer pixels
-
+            brightness = brightness ** 2  # Square again to further bias towards dimmer pixels
             # Adjust overall brightness
-            brightness *= self.brightness  # Adjust as needed
+            brightness *= self.brightness# Adjust as needed
 
             # Ensure brightness is between 0 and 1
             brightness = min(max(brightness, 0), 1)
