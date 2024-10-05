@@ -2,17 +2,17 @@
   auto_cycle: true
   name: Static
 - audio_reactive: true
-  auto_cycle: false
+  auto_cycle: true
   name: Beat Detector
 - audio_reactive: true
-  auto_cycle: false
+  auto_cycle: true
   name: Pulse
 - audio_reactive: true
   auto_cycle: true
   name: Bass Strobe
 - audio_reactive: true
-  auto_cycle: false
+  auto_cycle: true
   name: Bass & Mid Strobe
 - audio_reactive: true
-  auto_cycle: false
+  auto_cycle: true
   name: Sine Wave
