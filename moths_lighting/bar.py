@@ -436,21 +436,19 @@ class Bar:
             self.time = 0
             
         # Compute the overall magnitude from fft_data
-        magnitude = self.compute_bass_magnitude(fft_data)
+        beat = self.detect_beats(fft_data)
         # Increment time to animate the wave
         this_time_change = 0
-        if magnitude > self.bass_threshold:
-            this_time_change =  min(self.last_time_change*2, 0.09)
+        
+        if beat:
+            this_time_change =  min(self.last_time_change*2, 0.08)
+            self.current_step = (self.current_step + 100) % len(self.all_colours)
         else:
             this_time_change += max(0.003 , self.last_time_change * 0.96)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
         
-
-        # Detect beats and update colour accordingly
-        if self.detect_beats(fft_data):
-            self.current_step = (self.current_step + 100) % len(self.all_colours)
 
         # Get the current color
         color = self.all_colours[self.current_step]
