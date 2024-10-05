@@ -22,7 +22,7 @@ class ArtnetController:
         self.artnet_devices = []
         self.num_leds = 144
         self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
-        config = self.get_esp_config() ###THIS IS WHERE I NEED UPDATE SELF.ESP_CONFIGS AFTER FIRST RUN
+        self.esp_configs = self.get_esp_config() ###THIS IS WHERE I NEED UPDATE SELF.ESP_CONFIGS AFTER FIRST RUN
         for config in self.esp_configs: 
             target_ip = config['target_ip']
             #universe = config['universe']
