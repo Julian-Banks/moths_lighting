@@ -375,7 +375,7 @@ class Bar:
             # Reset fading when strobe is active
             self.fade_out_count = 0
         else:
-            self.fade_out()
+            self.sine_fade_out()
             
             
     def mode_bass_mid_strobe(self, fft_data):
@@ -427,7 +427,7 @@ class Bar:
             self.fade_out_count = 0
         else:
             # If not strobing, apply fading effect
-            self.fade_out()      
+            self.sine_fade_out()      
 
             
     def mode_sine_wave(self, fft_data):
@@ -493,6 +493,32 @@ class Bar:
                 # Reduce each channel (R, G, B) based on the fade parameter
                 self.pixels[i] = max(0, int(self.pixels[i] * (1 - self.fade)))
             
+            # Increment the fade out counter
+            self.fade_out_count += 1
+        else:
+            # If the threshold is reached, set pixels to black directly for performance
+            self.pixels = bytearray([0] * self.num_pixels)
+            self.current_step += 1
+            if self.current_step >= len(self.all_colours):
+                self.current_step = 0
+    def sine_fade_out(self):
+        # Only continue fading if the counter is below the threshold
+        fade_out_threshold = (5 / self.fade)
+        if self.fade_out_count < fade_out_threshold:
+            # Create a sine wave across the number of LEDs (soft edges)
+            sine_wave = np.sin(np.linspace(0, np.pi, self.num_leds))  # Half sine wave
+            
+            # Apply fading effect to each pixel with sine wave modulation
+            for i in range(0, self.num_pixels, 3):  # Assuming 3 channels (R, G, B)
+                # Get the sine factor corresponding to the current LED index
+                led_idx = i // 3
+                sine_factor = sine_wave[led_idx]
+
+                # Reduce each channel (R, G, B) based on the fade parameter and sine wave factor
+                self.pixels[i] = max(0, int(self.pixels[i] * (1 - self.fade) * sine_factor))
+                self.pixels[i+1] = max(0, int(self.pixels[i+1] * (1 - self.fade) * sine_factor))
+                self.pixels[i+2] = max(0, int(self.pixels[i+2] * (1 - self.fade) * sine_factor))
+
             # Increment the fade out counter
             self.fade_out_count += 1
         else:
