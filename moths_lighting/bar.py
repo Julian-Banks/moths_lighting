@@ -388,8 +388,20 @@ class Bar:
         bass_magnitude = self.compute_bass_magnitude(fft_data)
         mid_magnitude = self.compute_mid_magnitude(fft_data)
 
+                # Check if the bass magnitude exceeds the threshold
+        if (bass_magnitude > self.bass_threshold) and (time.time() - self.bass_debounce_time > self.bass_debounce):
+            
+            self.bass_debounce_time = time.time()
+            # Apply the strobe effect (turn on all LEDs)
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness*0.5) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+      
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
         
-        if (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_debounce):
+        elif (mid_magnitude > self.mid_threshold) and (time.time() - self.debounce_time > self.mid_debounce):
             
             self.debounce_time = time.time()
        
@@ -412,23 +424,7 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.fade_out()      
-            
-        # Check if the bass magnitude exceeds the threshold
-        if (bass_magnitude > self.bass_threshold) and (time.time() - self.bass_debounce_time > self.bass_debounce):
-            
-            self.bass_debounce_time = time.time()
-            # Apply the strobe effect (turn on all LEDs)
-            # Use the current step color when not in strobe mode
-            color = self.all_colours[self.current_step]
-            brightened_color = tuple(int(c * self.brightness*0.5) for c in color)
-            self.pixels = bytearray(brightened_color * self.num_leds)
-      
-            # Reset fading when strobe is active
-            self.fade_out_count = 0
-        
-        else:
-            # If not strobing, apply fading effect
-            self.fade_out()   
+
             
     def mode_sine_wave(self, fft_data):
         start_time = time.time()
