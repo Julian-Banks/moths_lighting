@@ -358,18 +358,13 @@ class Bar:
     def mode_bass_strobe_beat(self, fft_data):
         
         #move this into detect beat maybe?
-        # Compute energy from fft_data
-        energy = np.sum(np.abs(fft_data))
 
-        # Update energy buffer
-        self.energy_buffer[self.energy_index] = energy
-        self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
         
         self.current_step += 1
         if self.current_step >= len(self.all_colours):
             self.current_step = 0
         
-        beat_detected = self.detect_beats()
+        beat_detected = self.detect_beats(fft_data)
         print(beat_detected)
         # Use beat_detected to trigger actions
         if beat_detected:
@@ -528,7 +523,15 @@ class Bar:
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
         
-    def detect_beats(self):
+    def detect_beats(self,fft_data):
+        
+                # Compute energy from fft_data
+        energy = self.compute_bass_energy(fft_data)#np.sum(np.abs(fft_data))
+
+        # Update energy buffer
+        self.energy_buffer[self.energy_index] = energy
+        self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
+        
         # Ensure that the energy buffer is sufficiently filled
         if np.count_nonzero(self.energy_buffer) < self.energy_buffer_size:
             # Not enough data yet
@@ -559,6 +562,17 @@ class Bar:
 
         return len(recent_peaks) > 0
 
+    def compute_bass_energy(self, fft_data):
+        # Assuming fft_data corresponds to frequencies up to Nyquist frequency
+        num_bins = len(fft_data)
+        freqs = np.linspace(0, 5000, num_bins)
+
+        # Define bass frequency range
+        bass_indices = np.where((freqs >= self.bass_lower_bound) & (freqs <= self.bass_upper_bound))[0]
+
+        # Sum the magnitudes in the bass range
+        bass_energy = np.sum(np.abs(fft_data[bass_indices]))
+        return bass_energy
 
 
 
