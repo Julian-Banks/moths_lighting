@@ -393,24 +393,26 @@ class Display:
         
         #Controller 2    
         def get_num_bars_2():
-            return self.esp_configs[1]['num_bars']
+            return self.artnet_controller.esp_configs[1]['num_bars']
         def set_numbars_2(value):
-            self.esp_configs[1]['num_bars'] = value
-            self.esp_configs[1]['universe'] = max(value - 1,0)
+            self.artnet_controller.esp_configs[1]['num_bars'] = value
+            self.artnet_controller.update_config()
             #code to initalise the controller with new number of bars
         
         #Controller 3
         def get_num_bars_3():
-            return self.esp_configs[2]['num_bars']
+            return self.artnet_controller.esp_configs[2]['num_bars']
         def set_numbars_3(value):
-            self.esp_configs[2]['num_bars'] = value
+            self.artnet_controller.esp_configs[2]['num_bars'] = value
+            self.artnet_controller.update_config()
             #code to initalise the controller with new number of bars
         
         #Controller 4
         def get_num_bars_4():
-            return self.esp_configs[3]['num_bars']
+            return self.artnet_controller.esp_configs[3]['num_bars']
         def set_numbars_4(value):
-            self.esp_configs[3]['num_bars'] = value
+            self.artnet_controller.esp_configs[3]['num_bars'] = value
+            self.artnet_controller.update_config()
             #code to initalise the controller with new number of bars
         
         # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
