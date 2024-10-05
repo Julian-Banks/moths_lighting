@@ -108,7 +108,6 @@ class Bar:
         
         #Pulse settings
         self.global_magnitude_max = 0 
-        self.previous_magnitude = 0 
         self.decay_factor = 0.999
         
         #Sine mode settings
@@ -250,7 +249,6 @@ class Bar:
 
         # Call the current mode's update method
         self.mode_manager.auto_cycle_modes[self.state].mode_func(fft_data)
-
             
     def mode_display_colour(self):
         colour =(self.colour.red, self.colour.green, self.colour.blue)
@@ -311,26 +309,22 @@ class Bar:
         # Get the current color
         colour = self.all_colours[self.current_step]
         colour = tuple(int(c * self.brightness) for c in colour)
+            
+        beat = self.compute_bass_magnitude(fft_data) > self.bass_threshold
         
-        # If current magnitude is less than the previous magnitude, apply the fade
-        if energy < self.previous_magnitude:
-            self.fade_out()  # Apply fade to the LEDs
-        else:
+        if beat:
             self.fade_out_count = 0  # Reset the fade out count to allow further fading
-        
-        # Create a byte array for the LEDs that will light up based on the current magnitude
-        # This array will maintain the faded LEDs and increase the brightness of the relevant ones
-        updated_pixels = bytearray(self.pixels)  # Start with the current LED state
-        
-        # Update only the LEDs that are supposed to be on based on current magnitude
-        for i in range(num_leds_on):
-            updated_pixels[i*3:i*3+3] = colour  # Increase the brightness of the correct LEDs
-        
-        # Set the updated pixel array
-        self.pixels = updated_pixels
-        
-        # Store the current magnitude for comparison in the next cycle
-        self.previous_magnitude = energy
+            # Create a byte array for the LEDs that will light up based on the current magnitude
+            # This array will maintain the faded LEDs and increase the brightness of the relevant ones
+            updated_pixels = bytearray(self.pixels)  # Start with the current LED state
+            # Update only the LEDs that are supposed to be on based on current magnitude
+            # Set the updated pixel array
+            self.pixels = updated_pixels
+            
+            for i in range(num_leds_on):
+                updated_pixels[i*3:i*3+3] = colour  # Increase the brightness of the correct LEDs
+            else:
+                self.fade_out()  # Apply fade to the LEDs
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
@@ -365,7 +359,7 @@ class Bar:
         if self.current_step >= len(self.all_colours):
             self.current_step = 0
         
-        beat_detected = self.compute_bass_magnitude() > self.bass_threshold
+        beat_detected = self.compute_bass_magnitude(fft_data) > self.bass_threshold
         # Use beat_detected to trigger actions
         if beat_detected:
             color = self.all_colours[self.current_step]
