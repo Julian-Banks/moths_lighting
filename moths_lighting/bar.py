@@ -431,7 +431,22 @@ class Bar:
 
     def mode_swirl(self, fft_data):
         # Update time for animation
-        self.time += 0.005  # Adjust the increment to control the speed of the swirl
+        
+        if not hasattr(self, 'time'):
+            self.time = 0
+            
+        # Compute the overall magnitude from fft_data
+        magnitude = self.compute_bass_magnitude(fft_data)
+        # Increment time to animate the wave
+        this_time_change = 0
+        if magnitude > self.bass_threshold:
+            this_time_change =  min(self.last_time_change*5, 0.09)
+        else:
+            this_time_change += max(0.003 , self.last_time_change * 0.95)
+        
+        self.time += this_time_change
+        self.last_time_change = this_time_change
+        
 
         # Detect beats and update colour accordingly
         if self.detect_beats(fft_data):
