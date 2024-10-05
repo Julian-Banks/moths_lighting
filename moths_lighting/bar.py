@@ -526,7 +526,7 @@ class Bar:
     def detect_beats(self,fft_data):
         
                 # Compute energy from fft_data
-        energy = self.compute_bass_energy(fft_data)#np.sum(np.abs(fft_data))
+        energy = np.sum(np.abs(fft_data))
 
         # Update energy buffer
         self.energy_buffer[self.energy_index] = energy
@@ -554,26 +554,13 @@ class Bar:
             normalized_energy,
             prominence=self.bass_threshold,      # Adjust prominence as needed
             height=0,            # Peaks must be higher than 0
-            distance=10          # Minimum number of samples between peaks
+            distance=20          # Minimum number of samples between peaks
         )
 
         recent_window_start = len(normalized_energy) - 5  # Start of the last 5 readings
         recent_peaks = [p for p in peaks if p >= recent_window_start]
 
         return len(recent_peaks) > 0
-
-    def compute_bass_energy(self, fft_data):
-        # Assuming fft_data corresponds to frequencies up to Nyquist frequency
-        num_bins = len(fft_data)
-        freqs = np.linspace(0, 5000, num_bins)
-
-        # Define bass frequency range
-        bass_indices = np.where((freqs >= self.bass_lower_bound) & (freqs <= self.bass_upper_bound))[0]
-
-        # Sum the magnitudes in the bass range
-        bass_energy = np.sum(np.abs(fft_data[bass_indices]))
-        return bass_energy
-
 
 
     
