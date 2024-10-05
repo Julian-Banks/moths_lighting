@@ -385,10 +385,10 @@ class Display:
         #CONFIGURE CONTROLLERS
         #Controller 1
         def get_num_bars_1():
-            return self.esp_configs[0]['num_bars']
+            return self.artnet_controller.esp_configs[0]['num_bars']
         def set_numbars_1(value):
-            self.esp_configs[0]['num_bars'] = value
-            self.artnet_controller.update_config(self.esp_configs)
+            self.artnet_controller.esp_configs[0]['num_bars'] = value
+            self.artnet_controller.update_config()
             #code to initalise the controller with new number of bars
         
         #Controller 2    

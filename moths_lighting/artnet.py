@@ -1,6 +1,8 @@
 import time
 import numpy as np
 from stupidArtnet import StupidArtnet
+import yaml
+import os
 from artnet_manager import ArtnetManager
 from bar import Bar
 import queue
@@ -19,9 +21,11 @@ class ArtnetController:
         self.device_bars_map = {}
         self.artnet_devices = []
         self.num_leds = 144
-        for config in self.esp_configs:
+        self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
+        config = self.get_esp_config() ###THIS IS WHERE I NEED UPDATE SELF.ESP_CONFIGS AFTER FIRST RUN
+        for config in self.esp_configs: 
             target_ip = config['target_ip']
-            universe = config['universe']
+            #universe = config['universe']
             num_bars = config.get('num_bars', 1)
             packet_size = num_bars * self.num_leds * 3
             fps = config.get('fps', 40)
@@ -32,9 +36,37 @@ class ArtnetController:
             bars = [Bar(self.colour_manager,self.num_leds) for _ in range(num_bars)]
             
             self.device_bars_map[artnet_device] = bars
+            
+    def get_esp_config(self):
+        with open(self.esp_config_file, 'r') as file:
+            return yaml.safe_load(file)
+        
+        
+    def update_esp_config(self):
+        target_file = self.esp_config_file
+        to_print = self.dictify_esp_config()
+        current_directory = os.getcwd()
+        print(f"Current working directory: {current_directory}")
+        if os.path.exists(target_file):
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+            print(f"Config updated: {target_file}")
+        else:
+            print(f"File does not exist: {target_file}")
+            print("creating file")
+            os.makedirs(os.path.dirname(target_file), exist_ok=True)
+            with open(target_file, 'w') as file:
+                yaml.dump(to_print, file)
+    
+    def dictify_esp_config(self):
+        esp_config_list = []
+        for config in self.esp_configs:
+            esp_config_list.append({'target_ip': config['target_ip'], 'fps': config['fps'], 'num_bars': config['num_bars']})
+        return esp_config_list
 
-    def update_config(self, esp_configs):
-        self.esp_configs = esp_configs
+    def update_config(self):
+        #self.esp_configs = esp_configs
+        self.update_esp_config()
         with self.lock:
             #first clear the bars. Should definitely write a function in Bar's to do this. 
             for artnet_device in self.artnet_devices:
