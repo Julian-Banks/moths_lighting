@@ -436,7 +436,7 @@ class Bar:
             self.time = 0
             
         # Compute the overall magnitude from fft_data
-        beat = self.detect_beats(fft_data)
+        beat = (self.compute_bass_magnitude(fft_data) > self.bass_threshold)
         # Increment time to animate the wave
         this_time_change = 0
         
