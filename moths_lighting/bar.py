@@ -363,8 +363,8 @@ class Bar:
         
         beat_detected = self.compute_bass_magnitude(fft_data) > self.bass_threshold
         # Use beat_detected to trigger actions
-        if beat_detected and (self.debounce_time - time.time() > self.bass_debounce):
-            self.debounce_time = time.time()
+        if beat_detected and (time.time() - self.bass_debounce_time > self.bass_debounce):
+            self.bass_debounce_time = time.time()
             color = self.all_colours[self.current_step]
             brightened_color = tuple(int(c * self.brightness) for c in color)
             self.pixels = bytearray(brightened_color * self.num_leds)
