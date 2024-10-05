@@ -288,22 +288,22 @@ class Bar:
         self.pixels = bytearray(pixels)
 
     def mode_pulse(self, fft_data):
-        # Simple pulsing effect
-        magnitude = self.compute_fft_magnitude(fft_data)
         
+        # Simple pulsing effect
+        energy = self. compute_fft_energy(fft_data)
         # Increment current_step and reset if it exceeds the length of all_colours
         self.current_step += 1
         if self.current_step >= len(self.all_colours):
             self.current_step = 0
 
         # Determine maximum magnitude (apply decay if needed)
-        if magnitude > self.global_magnitude_max:
-            self.global_magnitude_max = magnitude
+        if energy > self.global_magnitude_max:
+            self.global_magnitude_max = energy
         else:
             self.global_magnitude_max *= self.decay_factor
 
         # Calculate the brightness level as a ratio of the current magnitude to the max magnitude
-        level = magnitude / self.global_magnitude_max
+        level = energy / self.global_magnitude_max
         
         # Number of LEDs that should be lit based on the level
         num_leds_on = int(level * self.num_leds)
@@ -313,8 +313,9 @@ class Bar:
         colour = tuple(int(c * self.brightness) for c in colour)
         
         # If current magnitude is less than the previous magnitude, apply the fade
-        if magnitude < self.previous_magnitude:
+        if energy < self.previous_magnitude:
             self.fade_out()  # Apply fade to the LEDs
+        else:
             self.fade_out_count = 0  # Reset the fade out count to allow further fading
         
         # Create a byte array for the LEDs that will light up based on the current magnitude
@@ -329,7 +330,7 @@ class Bar:
         self.pixels = updated_pixels
         
         # Store the current magnitude for comparison in the next cycle
-        self.previous_magnitude = magnitude
+        self.previous_magnitude = energy
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
@@ -483,7 +484,6 @@ class Bar:
         duration = end_time - start_time
         #print(f"Mode Duration: {duration:.4f}s")
 
-
     def fade_out(self):
         # Only continue fading if the counter is below the threshold
         fade_out_threshold = (5/self.fade)
@@ -523,14 +523,8 @@ class Bar:
                 self.current_step = 0
         
     def detect_beats(self,fft_data):
-        
-                # Compute energy from fft_data
-        energy = np.sum(np.abs(fft_data))
 
-        # Update energy buffer
-        self.energy_buffer[self.energy_index] = energy
-        self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
-        
+        self.compute_fft_energy(fft_data)
         # Ensure that the energy buffer is sufficiently filled
         if np.count_nonzero(self.energy_buffer) < self.energy_buffer_size:
             # Not enough data yet
@@ -561,6 +555,14 @@ class Bar:
 
         return len(recent_peaks) > 0
 
+    def compute_fft_energy(self,fft_data):
+        # Compute energy from fft_data
+        energy = np.sum(np.abs(fft_data))
+
+        # Update energy buffer
+        self.energy_buffer[self.energy_index] = energy
+        self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
+        return energy
 
     
     def compute_bass_magnitude(self, fft_data):
