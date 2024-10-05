@@ -12,10 +12,10 @@ class ArtnetController:
         self.device_bars_map = {}
         self.artnet_devices = []
         self.colour_manager = colour_manager
-        self.fps = esp_configs[0].get('fps', 40)
-        self.esp_configs = esp_configs
+        
         self.lock = threading.Lock()
         self.initialize_devices()
+        self.fps = self.esp_configs[0].get('fps', 40)
 
     def initialize_devices(self):
         self.device_bars_map = {}
@@ -23,6 +23,7 @@ class ArtnetController:
         self.num_leds = 144
         self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
         self.esp_configs = self.get_esp_config() ###THIS IS WHERE I NEED UPDATE SELF.ESP_CONFIGS AFTER FIRST RUN
+        
         for config in self.esp_configs: 
             target_ip = config['target_ip']
             #universe = config['universe']
