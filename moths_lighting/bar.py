@@ -379,6 +379,8 @@ class Bar:
       
             # Reset fading when strobe is active
             self.fade_out_count = 0
+        else:
+            self.fade_out()
             
             
     def mode_bass_mid_strobe(self, fft_data):
