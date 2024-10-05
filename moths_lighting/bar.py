@@ -549,7 +549,7 @@ class Bar:
         # Adjust parameters for find_peaks
         peaks, properties = find_peaks(
             normalized_energy,
-            prominence=0.5,      # Adjust prominence as needed
+            prominence=self.bass_threshold,      # Adjust prominence as needed
             height=0,            # Peaks must be higher than 0
             distance=10          # Minimum number of samples between peaks
         )
