@@ -410,15 +410,19 @@ class Bar:
 
             brightened_color = tuple(int(c * self.brightness) for c in color)
             
-            #for a length of 30 LEDs, somewhere random on the bars
+            sine_wave = np.sin(np.linspace(0, np.pi, self.length_mid_strobe))  # Creates half a sine wave over 30 steps
+
+            # Random starting point for the strobe
             max_value = (self.num_pixels - self.length_mid_strobe * 3) // 3
             strobe_idx = np.random.randint(0, max_value + 1) * 3
+
+            # Apply sine wave for soft edge effect
+            for i in range(strobe_idx, strobe_idx + self.length_mid_strobe * 3, 3):
+                sine_factor = sine_wave[(i - strobe_idx) // 3]  # Scales brightness based on sine wave
+                self.pixels[i] = int(brightened_color[0] * sine_factor)
+                self.pixels[i+1] = int(brightened_color[1] * sine_factor)
+                self.pixels[i+2] = int(brightened_color[2] * sine_factor)
             
-            for i in range(strobe_idx,strobe_idx+self.length_mid_strobe*3,3):
-                self.pixels[i] = brightened_color[0]
-                self.pixels[i+1] = brightened_color[1]
-                self.pixels[i+2] = brightened_color[2]
-                
             # Reset fading when strobe is active
             self.fade_out_count = 0
         else:
