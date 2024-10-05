@@ -16,3 +16,7 @@
 - audio_reactive: true
   auto_cycle: false
   name: Sine Wave
+- audio_reactive: true
+  auto_cycle: false
+  name: Swirl
+
