@@ -302,7 +302,7 @@ class Bar:
         num_leds_on = int(level * self.num_leds)
         colour = self.all_colours[self.current_step]
         #create a byte array that has colour for level*num_led and zeros for the rest up to num_leds
-        self.pixels = bytearray(colour * (level*num_leds_on))
+        self.pixels = bytearray(colour * (num_leds_on))
         self.pixels.extend(bytearray([0] * (3*(self.num_leds - num_leds_on))))
         #Get current colour
         
