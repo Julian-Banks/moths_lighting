@@ -370,7 +370,7 @@ class Bar:
             self.current_step = 0
         
         beat_detected = self.detect_beats()
-
+        print(beat_detected)
         # Use beat_detected to trigger actions
         if beat_detected:
             color = self.all_colours[self.current_step]
@@ -545,7 +545,7 @@ class Bar:
 
         # Use find_peaks with suitable parameters
         peaks, _ = find_peaks(normalized_energy, prominence=0.5)  # Adjust 'prominence' as needed
-        print(peaks)
+        #print(peaks)
         # The last sample is at index -1
         last_index = len(normalized_energy) - 1
 
