@@ -444,7 +444,7 @@ class Bar:
             this_time_change =  min(self.last_time_change*2, 0.08)
             self.current_step = (self.current_step + 100) % len(self.all_colours)
         else:
-            this_time_change += max(0.003 , self.last_time_change * 0.96)
+            this_time_change += max(0.003 , self.last_time_change * 0.94)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
