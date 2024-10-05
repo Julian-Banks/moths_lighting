@@ -323,8 +323,8 @@ class Bar:
             
             for i in range(num_leds_on):
                 updated_pixels[i*3:i*3+3] = colour  # Increase the brightness of the correct LEDs
-            else:
-                self.fade_out()  # Apply fade to the LEDs
+        else:
+            self.fade_out()  # Apply fade to the LEDs
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
