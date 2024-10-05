@@ -446,7 +446,7 @@ class Bar:
         for i in range(self.num_leds):
             # Calculate the brightness for this pixel
             position = i / self.num_leds
-            wave = math.sin(2 * math.pi * (position * 2 + self.time)) * math.cos(2 * math.pi * (position * 3 - self.time))
+            wave = math.sin(math.pi * (position * 2 + self.time)) * math.cos(math.pi * (position * 3 - self.time))
 
             # Normalize the wave value to be between 0 and 1
             brightness = (wave + 1) / 2
