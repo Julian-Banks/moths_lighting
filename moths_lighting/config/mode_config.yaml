@@ -3,7 +3,7 @@
   name: Static
 - audio_reactive: true
   auto_cycle: false
-  name: Wave
+  name: Beat Detector
 - audio_reactive: true
   auto_cycle: false
   name: Pulse

@@ -201,7 +201,7 @@ class Bar:
     def get_mode_func(self, mode_name):
         mode_funcs = {
             "Static": self.mode_static,
-            "Wave": self.mode_bass_strobe_beat,
+            "Beat Detector": self.mode_bass_strobe_beat,
             "Pulse": self.mode_pulse,
             "Bass Strobe": self.mode_bass_strobe,
             "Bass & Mid Strobe": self.mode_bass_mid_strobe,
