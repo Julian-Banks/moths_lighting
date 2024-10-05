@@ -117,7 +117,7 @@ class Bar:
         self.last_time_change = 0.005
         
         #beat decection settings
-        self.energy_buffer_size = 100  # Adjust the buffer size based on your frame rate and desired window
+        self.energy_buffer_size = 200  # Adjust the buffer size based on your frame rate and desired window
         self.energy_buffer = np.zeros(self.energy_buffer_size)
         self.energy_index = 0  # Index to keep track of where to insert the next energy value
 
@@ -529,10 +529,9 @@ class Bar:
                 self.current_step = 0
         
     def detect_beats(self):
-        # Ensure that the energy buffer is sufficiently filled before detecting beats
+        # Ensure that the energy buffer is sufficiently filled
         if np.count_nonzero(self.energy_buffer) < self.energy_buffer_size:
             # Not enough data yet
-            print('Not enough data')
             return False
 
         # Reorder the energy buffer so that the oldest sample is at index 0
@@ -540,16 +539,29 @@ class Bar:
             (self.energy_buffer[self.energy_index:], self.energy_buffer[:self.energy_index])
         )
 
+        # Apply a smoothing filter to reduce noise (optional but can help)
+        from scipy.ndimage import uniform_filter1d
+        smoothed_energy = uniform_filter1d(reordered_buffer, size=5)
+
         # Normalize the energy buffer
-        normalized_energy = (reordered_buffer - np.mean(reordered_buffer)) / np.std(reordered_buffer)
+        normalized_energy = (smoothed_energy - np.mean(smoothed_energy)) / np.std(smoothed_energy)
 
-        # Use find_peaks with suitable parameters
-        peaks, _ = find_peaks(normalized_energy, prominence=0.5)  # Adjust 'prominence' as needed
-        #print(peaks)
-        # The last sample is at index -1
-        last_index = len(normalized_energy) - 1
+        # Adjust parameters for find_peaks
+        peaks, properties = find_peaks(
+            normalized_energy,
+            prominence=0.5,      # Adjust prominence as needed
+            height=0,            # Peaks must be higher than 0
+            distance=10          # Minimum number of samples between peaks
+        )
 
-        return last_index in peaks
+        recent_window_start = len(normalized_energy) - 5  # Start of the last 5 readings
+        recent_peaks = [p for p in peaks if p >= recent_window_start]
+
+        return len(recent_peaks) > 0
+
+
+
+
     
     def compute_bass_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
