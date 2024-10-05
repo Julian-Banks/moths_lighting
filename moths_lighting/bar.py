@@ -226,7 +226,8 @@ class Bar:
     
     def get_mode(self):
         if self.auto_cycle:
-            auto_cycle_idx = self.mode_manager.auto_cycle_modes[self.state].name
+            if self.state < len(self.mode_manager.auto_cycle_modes):
+                auto_cycle_idx = self.mode_manager.auto_cycle_modes[self.state].name
             #find the idx of the mode in all modes
             idx = [mode.name for mode in self.mode_manager.get_all_modes()].index(auto_cycle_idx)
             return idx
