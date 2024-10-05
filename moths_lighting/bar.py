@@ -205,11 +205,10 @@ class Bar:
             "Pulse": self.mode_pulse,
             "Bass Strobe": self.mode_bass_strobe,
             "Bass & Mid Strobe": self.mode_bass_mid_strobe,
-            "Sine Wave" :self.mode_sine_wave
+            "Sine Wave" :self.mode_sine_wave,
+            "Swirl": self.mode_swirl
         }
         return mode_funcs.get(mode_name)
-
-        
 
     def update(self, fft_data):
         with self.lock:    
@@ -428,6 +427,33 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.sine_fade_out()      
+
+    def mode_swirl(self, fft_data):
+        # Update time for animation
+        self.time += 0.05  # Adjust the increment to control the speed of the swirl
+
+        # Detect beats and update colour accordingly
+        if self.detect_beats(fft_data):
+            self.current_step = (self.current_step + 100) % len(self.all_colours)
+
+        # Get the current color
+        color = self.all_colours[self.current_step]
+        brightened_color = tuple(int(c * self.brightness) for c in color)
+
+        # Create the swirling pattern
+        pixels = bytearray()
+        for i in range(self.num_leds):
+            # Calculate the brightness for this pixel
+            position = i / self.num_leds
+            wave = math.sin(2 * math.pi * (position * 5 + self.time)) * math.cos(2 * math.pi * (position * 3 - self.time))
+
+            # Normalize the wave value to be between 0 and 1
+            brightness = (wave + 1) / 2
+            brightened_color = tuple(int(c * brightness) for c in brightened_color)
+            # Decide whether to turn the pixel on or off to have about half of the pixels on
+            pixels.extend(brightened_color)
+            
+        self.pixels = pixels
 
             
     def mode_sine_wave(self, fft_data):
