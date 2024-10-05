@@ -105,6 +105,11 @@ class Bar:
         self.debounce_time = time.time()
         self.bass_debounce_time = time.time()
         
+        #Pulse settings
+        self.global_magnitude_max = 0 
+        self.previous_magnitude = 0 
+        self.decay_factor = 0.999
+        
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
         self.sine_frequency = 4  # Base frequency of the sine wave
@@ -279,10 +284,32 @@ class Bar:
 
     def mode_pulse(self, fft_data):
         # Simple pulsing effect
-        level = np.mean(np.abs(fft_data))
-        level = level / np.max([level, 1e-6])
-        color = (int(255 * level), 0, int(255 * (1 - level)))
-        self.pixels = bytearray(color * self.num_leds)
+        magnitude = self.compute_fft_magnitude(fft_data)
+        
+        # Increment current_step and reset if it exceeds the length of all_colours
+        self.current_step += 1
+        if self.current_step >= len(self.all_colours):
+            self.current_step = 0
+        
+        if magnitude > self.global_magnitude_max:
+            self.global_magnitude_max = magnitude
+        else:
+            self.global_magnitude_max *= self.decay_factor
+        
+        level = magnitude / self.global_magnitude_max
+        
+        #need to add some sort of fade if the current mag is less than the previous one. 
+        
+        colour = self.all_colours[self.current_step]
+        #create a byte array that has colour for level*num_led and zeros for the rest up to num_leds
+        self.pixels = bytearray(colour * (level*self.num_leds))
+        self.pixels.extend(bytearray([0] * (self.num_leds - level*self.num_leds)))
+        #Get current colour
+        
+        
+      
+        
+        
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
@@ -470,6 +497,16 @@ class Bar:
             bass_magnitude = np.mean(fft_data[bass_indices])
             
         return bass_magnitude
+    
+    def compute_fft_magnitude(self, fft_data):
+
+        # Compute the  bass trigger magnitude
+        if self.trigger_style == "max":
+            magnitude = np.max(fft_data)
+        elif self.trigger_style == "mean":
+            magnitude = np.mean(fft_data)
+            
+        return magnitude
     
     def compute_mid_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
