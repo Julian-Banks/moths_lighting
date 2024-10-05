@@ -74,7 +74,7 @@ class AudioProcessor:
         
         # Apply the decay to the global max magnitude
         self.global_max_mag *= self.decay_factor
-        self.global_max_mag = max(self.global_max_mag, 0.7)
+        self.global_max_mag = max(self.global_max_mag, 1)
         #get the current max
         current_max = np.max(fft_data)
         #update max if neccessary
