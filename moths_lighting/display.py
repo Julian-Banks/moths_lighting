@@ -387,8 +387,8 @@ class Display:
         def get_fps():
             return self.artnet_controller.esp_configs[0]['fps']
         def set_fps(value):
-            for esp in self.artnet_controller.esp_configs:
-                self.artnet_controller.esp_configs[esp]['fps'] = value
+            for i,esp in enumerate(self.artnet_controller.esp_configs):
+                self.artnet_controller.esp_configs[i]['fps'] = value
             self.artnet_controller.update_config()
         #Controller 1
         def get_num_bars_1():
