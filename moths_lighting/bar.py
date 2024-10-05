@@ -201,7 +201,7 @@ class Bar:
     def get_mode_func(self, mode_name):
         mode_funcs = {
             "Static": self.mode_static,
-            "Beat Detector": self.mode_bass_strobe_beat,
+            "Bass Strobe 1": self.mode_bass_strobe_1,
             "Pulse": self.mode_pulse,
             "Bass Strobe": self.mode_bass_strobe,
             "Bass & Mid Strobe": self.mode_bass_mid_strobe,
@@ -356,7 +356,7 @@ class Bar:
             # If not strobing, apply fading effect
             self.fade_out()
             
-    def mode_bass_strobe_beat(self, fft_data):
+    def mode_bass_strobe_1(self, fft_data):
         
         #move this into detect beat maybe?
 
@@ -365,7 +365,7 @@ class Bar:
         if self.current_step >= len(self.all_colours):
             self.current_step = 0
         
-        beat_detected = self.detect_beats(fft_data)
+        beat_detected = self.compute_bass_magnitude() > self.bass_threshold
         # Use beat_detected to trigger actions
         if beat_detected:
             color = self.all_colours[self.current_step]
@@ -527,6 +527,7 @@ class Bar:
             # Normalize the sine value to a brightness level between 0 and 1
             brightness = (value * amplitude + amplitude) / (2 * amplitude)
 
+            brightness = brightness ** 2  # Square to bias towards dimmer pixels
             # Apply brightness to the base color
             pixel_color = tuple(int(c * brightness) for c in brightened_color)
 
