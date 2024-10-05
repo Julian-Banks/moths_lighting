@@ -228,8 +228,10 @@ class Bar:
             if self.state < len(self.mode_manager.auto_cycle_modes):
                 auto_cycle_idx = self.mode_manager.auto_cycle_modes[self.state].name
             #find the idx of the mode in all modes
-            idx = [mode.name for mode in self.mode_manager.get_all_modes()].index(auto_cycle_idx)
-            return idx
+                idx = [mode.name for mode in self.mode_manager.get_all_modes()].index(auto_cycle_idx)
+                return idx
+            else: 
+                return self.state
         else:
             return self.state
 
