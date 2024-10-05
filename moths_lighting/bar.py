@@ -450,9 +450,15 @@ class Bar:
 
             # Normalize the wave value to be between 0 and 1
             brightness = (wave + 1) / 2
-            brightened_color = tuple(int(c * brightness) for c in brightened_color)
+            #brightened_color = tuple(int(c * brightness) for c in brightened_color)
             # Decide whether to turn the pixel on or off to have about half of the pixels on
-            pixels.extend(brightened_color)
+            #pixels.extend(brightened_color)
+            
+                    # Decide whether to turn the pixel on or off to have about half of the pixels on
+            if brightness > 0.5:
+                pixels.extend(brightened_color)
+            else:
+                pixels.extend((0, 0, 0))
             
         self.pixels = pixels
 
