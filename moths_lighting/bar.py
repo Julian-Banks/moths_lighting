@@ -420,7 +420,7 @@ class Bar:
             # Apply the strobe effect (turn on all LEDs)
             # Use the current step color when not in strobe mode
             color = self.all_colours[self.current_step]
-            brightened_color = tuple(int(c * self.brightness) for c in color)
+            brightened_color = tuple(int(c * self.brightness*0.5) for c in color)
             self.pixels = bytearray(brightened_color * self.num_leds)
       
             # Reset fading when strobe is active
