@@ -117,7 +117,7 @@ class Bar:
         self.last_time_change = 0.005
         
         #beat decection settings
-        self.energy_buffer_size = 200  # Adjust the buffer size based on your frame rate and desired window
+        self.energy_buffer_size = 100  # Adjust the buffer size based on your frame rate and desired window
         self.energy_buffer = np.zeros(self.energy_buffer_size)
         self.energy_index = 0  # Index to keep track of where to insert the next energy value
 
