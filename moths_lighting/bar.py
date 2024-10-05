@@ -310,7 +310,7 @@ class Bar:
         colour = self.all_colours[self.current_step]
         colour = tuple(int(c * self.brightness) for c in colour)
             
-        beat = self.compute_bass_magnitude(fft_data) > (self.bass_threshold *0.5)
+        beat = self.compute_fft_magnitude(fft_data) > (self.bass_threshold *0.5)
         
         if beat:
             self.fade_out_count = 0  # Reset the fade out count to allow further fading
