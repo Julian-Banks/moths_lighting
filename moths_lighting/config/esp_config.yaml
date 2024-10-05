@@ -1,6 +1,11 @@
 - fps: 40
+<<<<<<< HEAD
   num_bars: 5
   target_ip: 198.168.182.81
+=======
+  num_bars: 2
+  target_ip: 255.255.255.255
+>>>>>>> 586914c (config_update)
 - fps: 40
   num_bars: 0
   target_ip: 192.168.1.102
