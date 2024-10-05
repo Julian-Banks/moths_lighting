@@ -532,6 +532,7 @@ class Bar:
         # Ensure that the energy buffer is sufficiently filled before detecting beats
         if np.count_nonzero(self.energy_buffer) < self.energy_buffer_size:
             # Not enough data yet
+            print('Not enough data')
             return False
 
         # Reorder the energy buffer so that the oldest sample is at index 0
@@ -543,7 +544,7 @@ class Bar:
         normalized_energy = (reordered_buffer - np.mean(reordered_buffer)) / np.std(reordered_buffer)
 
         # Use find_peaks with suitable parameters
-        peaks, _ = find_peaks(normalized_energy, prominence=1)  # Adjust 'prominence' as needed
+        peaks, _ = find_peaks(normalized_energy, prominence=0.5)  # Adjust 'prominence' as needed
 
         # The last sample is at index -1
         last_index = len(normalized_energy) - 1
