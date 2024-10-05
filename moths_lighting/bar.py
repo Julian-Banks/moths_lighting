@@ -439,25 +439,35 @@ class Bar:
 
         # Get the current color
         color = self.all_colours[self.current_step]
-        brightened_color = tuple(int(c * self.brightness) for c in color)
 
         # Create the swirling pattern
         pixels = bytearray()
         for i in range(self.num_leds):
             # Calculate the brightness for this pixel
             position = i / self.num_leds
-            wave = math.sin(math.pi * (position * 5 + self.time)) * math.cos(math.pi * (position * 6 - self.time)) + math.sin(math.pi * (position  + self.time)) * math.cos(math.pi * (position * 2 - self.time))
+            wave = (
+                    math.sin(2 * math.pi * (position * 7 + self.time * 1.2)) +
+                    math.sin(2 * math.pi * (position * 13 - self.time * 0.7)) +
+                    math.sin(2 * math.pi * (position * 17 + self.time * 0.5))
+                )
 
             # Normalize the wave value to be between 0 and 1
-            brightness = (wave + 2) / 4
-            
-                    # Decide whether to turn the pixel on or off to have about half of the pixels on
-            new_pixels = tuple(int(c*brightness) for c in brightened_color)
-            pixels.extend(new_pixels)
-            #if brightness > 0.5:
-            #    pixels.extend(brightened_color*brightness)
-            #else:
-            #    pixels.extend((0, 0, 0))
+            brightness = (wave + 3) / 6  # Sum of three sine waves, total range -3 to +3
+
+            # Bias brightness towards lower values
+            brightness = brightness ** 2  # Square to bias towards dimmer pixels
+
+            # Adjust overall brightness
+            brightness *= self.brightness  # Adjust as needed
+
+            # Ensure brightness is between 0 and 1
+            brightness = min(max(brightness, 0), 1)
+
+            # Calculate the pixel color
+            pixel_color = tuple(int(c * brightness) for c in color)
+
+            # Append the color to the pixels array
+            pixels.extend(pixel_color)
             
         self.pixels = pixels
 
