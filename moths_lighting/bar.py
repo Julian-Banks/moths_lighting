@@ -365,7 +365,6 @@ class Bar:
             self.current_step = 0
         
         beat_detected = self.detect_beats(fft_data)
-        print(beat_detected)
         # Use beat_detected to trigger actions
         if beat_detected:
             color = self.all_colours[self.current_step]
