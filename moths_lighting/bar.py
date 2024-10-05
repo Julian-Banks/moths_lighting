@@ -282,29 +282,48 @@ class Bar:
             pixels.extend([int(c * self.brightness) for c in color])
         self.pixels = bytearray(pixels)
 
-    def mode_pulse(self, fft_data):
-        # Simple pulsing effect
-        magnitude = self.compute_fft_magnitude(fft_data)
-        
-        # Increment current_step and reset if it exceeds the length of all_colours
-        self.current_step += 1
-        if self.current_step >= len(self.all_colours):
-            self.current_step = 0
-        
-        if magnitude > self.global_magnitude_max:
-            self.global_magnitude_max = magnitude
-        else:
-            self.global_magnitude_max *= self.decay_factor
-        
-        level = magnitude / self.global_magnitude_max
-        
-        #need to add some sort of fade if the current mag is less than the previous one. 
-        num_leds_on = int(level * self.num_leds)
-        colour = self.all_colours[self.current_step]
-        #create a byte array that has colour for level*num_led and zeros for the rest up to num_leds
-        self.pixels = bytearray(colour * (num_leds_on))
-        self.pixels.extend(bytearray([0] * (3*(self.num_leds - num_leds_on))))
-        #Get current colour
+def mode_pulse(self, fft_data):
+    # Simple pulsing effect
+    magnitude = self.compute_fft_magnitude(fft_data)
+    
+    # Increment current_step and reset if it exceeds the length of all_colours
+    self.current_step += 1
+    if self.current_step >= len(self.all_colours):
+        self.current_step = 0
+
+    # Determine maximum magnitude (apply decay if needed)
+    if magnitude > self.global_magnitude_max:
+        self.global_magnitude_max = magnitude
+    else:
+        self.global_magnitude_max *= self.decay_factor
+
+    # Calculate the brightness level as a ratio of the current magnitude to the max magnitude
+    level = magnitude / self.global_magnitude_max
+    
+    # Number of LEDs that should be lit based on the level
+    num_leds_on = int(level * self.num_leds)
+    
+    # Get the current color
+    colour = self.all_colours[self.current_step]
+    
+    # If current magnitude is less than the previous magnitude, apply the fade
+    if magnitude < self.previous_magnitude:
+        self.fade()  # Apply fade to the LEDs
+    
+    # Create a byte array for the LEDs that will light up based on the current magnitude
+    # This array will maintain the faded LEDs and increase the brightness of the relevant ones
+    updated_pixels = bytearray(self.pixels)  # Start with the current LED state
+    
+    # Update only the LEDs that are supposed to be on based on current magnitude
+    for i in range(num_leds_on):
+        updated_pixels[i*3:i*3+3] = colour  # Increase the brightness of the correct LEDs
+    
+    # Set the updated pixel array
+    self.pixels = updated_pixels
+    
+    # Store the current magnitude for comparison in the next cycle
+    self.previous_magnitude = magnitude
+
         
         
       
