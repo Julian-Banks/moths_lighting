@@ -431,7 +431,7 @@ class Bar:
 
     def mode_swirl(self, fft_data):
         # Update time for animation
-        self.time += 0.05  # Adjust the increment to control the speed of the swirl
+        self.time += 0.001  # Adjust the increment to control the speed of the swirl
 
         # Detect beats and update colour accordingly
         if self.detect_beats(fft_data):
