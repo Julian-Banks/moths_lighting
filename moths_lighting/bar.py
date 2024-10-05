@@ -4,6 +4,7 @@ import time
 import yaml
 import os 
 import math
+from scipy.signal import find_peaks
 
 class mode:
     def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
@@ -115,6 +116,11 @@ class Bar:
         self.sine_frequency = 4  # Base frequency of the sine wave
         self.last_time_change = 0.005
         
+        #beat decection settings
+        self.energy_buffer_size = 100  # Adjust the buffer size based on your frame rate and desired window
+        self.energy_buffer = np.zeros(self.energy_buffer_size)
+        self.energy_index = 0  # Index to keep track of where to insert the next energy value
+
         #colours 
         self.colour = colour_manager.get_colour_list()[0]
         self.colour_manager = colour_manager
@@ -195,7 +201,7 @@ class Bar:
     def get_mode_func(self, mode_name):
         mode_funcs = {
             "Static": self.mode_static,
-            "Wave": self.mode_wave,
+            "Wave": self.mode_bass_strobe_beat,
             "Pulse": self.mode_pulse,
             "Bass Strobe": self.mode_bass_strobe,
             "Bass & Mid Strobe": self.mode_bass_mid_strobe,
@@ -206,7 +212,7 @@ class Bar:
         
 
     def update(self, fft_data):
-        with self.lock:
+        with self.lock:    
             # Call the current mode's update method
             if self.state == "static":
                 self.mode_display_colour()
@@ -218,7 +224,6 @@ class Bar:
                 else: 
                     print(f'Mode {self.state} not found')
                     
-    #Github copilot where are you? 
     
     def get_mode(self):
         if self.auto_cycle:
@@ -305,6 +310,7 @@ class Bar:
         
         # Get the current color
         colour = self.all_colours[self.current_step]
+        colour = tuple(int(c * self.brightness) for c in colour)
         
         # If current magnitude is less than the previous magnitude, apply the fade
         if magnitude < self.previous_magnitude:
@@ -324,12 +330,6 @@ class Bar:
         
         # Store the current magnitude for comparison in the next cycle
         self.previous_magnitude = magnitude
-
-        
-        
-      
-        
-        
         
     def mode_bass_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
@@ -354,6 +354,32 @@ class Bar:
         else:
             # If not strobing, apply fading effect
             self.fade_out()
+            
+    def mode_bass_strobe_beat(self, fft_data):
+        
+        #move this into detect beat maybe?
+        # Compute energy from fft_data
+        energy = np.sum(np.abs(fft_data))
+
+        # Update energy buffer
+        self.energy_buffer[self.energy_index] = energy
+        self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
+        
+        self.current_step += 1
+        if self.current_step >= len(self.all_colours):
+            self.current_step = 0
+        
+        beat_detected = self.detect_beats()
+
+        # Use beat_detected to trigger actions
+        if beat_detected:
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+      
+            # Reset fading when strobe is active
+            self.fade_out_count = 0
+            
             
     def mode_bass_mid_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
@@ -500,6 +526,28 @@ class Bar:
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
         
+    def detect_beats(self):
+        # Ensure that the energy buffer is sufficiently filled before detecting beats
+        if np.count_nonzero(self.energy_buffer) < self.energy_buffer_size:
+            # Not enough data yet
+            return False
+
+        # Reorder the energy buffer so that the oldest sample is at index 0
+        reordered_buffer = np.concatenate(
+            (self.energy_buffer[self.energy_index:], self.energy_buffer[:self.energy_index])
+        )
+
+        # Normalize the energy buffer
+        normalized_energy = (reordered_buffer - np.mean(reordered_buffer)) / np.std(reordered_buffer)
+
+        # Use find_peaks with suitable parameters
+        peaks, _ = find_peaks(normalized_energy, prominence=1)  # Adjust 'prominence' as needed
+
+        # The last sample is at index -1
+        last_index = len(normalized_energy) - 1
+
+        return last_index in peaks
+    
     def compute_bass_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
         # Extract indices corresponding to bass frequencies (20-200 Hz)
