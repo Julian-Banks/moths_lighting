@@ -431,7 +431,7 @@ class Bar:
 
     def mode_swirl(self, fft_data):
         # Update time for animation
-        self.time += 0.001  # Adjust the increment to control the speed of the swirl
+        self.time += 0.005  # Adjust the increment to control the speed of the swirl
 
         # Detect beats and update colour accordingly
         if self.detect_beats(fft_data):
@@ -446,7 +446,7 @@ class Bar:
         for i in range(self.num_leds):
             # Calculate the brightness for this pixel
             position = i / self.num_leds
-            wave = math.sin(2 * math.pi * (position * 5 + self.time)) * math.cos(2 * math.pi * (position * 3 - self.time))
+            wave = math.sin(2 * math.pi * (position * 2 + self.time)) * math.cos(2 * math.pi * (position * 3 - self.time))
 
             # Normalize the wave value to be between 0 and 1
             brightness = (wave + 1) / 2
@@ -455,10 +455,11 @@ class Bar:
             #pixels.extend(brightened_color)
             
                     # Decide whether to turn the pixel on or off to have about half of the pixels on
-            if brightness > 0.5:
-                pixels.extend(brightened_color)
-            else:
-                pixels.extend((0, 0, 0))
+            pixels.extend(brightened_color*brightness)
+            #if brightness > 0.5:
+            #    pixels.extend(brightened_color*brightness)
+            #else:
+            #    pixels.extend((0, 0, 0))
             
         self.pixels = pixels
 
