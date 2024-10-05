@@ -383,6 +383,13 @@ class Display:
 
             
         #CONFIGURE CONTROLLERS
+        #FPS
+        def get_fps():
+            return self.artnet_controller.esp_configs[0]['fps']
+        def set_fps(value):
+            for esp in self.artnet_controller.esp_configs:
+                self.artnet_controller.esp_config[esp]['fps'] = value
+            self.artnet_controller.update_config()
         #Controller 1
         def get_num_bars_1():
             return self.artnet_controller.esp_configs[0]['num_bars']
@@ -463,6 +470,7 @@ class Display:
 
         # Configure Controllers Menu
         configure_controllers_menu = Menu("Configure Controllers", items=[
+            AdjustableMenuItem("FPS", get_fps, set_fps, min_value=20, max_value=60, step=1),
             AdjustableMenuItem("ESP One", get_num_bars_1, set_numbars_1, min_value=0, max_value=5, step=1),
             AdjustableMenuItem("ESP Two", get_num_bars_2, set_numbars_2, min_value=0, max_value=5, step=1),
             AdjustableMenuItem("ESP Three", get_num_bars_3, set_numbars_3, min_value=0, max_value=5, step=1),
