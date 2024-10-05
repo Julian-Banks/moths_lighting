@@ -24,14 +24,14 @@ fft_fps_queue = Queue()
 audio_sensitivity = 1  # Initial audio sensitivity
 
 # ESP32 configurations
-esp_configs = [
+'''esp_configs = [
     {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 40, 'num_bars': 1},
     {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 60, 'num_bars': 0},
     {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
     {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
-]
+]'''
 
-FPS_target = esp_configs[0].get('fps', 40)
+#FPS_target = esp_configs[0].get('fps', 40)
 
 def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
@@ -56,7 +56,7 @@ def artnet_thread(artnet_controller, led_queue):
         loop_durations.append(loop_duration)
         
         computation_time = iteration_end_time - iteration_start_time
-        sleep_time = max(1/FPS_target - computation_time, 0)
+        sleep_time = max(1/artnet_controller.esp_configs[0]['fps'] - computation_time, 0)
         time.sleep(sleep_time)
         
         send_count += 1
