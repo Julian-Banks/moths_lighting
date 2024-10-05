@@ -8,7 +8,7 @@ from bar import Bar
 import queue
 import threading
 class ArtnetController:
-    def __init__(self, esp_configs, colour_manager):
+    def __init__(self, colour_manager):
         self.device_bars_map = {}
         self.artnet_devices = []
         self.colour_manager = colour_manager

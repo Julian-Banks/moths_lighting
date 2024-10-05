@@ -118,13 +118,13 @@ def main():
     audio_thread_instance.start()
 
     print('Initializing Artnet Controller...')
-    artnet_controller = ArtnetController(esp_configs=esp_configs,colour_manager=colour_manager)
+    artnet_controller = ArtnetController(colour_manager=colour_manager)
     artnet_thread_instance = threading.Thread(target=artnet_thread, args=(artnet_controller, led_queue))
     artnet_thread_instance.start()
 
     print('Initializing Display and Encoder...')
     global display
-    display = Display(audio_processor, artnet_controller, esp_configs, colour_manager,
+    display = Display(audio_processor, artnet_controller, colour_manager,
                       artnet_fps_queue, fft_fps_queue, fft_queue)
     encoder = Encoder(pin_A=22, pin_B=27, pin_button=17,
                       callback=on_position_change,

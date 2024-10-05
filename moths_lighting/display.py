@@ -126,7 +126,7 @@ class MenuManager:
                 
 
 class Display:
-    def __init__(self, audio_processor, artnet_controller, esp_configs,colour_manager,
+    def __init__(self, audio_processor, artnet_controller,colour_manager,
                  artnet_fps_queue, fft_fps_queue, fft_queue):
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
@@ -140,7 +140,6 @@ class Display:
         self.audio_processor = audio_processor
         self.artnet_controller = artnet_controller
         self.colour_manager = colour_manager
-        self.esp_configs = esp_configs
         self.artnet_fps_queue = artnet_fps_queue
         self.fft_fps_queue = fft_fps_queue
         self.fft_queue = fft_queue  # FFT data queue
