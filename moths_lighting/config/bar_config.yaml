@@ -1,4 +1,4 @@
-auto_cycle: 0
+auto_cycle: 1
 bass_debounce: 1.3877787807814457e-17
 bass_lower_bound: 30
 bass_threshold: 0.4
