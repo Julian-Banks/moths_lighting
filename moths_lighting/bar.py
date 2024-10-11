@@ -318,7 +318,7 @@ class Bar:
         beat = self.compute_fft_magnitude(fft_data) > (self.bass_threshold *0.5)
         
         if beat:
-            self.fade_out_count = 0  # Reset the fade out count to allow further fading
+            self.fade_out_count = int(self.fade_out_threshold/10)  # Reset the fade out count to allow further fading
             # Create a byte array for the LEDs that will light up based on the current magnitude
             # This array will maintain the faded LEDs and increase the brightness of the relevant ones
             updated_pixels = bytearray(self.pixels)  # Start with the current LED state
@@ -443,7 +443,7 @@ class Bar:
         
         if beat:
             this_time_change =  min(self.last_time_change*2, 0.06)
-            self.current_step = (self.current_step + 100) % len(self.all_colours)
+            self.current_step = (self.current_step + 10) % len(self.all_colours)
         else:
             this_time_change += max(0.003 , self.last_time_change * 0.95)
         
