@@ -442,7 +442,7 @@ class Bar:
         this_time_change = 0
         
         if beat:
-            this_time_change =  min(self.last_time_change*2, 0.02)
+            this_time_change =  min(self.last_time_change*2, 0.03)
             self.current_step = (self.current_step + 50) % len(self.all_colours)
         else:
             this_time_change += max(0.003 , self.last_time_change * 0.95)
