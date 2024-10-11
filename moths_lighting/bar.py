@@ -442,7 +442,7 @@ class Bar:
         this_time_change = 0
         
         if beat:
-            this_time_change =  min(self.last_time_change*2, 0.07)
+            this_time_change =  min(self.last_time_change*2, 0.06)
             self.current_step = (self.current_step + 100) % len(self.all_colours)
         else:
             this_time_change += max(0.003 , self.last_time_change * 0.95)
@@ -499,7 +499,7 @@ class Bar:
         if magnitude > self.bass_threshold:
             this_time_change =  min(self.last_time_change*3, 0.09)
         else:
-            this_time_change += max(0.003 , self.last_time_change * 0.95)
+            this_time_change += max(0.003 , self.last_time_change * 0.97)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
