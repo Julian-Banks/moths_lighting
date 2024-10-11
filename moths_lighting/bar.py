@@ -328,6 +328,7 @@ class Bar:
             
             for i in range(num_leds_on):
                 updated_pixels[i*3:i*3+3] = colour  # Increase the brightness of the correct LEDs
+            self.fade_out()
         else:
             self.fade_out()  # Apply fade to the LEDs
         
@@ -441,10 +442,10 @@ class Bar:
         this_time_change = 0
         
         if beat:
-            this_time_change =  min(self.last_time_change*2, 0.08)
+            this_time_change =  min(self.last_time_change*2, 0.07)
             self.current_step = (self.current_step + 100) % len(self.all_colours)
         else:
-            this_time_change += max(0.003 , self.last_time_change * 0.94)
+            this_time_change += max(0.003 , self.last_time_change * 0.95)
         
         self.time += this_time_change
         self.last_time_change = this_time_change
@@ -496,7 +497,7 @@ class Bar:
         # Increment time to animate the wave
         this_time_change = 0
         if magnitude > self.bass_threshold:
-            this_time_change =  min(self.last_time_change*10, 0.09)
+            this_time_change =  min(self.last_time_change*3, 0.09)
         else:
             this_time_change += max(0.003 , self.last_time_change * 0.95)
         
