@@ -324,7 +324,7 @@ class Display:
         
         def set_auto_cycle(value):
             self.artnet_controller.set_auto_cycle(value)
-            print(f'in display, setting auto cycle to {value}')
+            #print(f'in display, setting auto cycle to {value}')
             
                 
         
