@@ -217,6 +217,7 @@ class ArtnetController:
                 auto_cycle.append(bar.auto_cycle)
         return auto_cycle[0]
     def set_auto_cycle(self, auto_cycle):
+        print(f'in artnet controller set_auto_cycle: {auto_cycle}')
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:

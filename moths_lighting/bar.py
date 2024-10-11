@@ -21,6 +21,7 @@ class mode_manager:
         self.auto_cycle_modes = []
         self.get_mode_func = get_mode_func
         self.set_mode_config()
+        self.generate_auto_cycle_modes()
         
     
     def add_mode(self,mode):
@@ -212,6 +213,8 @@ class Bar:
     def update(self, fft_data):
         with self.lock:    
             # Call the current mode's update method
+            print(f"in bar, auto cycle: {self.auto_cycle}")
+            print(f"in bar, len(self.mode_manager.auto_cycle_modes): {len(self.mode_manager.auto_cycle_modes)}")
             if self.state == "static":
                 self.mode_display_colour()
             elif self.auto_cycle and (len(self.mode_manager.auto_cycle_modes) > 0):
