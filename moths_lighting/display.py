@@ -16,14 +16,14 @@ class MenuItem:
         self.submenu = submenu  # Submenu if any
 
 class AdjustableMenuItem(MenuItem): 
-    def __init__(self, name, get_value_func, set_value_func, min_value, max_value, step, option1 = None, checkbox = False):
+    def __init__(self, name, get_value_func, set_value_func, min_value=0, max_value=1, step=1, option1 = None, checkbox = False):
         super().__init__(name,option1 = option1)
         self.get_value = get_value_func
         self.set_value = set_value_func
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
-        if checkbox == True:
+        if checkbox == True: #this is pretty pointless logic, but i'm putting it here so I can remember to add a cooler & better checkbox functionality
             self.min_value = 0
             self.max_value = 1
             self.step = 1
