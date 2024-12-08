@@ -16,7 +16,7 @@ class MenuItem:
         self.submenu = submenu  # Submenu if any
 
 class AdjustableMenuItem(MenuItem): 
-    def __init__(self, name, get_value_func, set_value_func, min_value, max_value, step, option1, checkbox = False):
+    def __init__(self, name, get_value_func, set_value_func, min_value, max_value, step, option1 = None, checkbox = False):
         super().__init__(name,option1 = option1)
         self.get_value = get_value_func
         self.set_value = set_value_func
