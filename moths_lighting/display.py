@@ -608,7 +608,7 @@ class Display:
                     actual_idx = menu.scroll_offset + idx
                     prefix = "-> " if actual_idx == menu.position else "   "
                     if isinstance(item, AdjustableMenuItem):
-                        value = item.get_value()
+                        value = item.get_value(item.option1) if item.option1 else item.get_value()
                         if isinstance(value, float):
                             value_str = f"{round(value, 2)}"
                         else:
