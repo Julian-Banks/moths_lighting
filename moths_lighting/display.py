@@ -520,10 +520,10 @@ class Display:
         ])
         
         esp_select_menu = Menu("Controller Select", items = [
-            AdjustableMenuItem("Edit Controller 1", set_controller_select, get_controller_select, checkbox = True ,option1= 0),
-            AdjustableMenuItem("Edit Controller 2", set_controller_select, get_controller_select,  checkbox = True,option1 = 1),
-            AdjustableMenuItem("Controller 3", set_controller_select, get_controller_select,  checkbox = True,option1 = 2),
-            AdjustableMenuItem("Controller 4", set_controller_select, get_controller_select, checkbox = True,option1 = 3),
+            AdjustableMenuItem("Edit Controller 1", get_controller_select,  set_controller_select, checkbox = True ,option1= 0),
+            AdjustableMenuItem("Edit Controller 2", get_controller_select, set_controller_select,  checkbox = True,option1 = 1),
+            AdjustableMenuItem("Controller 3", get_controller_select, set_controller_select,  checkbox = True,option1 = 2),
+            AdjustableMenuItem("Controller 4", get_controller_select, set_controller_select, checkbox = True,option1 = 3),
             MenuItem('Continue...', submenu = options_menu)
         ])
         # Main Menu
