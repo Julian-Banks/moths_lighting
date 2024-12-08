@@ -17,7 +17,7 @@ class MenuItem:
 
 class AdjustableMenuItem(MenuItem): 
     def __init__(self, name, get_value_func, set_value_func, min_value=0, max_value=1, step=1, option1 = None, checkbox = False):
-        super().__init__(name,option1)
+        super().__init__(name = name ,option1 = option1)
         self.get_value = get_value_func
         self.set_value = set_value_func
         self.min_value = min_value
