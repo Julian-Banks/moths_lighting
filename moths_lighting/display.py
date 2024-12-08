@@ -583,7 +583,7 @@ class Display:
             
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
-            if self.menu_manager.adjusting and self.menu_manager.current_adjustable_ite and not(self.menu_manager.current_adjustable_item.checkbox):
+            if self.menu_manager.adjusting and self.menu_manager.current_adjustable_item and not(self.menu_manager.current_adjustable_item.checkbox):
                 # Adjusting screen 
                 #should add a boolean display here as well. 
                 item = self.menu_manager.current_adjustable_item
