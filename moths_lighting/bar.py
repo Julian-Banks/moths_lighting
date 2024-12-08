@@ -113,7 +113,7 @@ class Bar:
         
         #Sine mode settings
         self.time = 0              # Initialize time for the animation
-        self.sine_frequency = 4  # Base frequency of the sine wave
+        self.sine_frequency = 4  #frequency of the sine wave
         self.last_time_change = 0.005
         
         #beat decection settings
@@ -605,6 +605,9 @@ class Bar:
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0
         
+##### I need to figure out what I'm actually using here. Currently these calculations are being repeated which I dont like.
+##### Once I know what I'm using I can do the calculations once in the ArtnetController class and pass the values to the bar class.        
+
     def detect_beats(self,fft_data):
 
         self.compute_fft_energy(fft_data)
@@ -647,7 +650,6 @@ class Bar:
         self.energy_index = (self.energy_index + 1) % self.energy_buffer_size
         return energy
 
-    
     def compute_bass_magnitude(self, fft_data):
         # Assuming fft_data contains magnitudes for frequencies up to 5000 Hz
         # Extract indices corresponding to bass frequencies (20-200 Hz)
@@ -667,13 +669,11 @@ class Bar:
         return bass_magnitude
     
     def compute_fft_magnitude(self, fft_data):
-
         # Compute the  bass trigger magnitude
         if self.trigger_style == "max":
             magnitude = np.max(fft_data)
         elif self.trigger_style == "mean":
             magnitude = np.mean(fft_data)
-            
         return magnitude
     
     def compute_mid_magnitude(self, fft_data):
@@ -701,8 +701,9 @@ class Bar:
         b = 0
         return (r, g, b)
 
+
+### Get and set Functions ###
     def get_pixels(self):
-    #helper functions with modes
         with self.lock:
             return self.pixels
 
@@ -721,17 +722,12 @@ class Bar:
         return self.time_per_mode
 
     ##Helper functions with colours
+    ### Update colours fetchs the RGB values from the colour manager and then Creates the list of all colours to cycle through
     def update_colours(self):
         self.colours = self.colour_manager.get_colour_list()
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
     
-    def interpolate_colour(self, colour1, colour2, steps):
-        # This function will take two colours and return a list of colours that are interpolated between the two colours
-        # The resulting colors are converted to integers
-        colour1 = (colour1.red, colour1.green, colour1.blue)
-        colour2 = (colour2.red, colour2.green, colour2.blue)
-        return [list(map(int, (1 - t) * np.array(colour1) + t * np.array(colour2))) for t in np.linspace(0, 1, steps)]
-
+    ### Update colours then calls cycle colours to create the list of all colours to cycle through
     def cycle_colours(self, colours, steps_per_transition):
         """Cycle through a list of RGB colors smoothly with integer values."""
         all_colors = []
@@ -740,4 +736,11 @@ class Bar:
             color2 = colours[(i + 1) % len(colours)]  # Wrap to the first color after the last
             all_colors.extend(self.interpolate_colour(color1, color2, steps_per_transition))
         return all_colors
- 
+    
+    #Cycle colours calls interpolate colour to create the list of colours inbetween for each colour pair. 
+    def interpolate_colour(self, colour1, colour2, steps):
+        # This function will take two colours and return a list of colours that are interpolated between the two colours
+        # The resulting colors are converted to integers
+        colour1 = (colour1.red, colour1.green, colour1.blue)
+        colour2 = (colour2.red, colour2.green, colour2.blue)
+        return [list(map(int, (1 - t) * np.array(colour1) + t * np.array(colour2))) for t in np.linspace(0, 1, steps)]

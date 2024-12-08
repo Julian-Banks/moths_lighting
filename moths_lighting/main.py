@@ -14,30 +14,17 @@ from colour_manager import ColourManager
 
 
 # Queues for inter-thread communication
-fft_queue = Queue()
-led_queue = Queue()
-artnet_fps_queue = Queue()
-fft_fps_queue = Queue()
+fft_queue = Queue()  #this queue is for fft_mag data and is used by the display to process and show information to the user
+led_queue = Queue()  # this queue is the same fft_mag data but it is used by artnet controller to update led strips 
+artnet_fps_queue = Queue() #this queue is used to store how many frames of Artnet are being sent per second.
+fft_fps_queue = Queue()   #this queue is used to store how many frames of FFT are being processed per second.
 
-# Global variables
-
-audio_sensitivity = 1  # Initial audio sensitivity
-
-# ESP32 configurations
-'''esp_configs = [
-    {'target_ip': '255.255.255.255', 'universe': 0, 'fps': 40, 'num_bars': 1},
-    {'target_ip': '192.168.1.102', 'universe': 0, 'fps': 60, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
-    {'target_ip': '192.168.1.103', 'universe': 0, 'fps': 60, 'num_bars': 0},
-]'''
-
-#FPS_target = esp_configs[0].get('fps', 40)
 
 def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
     send_count = 0
     start_time = time.time()
-    loop_durations = deque(maxlen=1000)  # Adjust maxlen as needed
+    loop_durations = deque(maxlen=1000)  
     
     while not stop_flag.is_set():
         iteration_start_time = time.time()
@@ -113,7 +100,7 @@ def main():
     colour_manager = ColourManager()
     
     print('Initializing Audio Processor...')
-    audio_processor = AudioProcessor(fft_queue, led_queue, audio_sensitivity)
+    audio_processor = AudioProcessor(fft_queue=fft_queue, led_queue=led_queue)
     audio_thread_instance = threading.Thread(target=audio_thread, args=(audio_processor,))
     audio_thread_instance.start()
 

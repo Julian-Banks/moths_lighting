@@ -6,7 +6,7 @@ from scipy.signal import butter, lfilter
 from scipy.signal import find_peaks
 
 class AudioProcessor:
-    def __init__(self, fft_queue, led_queue, audio_sensitivity):
+    def __init__(self, fft_queue, led_queue, audio_sensitivity=1):
         self.format = pyaudio.paInt16
         self.channels = 1
         self.rate = 44100  # Increased sample rate

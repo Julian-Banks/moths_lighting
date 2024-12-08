@@ -1,18 +1,18 @@
 import time
 import numpy as np
-from stupidArtnet import StupidArtnet
 import yaml
 import os
 from artnet_manager import ArtnetManager
 from bar import Bar
 import queue
 import threading
+
 class ArtnetController:
     def __init__(self, colour_manager):
         self.device_bars_map = {}
         self.artnet_devices = []
         self.colour_manager = colour_manager
-        
+        self.num_leds = 144      #Need to update to 96 for the new strips
         self.lock = threading.Lock()
         self.initialize_devices()
         self.fps = self.esp_configs[0].get('fps', 40)
@@ -20,9 +20,8 @@ class ArtnetController:
     def initialize_devices(self):
         self.device_bars_map = {}
         self.artnet_devices = []
-        self.num_leds = 144
         self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
-        self.esp_configs = self.get_esp_config() ###THIS IS WHERE I NEED UPDATE SELF.ESP_CONFIGS AFTER FIRST RUN
+        self.esp_configs = self.get_esp_config() 
         
         for config in self.esp_configs: 
             target_ip = config['target_ip']
@@ -34,8 +33,8 @@ class ArtnetController:
             artnet_device = ArtnetManager(target_ip, packet_size, fps)
             # Add the new Artnet device to the list
             self.artnet_devices.append(artnet_device)
+            # Create new bars for the Artnet device
             bars = [Bar(self.colour_manager,self.num_leds) for _ in range(num_bars)]
-            
             self.device_bars_map[artnet_device] = bars
             
     def get_esp_config(self):
@@ -68,8 +67,14 @@ class ArtnetController:
     def update_config(self):
         #self.esp_configs = esp_configs
         self.update_esp_config()
+        #first clear the bars. Need to do this because the number of bars may have decreased and then the extra bars which are not recieving data would stay on. 
+        self.clear_all()
+        #then reinitialize the devices      
+        self.initialize_devices()
+    
+    
+    def clear_all(self):
         with self.lock:
-            #first clear the bars. Should definitely write a function in Bar's to do this. 
             for artnet_device in self.artnet_devices:
                 packet = bytearray(artnet_device.packet_size)
                 bars = self.device_bars_map[artnet_device]
@@ -79,8 +84,7 @@ class ArtnetController:
                     packet[offset:offset + len(pixels)] = pixels
                     offset += len(pixels)
                     artnet_device.send(packet)
-            #then reinitialize the devices      
-            self.initialize_devices()
+        
     
     def change_mode(self,mode = 0):
         for artnet_device in self.artnet_devices:

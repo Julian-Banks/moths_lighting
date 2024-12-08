@@ -115,15 +115,10 @@ class MenuManager:
             
 
     def go_back(self):
-                # Go back to previous menu
+        # Go back to previous menu
         if len(self.menu_stack) > 1:
             self.menu_stack.pop()
-            #print(f"current menu name: {self.menu_stack[-1].name}")
-            #if self.menu_stack[-1].regenerate is not None: 
-            #    print("redrawing edit colours")
-            #    submenu = self.menu_stack[-1].regenerate()    #regenerate the menu
-            #    self.menu_stack[-1] = submenu          #display it. 
-                
+
 
 class Display:
     def __init__(self, audio_processor, artnet_controller,colour_manager,
@@ -156,6 +151,7 @@ class Display:
         self.green = 0
         self.blue = 100
         self.updated_colour_idx = 0
+        
         # Initialize MenuManager
         self.showing_fft = False
         self.menu_manager = MenuManager(self.create_menu_structure())
