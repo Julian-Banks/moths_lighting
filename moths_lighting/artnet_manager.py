@@ -45,6 +45,7 @@ class ArtnetManager:
             artnet_instance.send(data[start:end]) 
             
             #Man I worked this out but i have forgotten my logic and need to understand it better. 
+            # Okay so there definitely is a bug, the pixels overlap between universes. I think an easy fix may just be to set the number of pixels per universe to 510 instead of 512. Not gonna mess with it now cause I have other more important things to try. 
             
             #Eg.
             #Data len is 1332. 
