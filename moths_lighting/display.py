@@ -15,14 +15,28 @@ class MenuItem:
         self.action = action  # Function to call when selected
         self.submenu = submenu  # Submenu if any
 
-class AdjustableMenuItem(MenuItem):
-    def __init__(self, name, get_value_func, set_value_func, min_value, max_value, step):
-        super().__init__(name)
+class AdjustableMenuItem(MenuItem): 
+    def __init__(self, name, get_value_func, set_value_func, min_value, max_value, step, option1, checkbox = False):
+        super().__init__(name,option1 = option1)
         self.get_value = get_value_func
         self.set_value = set_value_func
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
+        if checkbox == True:
+            self.min_value = 0
+            self.max_value = 1
+            self.step = 1
+        
+class AdjustableOptionItem(MenuItem): # Should look into this more. Understand how to use different super and sub classes. idea to solve some yucky UI vibes. Create another AdjustableOptionItems(MenuItem) which allows you cycle through a 'picklist' rather than numbers.
+    def __init__(self, name, get_value_func, set_value_func, values):
+        super().__init__(name)
+        self.get_value = get_value_func
+        self.set_value = set_value_func
+        self.min_value = 0
+        self.max_value = len(values) #the idea behind this is still integrate with existing adjustable item logic.
+        self.values = values
+        self.step = 1
         
 class DynamicMenuItem(MenuItem):
     def __init__(self, name, submenu_func):
@@ -50,17 +64,32 @@ class MenuManager:
 
     def on_position_change(self, delta):
         if self.adjusting and self.current_adjustable_item:
-            # Adjust the value
-            current_value = self.current_adjustable_item.get_value()
-            new_value = current_value + delta * self.current_adjustable_item.step
-            #Code to wrap the value if it goes above or below the min and max values
-            if new_value > self.current_adjustable_item.max_value:
-                new_value = self.current_adjustable_item.min_value
-            elif new_value < self.current_adjustable_item.min_value:
-                new_value = self.current_adjustable_item.max_value
-            #Code to clamp the value if it goes above or below the min and max values
-            new_value = max(self.current_adjustable_item.min_value, min(self.current_adjustable_item.max_value, new_value))
-            self.current_adjustable_item.set_value(new_value)
+            if self.current_adjustable_item.option1 != None: 
+                option1 = self.current_adjustable_item.option1
+                # Adjust the value
+                current_value = self.current_adjustable_item.get_value(option1)
+                new_value = current_value + delta * self.current_adjustable_item.step
+                #Code to wrap the value if it goes above or below the min and max values
+                if new_value > self.current_adjustable_item.max_value:
+                    new_value = self.current_adjustable_item.min_value
+                elif new_value < self.current_adjustable_item.min_value:
+                    new_value = self.current_adjustable_item.max_value
+                #Code to clamp the value if it goes above or below the min and max values
+                new_value = max(self.current_adjustable_item.min_value, min(self.current_adjustable_item.max_value, new_value))
+                self.current_adjustable_item.set_value(new_value,option1)
+            else: 
+                # Adjust the value
+                current_value = self.current_adjustable_item.get_value()
+                new_value = current_value + delta * self.current_adjustable_item.step
+                #Code to wrap the value if it goes above or below the min and max values
+                if new_value > self.current_adjustable_item.max_value:
+                    new_value = self.current_adjustable_item.min_value
+                elif new_value < self.current_adjustable_item.min_value:
+                    new_value = self.current_adjustable_item.max_value
+                #Code to clamp the value if it goes above or below the min and max values
+                new_value = max(self.current_adjustable_item.min_value, min(self.current_adjustable_item.max_value, new_value))
+                self.current_adjustable_item.set_value(new_value)
+            
         else:
             # Move the menu selection
             menu = self.current_menu
@@ -152,6 +181,9 @@ class Display:
         self.blue = 100
         self.updated_colour_idx = 0
         
+        #JUST FOR TESTING!!
+        self.controller_select = [0,1,0,1]
+        
         # Initialize MenuManager
         self.showing_fft = False
         self.menu_manager = MenuManager(self.create_menu_structure())
@@ -201,8 +233,6 @@ class Display:
             return self.artnet_controller.get_time_per_colour()
         def set_time_per_colour(value):
             self.artnet_controller.set_time_per_colour(value)
-
-        
         
         #Need to add Colour Picker
         #here comes the cavalery. IDK how much longer this file can get...
@@ -297,9 +327,7 @@ class Display:
                     items.append(MenuItem(mode.name, action = self.artnet_controller.change_mode, option1 = idx))
             items.append(MenuItem("Back"))
             return Menu("Select Mode", items = items, regenerate_func=select_mode,position = self.menu_manager.current_menu.position,scroll_offset=self.menu_manager.current_menu.scroll_offset)
-        
-
-        
+              
         def select_auto_cycle_modes():
             items = []
             for idx, mode in enumerate(self.artnet_controller.get_all_modes()):
@@ -316,14 +344,10 @@ class Display:
         def get_auto_cycle():
             return self.artnet_controller.get_auto_cycle()
        
-            
-        
         def set_auto_cycle(value):
             self.artnet_controller.set_auto_cycle(value)
             #print(f'in display, setting auto cycle to {value}')
             
-                
-        
         #CONFIGURE AUDIO OPTIONS
         #Trigger Style
         def get_trigger_style():
@@ -376,8 +400,6 @@ class Display:
         def set_audio_sensitivity(value):
             self.audio_processor.set_sensitivity(value)
             
-
-            
         #CONFIGURE CONTROLLERS
         #FPS
         def get_fps():
@@ -418,13 +440,20 @@ class Display:
             self.artnet_controller.update_config()
             #code to initalise the controller with new number of bars
         
+        
+        ##Controller Select
+        def set_controller_select(value, controller_num):
+            print(f"Seting controller {controller_num} to {value}")
+            self.controller_select[controller_num] = value
+            
+        def get_controller_select(controller_num):
+            return self.controller_select[controller_num]
+        
+        
         # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
         #Shows the fft_stats
         def show_fft_stats():
             self.show_fft_display()
- 
-
-
 
         #CONFIGURE MENU STRUCTURE
         # Lighting Options Menu
@@ -438,7 +467,6 @@ class Display:
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
             MenuItem("Back")
         ])
-
 
         add_colour_menu = Menu("Select Colour to Add", items=[
         AdjustableMenuItem("Red", get_red,set_red, min_value=0, max_value=255, step=5),
@@ -485,7 +513,7 @@ class Display:
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
-            MenuItem("Modes Manager", submenu=mode_menu),
+            MenuItem("Mode Manager", submenu=mode_menu),
             MenuItem("Controller Config.", submenu=configure_controllers_menu),
             
             MenuItem("Back")
@@ -494,8 +522,16 @@ class Display:
         # Main Menu
         main_menu = Menu("Main Screen", items=[
             MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
-            MenuItem("Options", submenu=options_menu),
+            MenuItem("Edit Config", submenu=esp_select_menu),
             # Add other main menu items...
+        ])
+        
+        esp_select_menu = Menu("Controller Select", items = [
+            AdjustableMenuItem("Edit Controller 1", set_controller_select, get_controller_select, checkbox = True ,option1= 0),
+            AdjustableMenuItem("Edit Controller 2", set_controller_select, get_controller_select,  checkbox = True,option1 = 1),
+            AdjustableMenuItem("Controller 3", set_controller_select, get_controller_select,  checkbox = True,option1 = 2),
+            AdjustableMenuItem("Controller 4", set_controller_select, get_controller_select, checkbox = True,option1 = 3),
+            MenuItem('Continue...', submenu = options_menu)
         ])
 
         return main_menu

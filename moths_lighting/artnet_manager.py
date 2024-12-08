@@ -40,7 +40,7 @@ class ArtnetManager:
                 start = universe * self.pixels_per_universe - universe*2
                 end = len(data) 
             
-            print('Uni',universe,'start:',start,'end:',end)
+            #print('Uni',universe,'start:',start,'end:',end)
             #print(f'Sending {end-start} pixels to universe {universe}, size is supposed to be {artnet_instance.packet_size}')
             artnet_instance.send(data[start:end]) 
             
