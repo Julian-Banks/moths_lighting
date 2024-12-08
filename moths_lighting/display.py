@@ -519,13 +519,6 @@ class Display:
             MenuItem("Back")
         ])
         
-        # Main Menu
-        main_menu = Menu("Main Screen", items=[
-            MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
-            MenuItem("Edit Config", submenu=esp_select_menu),
-            # Add other main menu items...
-        ])
-        
         esp_select_menu = Menu("Controller Select", items = [
             AdjustableMenuItem("Edit Controller 1", set_controller_select, get_controller_select, checkbox = True ,option1= 0),
             AdjustableMenuItem("Edit Controller 2", set_controller_select, get_controller_select,  checkbox = True,option1 = 1),
@@ -533,6 +526,14 @@ class Display:
             AdjustableMenuItem("Controller 4", set_controller_select, get_controller_select, checkbox = True,option1 = 3),
             MenuItem('Continue...', submenu = options_menu)
         ])
+        # Main Menu
+        main_menu = Menu("Main Screen", items=[
+            MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
+            MenuItem("Edit Config", submenu=esp_select_menu),
+            # Add other main menu items...
+        ])
+        
+
 
         return main_menu
 
