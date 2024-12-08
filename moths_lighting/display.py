@@ -609,7 +609,7 @@ class Display:
                     prefix = "-> " if actual_idx == menu.position else "   "
                     if isinstance(item, AdjustableMenuItem):
                         print(f"Item.option1 = {item.option1}")
-                        value = item.get_value(item.option1) if item.option1 else item.get_value()
+                        value = item.get_value(item.option1) if item.option1 != None else item.get_value()
                         if isinstance(value, float):
                             value_str = f"{round(value, 2)}"
                         else:
