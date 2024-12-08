@@ -17,7 +17,7 @@ class MenuItem:
 
 class AdjustableMenuItem(MenuItem): 
     def __init__(self, name, get_value_func, set_value_func, min_value=0, max_value=1, step=1, option1 = None, checkbox = False):
-        super().__init__(name,option1 = option1)
+        super().__init__(name,option1)
         self.get_value = get_value_func
         self.set_value = set_value_func
         self.min_value = min_value
@@ -608,6 +608,7 @@ class Display:
                     actual_idx = menu.scroll_offset + idx
                     prefix = "-> " if actual_idx == menu.position else "   "
                     if isinstance(item, AdjustableMenuItem):
+                        print(f"Item.option1 = {item.option1}")
                         value = item.get_value(item.option1) if item.option1 else item.get_value()
                         if isinstance(value, float):
                             value_str = f"{round(value, 2)}"
