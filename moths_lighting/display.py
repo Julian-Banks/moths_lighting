@@ -23,10 +23,9 @@ class AdjustableMenuItem(MenuItem):
         self.min_value = min_value
         self.max_value = max_value
         self.step = step
-        if checkbox == True: #this is pretty pointless logic, but i'm putting it here so I can remember to add a cooler & better checkbox functionality
-            self.min_value = 0
-            self.max_value = 1
-            self.step = 1
+        self.checkbox = checkbox #this is pretty shitty, but i'm putting it here so I can remember to add a cooler & better checkbox functionality
+        
+ 
         
 class AdjustableOptionItem(MenuItem): # Should look into this more. Understand how to use different super and sub classes. idea to solve some yucky UI vibes. Create another AdjustableOptionItems(MenuItem) which allows you cycle through a 'picklist' rather than numbers.
     def __init__(self, name, get_value_func, set_value_func, values):
@@ -584,7 +583,7 @@ class Display:
             
         with Image.new("1", (self.device.width, self.device.height)) as img:
             draw = ImageDraw.Draw(img)
-            if self.menu_manager.adjusting and self.menu_manager.current_adjustable_item:
+            if self.menu_manager.adjusting and self.menu_manager.current_adjustable_ite and not(self.menu_manager.current_adjustable_item.checkbox):
                 # Adjusting screen 
                 #should add a boolean display here as well. 
                 item = self.menu_manager.current_adjustable_item
