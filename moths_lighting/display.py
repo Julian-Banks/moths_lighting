@@ -442,7 +442,6 @@ class Display:
         
         ##Controller Select
         def set_controller_select(value, controller_num):
-            print(f"Seting controller {controller_num} to {value}")
             self.controller_select[controller_num] = value
             
         def get_controller_select(controller_num):
@@ -600,14 +599,13 @@ class Display:
                 # Header
                 draw.text((0, 0), menu.name, font=self.font, fill=255)
                 # Menu items
-                visible_items_count = 4  # Number of items that can be displayed at once
+                visible_items_count = 5  # Number of items that can be displayed at once
                 visible_items = menu.items[menu.scroll_offset:menu.scroll_offset + visible_items_count]
                 for idx, item in enumerate(visible_items):
                     y = 16 + idx * 10
                     actual_idx = menu.scroll_offset + idx
                     prefix = "-> " if actual_idx == menu.position else "   "
                     if isinstance(item, AdjustableMenuItem):
-                        print(f"Item.option1 = {item.option1}")
                         value = item.get_value(item.option1) if item.option1 != None else item.get_value()
                         if isinstance(value, float):
                             value_str = f"{round(value, 2)}"
