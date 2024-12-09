@@ -9,7 +9,6 @@ from audio import AudioProcessor
 from artnet import ArtnetController
 from display import Display
 from encoder import Encoder
-from colour_manager import ColourManager
 
 
 
@@ -96,16 +95,13 @@ def on_button_push():
 
 def main():
     
-    print('Initializing Colour Manager...')
-    colour_manager = ColourManager()
-    
     print('Initializing Audio Processor...')
     audio_processor = AudioProcessor(fft_queue=fft_queue, led_queue=led_queue)
     audio_thread_instance = threading.Thread(target=audio_thread, args=(audio_processor,))
     audio_thread_instance.start()
 
     print('Initializing Artnet Controller...')
-    artnet_controller = ArtnetController(colour_manager=colour_manager)
+    artnet_controller = ArtnetController()
     artnet_thread_instance = threading.Thread(target=artnet_thread, args=(artnet_controller, led_queue))
     artnet_thread_instance.start()
 

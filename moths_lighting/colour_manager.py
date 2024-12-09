@@ -11,39 +11,43 @@ class Colour:
         
 #A class that stores a list of colours and has functions to remove, add, get and set them.
 class ColourManager:
-    def __init__(self):
+    def __init__(self,controller_idx):
+        
+        self.controller_idx = controller_idx
         config = self.get_config()
-        print(f"in colour manager: {config}")
+        #print(f"in colour manager: {config}")
         self.colours = []
         self.target_file = 'moths_lighting/config/colour_config.yaml'
         
         for colour in config:
-            print(f"colour: {colour}")
+            #print(f"colour: {colour}")
             red, green, blue = colour
             self.colours.append(Colour(red, green, blue))
             
             
     def get_config(self):
         with open('moths_lighting/config/colour_config.yaml', 'r') as file:
-            return yaml.safe_load(file)
+            data = yaml.safe_load(file)
+        data = data[str(self.controller_idx)]
+        return data
         
         
     def add_colour(self, colour):
-        print('in add colour')
-        print(f"len: {len(self.colours)}")
+        #print('in add colour')
+        #print(f"len: {len(self.colours)}")
         self.colours.append(colour)
         self.update_config()
         
     def remove_colour(self, idx):
-        print('in remove colour')
-        print(f"idx: {idx}, len: {len(self.colours)}")
+        #print('in remove colour')
+        #print(f"idx: {idx}, len: {len(self.colours)}")
         if 0 <= idx < len(self.colours):
             self.colours.pop(idx)
             self.update_config()
             
     def update_colour(self, index, colour):
-        print('in update colour')
-        print(f"index: {index}, len: {len(self.colours)}")
+        #print('in update colour')
+        #print(f"index: {index}, len: {len(self.colours)}")
         self.colours[index] = colour
         self.update_config()
             
@@ -62,16 +66,23 @@ class ColourManager:
         to_print = self.dictify()
         current_directory = os.getcwd()
         print(f"Current working directory: {current_directory}")
+        
         if os.path.exists(target_file):
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-        else:
+            with open(target_file, 'r') as file:
+                data = yaml.safe_load(file)
+        else: 
             print(f"File does not exist: {target_file}")
             print("creating file")
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-        
+            data = {}         
+            
+        #update that specific controller's colour config
+        data[str(self.controller_idx)] = to_print
+        #Print out to the file.
+        with open(target_file, 'w') as file:    
+            yaml.dump(to_print, file)
+        print(f"Updated colour config {self.controller_idx}")
+
         
     
         

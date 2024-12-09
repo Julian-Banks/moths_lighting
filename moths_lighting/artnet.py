@@ -6,12 +6,13 @@ from artnet_manager import ArtnetManager
 from bar import Bar
 import queue
 import threading
+from colour_manager import ColourManager
+from mode_manager import ModeManager
 
 class ArtnetController:
-    def __init__(self, colour_manager):
+    def __init__(self):
         self.device_bars_map = {}
         self.artnet_devices = []
-        self.colour_manager = colour_manager
         self.num_leds = 144      #Need to update to 96 for the new strips
         self.lock = threading.Lock()
         self.initialize_devices()
@@ -29,12 +30,21 @@ class ArtnetController:
             num_bars = config.get('num_bars', 1)
             packet_size = num_bars * self.num_leds * 3
             fps = config.get('fps', 40)
+            #Each artnetManger has a property of whether it is in edit_config mode or not.
+            edit_config = config.get('edit_config', False)
             # Create new Artnet device
-            artnet_device = ArtnetManager(target_ip, packet_size, fps)
+            artnet_device = ArtnetManager(target_ip, packet_size, fps, edit_config = edit_config) 
             # Add the new Artnet device to the list
             self.artnet_devices.append(artnet_device)
+            
+            artnet_device_idx = len(self.artnet_devices) - 1
+            #Creat a colour manager for each artnet device 
+            colour_manager = ColourManager(artnet_device_idx)
+            #create a mode manager for each artnet device
+            mode_manager = ModeManager(artnet_device_idx)
+            
             # Create new bars for the Artnet device
-            bars = [Bar(self.colour_manager,self.num_leds) for _ in range(num_bars)]
+            bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
             self.device_bars_map[artnet_device] = bars
             
     def get_esp_config(self):
@@ -73,6 +83,7 @@ class ArtnetController:
         self.initialize_devices()
     
     
+    
     def clear_all(self):
         with self.lock:
             for artnet_device in self.artnet_devices:
@@ -88,40 +99,44 @@ class ArtnetController:
     
     def change_mode(self,mode = 0):
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.state = mode  # Set initial state if needed
-            if len(bars) > 0:
-                bars[0].update_config()
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.state = mode  # Set initial state if needed
+                if len(bars) > 0:
+                    bars[0].update_config()
     
     def set_display_colour(self, value, colour):
-        if value == 1:
-            for artnet_device in self.artnet_devices:
-                bars = self.device_bars_map[artnet_device]
-                for bar in bars:
-                    if bar.state != "static":
-                        bar.previous_state = bar.state
-                    bar.state = "static"
-                    bar.colour = colour
-        else:
-            for artnet_device in self.artnet_devices:
-                bars = self.device_bars_map[artnet_device]
-                for bar in bars:
-                    bar.state = bar.previous_state
+        for artnet_device in self.artnet_devices:
+            if artnet_device.edit_config:
+                if value == 1:
+                    bars = self.device_bars_map[artnet_device]
+                    for bar in bars:
+                        if bar.state != "static":
+                            bar.previous_state = bar.state
+                        bar.state = "static"
+                        bar.colour = colour
+                else:
+                    bars = self.device_bars_map[artnet_device]
+                    for bar in bars:
+                        bar.state = bar.previous_state
 
     def get_display_colour(self):
         static_colour = []
+        
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map.get(artnet_device, [])
-            for bar in bars:
-                static_colour.append(0 if bar.state != "static" else 1)
+            if artnet_device.edit_config:
+                bars = self.device_bars_map.get(artnet_device, [])
+                for bar in bars:
+                    static_colour.append(0 if bar.state != "static" else 1)
         return static_colour[0]
     
     def update_colours(self):
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.update_colours()
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.update_colours()
                 
     def end_mode(self):
         for artnet_device in self.artnet_devices:
@@ -129,6 +144,7 @@ class ArtnetController:
             for bar in bars:
                 bar.state = "off"
 
+    ################################### MAIN LOOP FUNCTION TO UPDATE BARS ####################################################################
     def update_bars(self, led_queue):
         start_time = time.time()
         fft_data = self.process_audio(led_queue)
@@ -140,10 +156,9 @@ class ArtnetController:
         end_time = time.time()
         duration = end_time - start_time
         #print(f"Update duration: {duration:.4f}s")
-
+        
     def process_audio(self, led_queue):
         fft_data_list = []
-
         # Retrieve all values from the queue
         while True:
             try:
@@ -151,7 +166,6 @@ class ArtnetController:
                 fft_data_list.append(fft_data)
             except queue.Empty:
                 break
-
         # Compute the average if the list is not empty
         if fft_data_list:
             fft_data_array = np.array(fft_data_list)
@@ -177,7 +191,8 @@ class ArtnetController:
                 print(f"packet size: {len(packet)}")
                 print(f"declared packet size: {artnet_device.packet_size}") 
         # Timing control is handled in the main loop
-        
+    
+    ########################################## END OF MAIN LOOP FUNCTIONS ################################################################
     ##GET AND SET FUNCTIONS
     #MODE OPTIONS
     #Get all modes
@@ -192,57 +207,51 @@ class ArtnetController:
     def get_current_mode(self):
         modes = []
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map.get(artnet_device, [])
-            for bar in bars:
-                modes.append(bar.get_mode())
+            if artnet_device.edit_config:
+                bars = self.device_bars_map.get(artnet_device, [])
+                for bar in bars:
+                    modes.append(bar.get_mode())
         return modes[0]
     
     def remove_auto_cycle_mode(self,idx):
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.mode_manager.remove_auto_cycle_mode(idx)
-            if len(bars) > 0:
-                bars[0].mode_manager.update_mode_config()
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.mode_manager.remove_auto_cycle_mode(idx)
+                if len(bars) > 0:
+                    bars[0].mode_manager.update_mode_config()
     
     def add_auto_cycle_mode(self,idx):
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.mode_manager.add_auto_cycle_mode(idx)
-            if len(bars) > 0:
-                bars[0].mode_manager.update_mode_config()
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.mode_manager.add_auto_cycle_mode(idx)
+                if len(bars) > 0:
+                    bars[0].mode_manager.update_mode_config()
                 
-    def get_auto_cycle(self):
-        auto_cycle = []
-        for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map.get(artnet_device, [])
-            for bar in bars:
-                auto_cycle.append(bar.auto_cycle)
-        return auto_cycle[0]
-    def set_auto_cycle(self, auto_cycle):
-       # print(f'in artnet controller set_auto_cycle: {auto_cycle}')
-        for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.auto_cycle = auto_cycle
-            if len(bars) > 0:
-                bars[0].update_config()
-            
+    
+#############################################################################
+    '''
     def get_time_per_mode(self):
         time_per_mode = []
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                time_per_mode.append(bar.time_per_mode)
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    time_per_mode.append(bar.time_per_mode)
         return time_per_mode[0]
+    
     def set_time_per_mode(self, time_per_mode):
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.time_per_mode = time_per_mode
-            if len(bars) > 0:
-                bars[0].update_config()
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.time_per_mode = time_per_mode
+                if len(bars) > 0:
+                    bars[0].update_config()
+
     
     #LIGHTING OPTIONS
     #Update brightness
@@ -261,7 +270,7 @@ class ArtnetController:
             for bar in bars:
                 brightness.append(bar.brightness)
         return brightness[0]                
-    
+
     #Updated Fade
     def set_fade(self, fade):
         for artnet_device in self.artnet_devices:
@@ -278,7 +287,7 @@ class ArtnetController:
             for bar in bars:
                 fade.append(bar.fade)
         return fade[0]
-    
+   
     #Update mid debounce
     def set_mid_debounce(self, mid_debounce):
         for artnet_device in self.artnet_devices:
@@ -309,7 +318,7 @@ class ArtnetController:
             for bar in bars:
                 bass_debounce.append(bar.bass_debounce)
         return bass_debounce[0]
-    
+    '''     
     
     #Time per colour
     def get_time_per_colour(self):
@@ -332,6 +341,7 @@ class ArtnetController:
         
     #AUDIO REACTIVITY OPTIONS
     #Trigger style
+    '''
     def set_trigger_style(self, trigger_style):
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
@@ -339,6 +349,7 @@ class ArtnetController:
                 bar.trigger_style = trigger_style
             if len(bars) > 0:
                 bars[0].update_config()
+                
     def get_trigger_style(self):
         trigger_style = []
         for artnet_device in self.artnet_devices:
@@ -346,7 +357,7 @@ class ArtnetController:
             for bar in bars:
                 trigger_style.append(bar.trigger_style)
         return trigger_style[0]
-    
+
     #Bass trigger
     def set_bass_threshold(self, base_threshold):
         for artnet_device in self.artnet_devices:
@@ -394,7 +405,7 @@ class ArtnetController:
                 bar.bass_upper_bound = bass_upper_bound
             if len(bars) > 0:
                 bars[0].update_config()
-    
+  
     #Get and set the mid threshold
     def set_mid_threshold(self, mid_threshold):
         for artnet_device in self.artnet_devices:
@@ -410,7 +421,7 @@ class ArtnetController:
             for bar in bars:
                 thresholds.append(bar.mid_threshold)
         return thresholds[0]
-    
+
     #Get and set mid lower bound
     def get_mid_lower_bound(self):
         lower_bound = []
@@ -442,3 +453,33 @@ class ArtnetController:
                 bar.mid_upper_bound = mid_upper_bound
             if len(bars) > 0:
                 bars[0].update_config()
+    '''
+#Could nearly all of the above be solved with this simple function?.....
+    def get_parameter(self, parameter):
+        parameters = []
+        for artnet_device in self.artnet_devices:
+            if artnet_device.edit_config:
+                bars = self.device_bars_map.get(artnet_device, [])
+                for bar in bars:
+                    parameters.append(getattr(bar, parameter))
+        return parameters[0]
+    
+    def set_parameter(self, parameter, value):
+        for artnet_device in self.artnet_devices:
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    setattr(bar, parameter, value)
+                if len(bars) > 0:
+                    bars[0].update_config()
+
+#########################################################################################################################################
+#All the above get and set methods are old and will need to be updated. I am going to try and do this with the least breakages possible.
+
+#First we need to be able to get and set whether artnetManagers are in edit_config mode or not.
+    def get_edit_config(self, controller_idx):
+        return self.artnet_devices[controller_idx].edit_config
+    
+    def set_edit_config(self, edit_config, controller_idx):
+        self.artnet_devices[controller_idx].edit_config = edit_config
+        

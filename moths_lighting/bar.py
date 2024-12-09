@@ -6,92 +6,10 @@ import os
 import math
 from scipy.signal import find_peaks
 
-class mode:
-    def __init__(self, name = None, audio_reactive = False, mode_func = None, auto_cycle = False):  
-        self.name = name
-        self.audio_reactive = audio_reactive
-        self.auto_cycle = auto_cycle
-        self.mode_func = mode_func
-
-class mode_manager:
-    def __init__(self, get_mode_func):
-        self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
-        self.modes = []
-        self.modes_menu = []
-        self.auto_cycle_modes = []
-        self.get_mode_func = get_mode_func
-        self.set_mode_config()
-        self.generate_auto_cycle_modes()
-        
-    
-    def add_mode(self,mode):
-        self.modes.append(mode)
-        self.modes_menu.append(mode.name)
-        
-    def generate_auto_cycle_modes(self):
-        self.auto_cycle_modes = self.get_auto_cycle_modes()
-        
-    def remove_auto_cycle_mode(self,idx):
-        if 0 <= idx < len(self.modes):
-            if self.modes[idx].auto_cycle:
-                self.modes[idx].auto_cycle = False
-        self.generate_auto_cycle_modes()
-                
-    def add_auto_cycle_mode(self,idx):
-        if 0 <= idx < len(self.modes):
-            if not self.modes[idx].auto_cycle:
-                self.modes[idx].auto_cycle = True
-        self.generate_auto_cycle_modes()
-            
-    def get_all_modes(self):
-        return self.modes
-    
-    def get_all_mode_menu(self):
-        return self.modes_menu
-    
-    def get_auto_cycle_modes(self):
-        return [mode for mode in self.modes if mode.auto_cycle]
-    def get_auto_cycle_menu(self):
-        return [mode.name for mode in self.modes if mode.auto_cycle]
-    
-    def dictify_modes(self): 
-        return [{'name': mode.name, 'audio_reactive': mode.audio_reactive, 'auto_cycle': mode.auto_cycle} for mode in self.modes]
-    
-    def update_mode_config(self):
-        target_file = self.mode_config_file
-        to_print = self.dictify_modes()
-        current_directory = os.getcwd()
-        print(f"Current working directory: {current_directory}")
-        if os.path.exists(target_file):
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-            print(f"Config updated: {target_file}")
-        else:
-            print(f"File does not exist: {target_file}")
-            print("creating file")
-            os.makedirs(os.path.dirname(target_file), exist_ok=True)
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-            
-    def set_mode_config(self): 
-        with open(self.mode_config_file, 'r') as file:
-            data = yaml.safe_load(file)
-        self.generate_mode_menu(data)
-    
-    #also want to move this into mode manager class. 
-    def generate_mode_menu(self,data):
-        for config in data:
-            name = config["name"]
-            audio_reactive = config["audio_reactive"]
-            mode_func = self.get_mode_func(name)
-            auto_cycle = config["auto_cycle"]
-            new_mode = mode(name = name, audio_reactive = audio_reactive, mode_func = mode_func, auto_cycle = auto_cycle)
-            self.add_mode(new_mode)
-        print(f'Modes added: {[mode.name for mode in self.modes]}')
 
 
 class Bar:
-    def __init__(self,colour_manager, num_leds=96):
+    def __init__(self,colour_manager, mode_manager,controller_idx, num_leds=96):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
         self.set_config()
@@ -128,7 +46,10 @@ class Bar:
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
         #Modes also want to move this into mode manager class
-        self.mode_manager = mode_manager(self.get_mode_func)
+        self.mode_manager = mode_manager
+        
+        #config values:
+        self.controller_idx = controller_idx
 
     def set_config(self):
         config = self.get_config()
@@ -153,7 +74,9 @@ class Bar:
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
-            return yaml.safe_load(file)
+            data = yaml.safe_load(file)
+        data = data[str(self.controller_idx)]
+        return data
     
     def update_config(self):
                 # Get the current working directory
@@ -162,15 +85,19 @@ class Bar:
         current_directory = os.getcwd()
         print(f"Current working directory: {current_directory}")
         if os.path.exists(target_file):
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
-            print(f"Config updated: {target_file}")
+            with open(target_file, 'r') as file:
+                data = yaml.safe_load(file)
         else:
             print(f"File does not exist: {target_file}")
             print("creating file")
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
-            with open(target_file, 'w') as file:
-                yaml.dump(to_print, file)
+            data = {}
+            
+        data[str(self.controller_idx)] = to_print      
+        
+        with open(target_file, 'w') as file:
+            yaml.dump(data, file)
+        print(f"Config updated: {target_file}")
     
     #write a function to get all of the correct properties in the correct format.
     def dictify(self):
@@ -221,11 +148,11 @@ class Bar:
                 self.update_auto_cycle(fft_data)
             else:
                 if self.state < len(self.mode_manager.get_all_modes()):
-                    self.mode_manager.modes[self.state].mode_func(fft_data)
+                    mode_name = self.mode_manager.modes[self.state].name
+                    self.get_mode_func(mode_name)(fft_data)
                 else: 
                     print(f'Mode {self.state} not found')
-                    
-    
+                     
     def get_mode(self):
         if self.auto_cycle:
             if self.state < len(self.mode_manager.auto_cycle_modes):
@@ -253,8 +180,11 @@ class Bar:
             self.state = 0
 
         # Call the current mode's update method
-        self.mode_manager.auto_cycle_modes[self.state].mode_func(fft_data)
-            
+        mode_name = self.mode_manager.auto_cycle_modes[self.state].name
+        self.get_mode_func(mode_name)(fft_data)
+ 
+ 
+ ############### MODES ####################################           
     def mode_display_colour(self):
         colour =(self.colour.red, self.colour.green, self.colour.blue)
         # Apply brightness to the color
@@ -378,7 +308,6 @@ class Bar:
         else:
             self.sine_fade_out()
             
-            
     def mode_bass_mid_strobe(self, fft_data):
         # Compute the bass magnitude from fft_data
         # Increment current_step and reset if it exceeds the length of all_colours
@@ -485,7 +414,6 @@ class Bar:
             
         self.pixels = pixels
 
-            
     def mode_sine_wave(self, fft_data):
         start_time = time.time()
         # Initialize time variable if not already present
@@ -540,7 +468,28 @@ class Bar:
         end_time = time.time()
         duration = end_time - start_time
         #print(f"Mode Duration: {duration:.4f}s")
+            
+    def mode_colour_with_strobe(self, fft_data):
+        # Compute the bass magnitude from fft_data
+        bass_magnitude = self.compute_bass_magnitude(fft_data)
 
+        # Check if the bass magnitude exceeds the threshold
+        if bass_magnitude > self.bass_threshold:
+            # Apply the strobe effect (turn on all LEDs)
+            color = (255, 255, 255)  # White color for strobe effect
+            self.pixels = bytearray([int(c * self.brightness) for c in color] * self.num_leds)
+        else:
+            # Use the current step color when not in strobe mode
+            color = self.all_colours[self.current_step]
+            brightened_color = tuple(int(c * self.brightness) for c in color)
+            self.pixels = bytearray(brightened_color * self.num_leds)
+
+            # Increment current_step and reset if it exceeds the length of all_colours
+            self.current_step += 1
+            if self.current_step >= len(self.all_colours):
+                self.current_step = 0
+ 
+########## MODE HELEPERS ############################
     def fade_out(self):
         # Only continue fading if the counter is below the threshold
         fade_out_threshold = (5/self.fade)
@@ -581,26 +530,6 @@ class Bar:
         else:
             # If the threshold is reached, set pixels to black directly for performance
             self.pixels = bytearray([0] * self.num_pixels)
-            self.current_step += 1
-            if self.current_step >= len(self.all_colours):
-                self.current_step = 0
-                        
-    def mode_colour_with_strobe(self, fft_data):
-        # Compute the bass magnitude from fft_data
-        bass_magnitude = self.compute_bass_magnitude(fft_data)
-
-        # Check if the bass magnitude exceeds the threshold
-        if bass_magnitude > self.bass_threshold:
-            # Apply the strobe effect (turn on all LEDs)
-            color = (255, 255, 255)  # White color for strobe effect
-            self.pixels = bytearray([int(c * self.brightness) for c in color] * self.num_leds)
-        else:
-            # Use the current step color when not in strobe mode
-            color = self.all_colours[self.current_step]
-            brightened_color = tuple(int(c * self.brightness) for c in color)
-            self.pixels = bytearray(brightened_color * self.num_leds)
-
-            # Increment current_step and reset if it exceeds the length of all_colours
             self.current_step += 1
             if self.current_step >= len(self.all_colours):
                 self.current_step = 0

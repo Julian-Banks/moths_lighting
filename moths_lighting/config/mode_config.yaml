@@ -1,21 +1,89 @@
-- audio_reactive: false
-  auto_cycle: false
-  name: Static
-- audio_reactive: true
-  auto_cycle: true
-  name: Bass Strobe 1
-- audio_reactive: true
-  auto_cycle: true
-  name: Pulse
-- audio_reactive: true
-  auto_cycle: true
-  name: Bass Strobe
-- audio_reactive: true
-  auto_cycle: false
-  name: Bass & Mid Strobe
-- audio_reactive: true
-  auto_cycle: true
-  name: Sine Wave
-- audio_reactive: true
-  auto_cycle: true
-  name: Swirl
+0:
+  - audio_reactive: false
+    auto_cycle: false
+    name: Static
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe 1
+  - audio_reactive: true
+    auto_cycle: true
+    name: Pulse
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe
+  - audio_reactive: true
+    auto_cycle: false
+    name: Bass & Mid Strobe
+  - audio_reactive: true
+    auto_cycle: true
+    name: Sine Wave
+  - audio_reactive: true
+    auto_cycle: true
+    name: Swirl
+1:
+  - audio_reactive: false
+    auto_cycle: false
+    name: Static
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe 1
+  - audio_reactive: true
+    auto_cycle: true
+    name: Pulse
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe
+  - audio_reactive: true
+    auto_cycle: false
+    name: Bass & Mid Strobe
+  - audio_reactive: true
+    auto_cycle: true
+    name: Sine Wave
+  - audio_reactive: true
+    auto_cycle: true
+    name: Swirl
+2:
+  - audio_reactive: false
+    auto_cycle: false
+    name: Static
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe 1
+  - audio_reactive: true
+    auto_cycle: true
+    name: Pulse
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe
+  - audio_reactive: true
+    auto_cycle: false
+    name: Bass & Mid Strobe
+  - audio_reactive: true
+    auto_cycle: true
+    name: Sine Wave
+  - audio_reactive: true
+    auto_cycle: true
+    name: Swirl
+3:
+  - audio_reactive: false
+    auto_cycle: false
+    name: Static
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe 1
+  - audio_reactive: true
+    auto_cycle: true
+    name: Pulse
+  - audio_reactive: true
+    auto_cycle: true
+    name: Bass Strobe
+  - audio_reactive: true
+    auto_cycle: false
+    name: Bass & Mid Strobe
+  - audio_reactive: true
+    auto_cycle: true
+    name: Sine Wave
+  - audio_reactive: true
+    auto_cycle: true
+    name: Swirl
+    

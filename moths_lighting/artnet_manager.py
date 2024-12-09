@@ -1,18 +1,21 @@
 from stupidArtnet import StupidArtnet
 
 class ArtnetManager:
-    def __init__(self,target_ip = '255.255.255.255',packet_size = 512,fps = 30):
+    def __init__(self,target_ip = '255.255.255.255',packet_size = 512,fps = 30,edit_config = False):
         
+        ###Artnet settings
         self.packet_size = packet_size
         self.num_leds = self.packet_size // 3
         self.target_ip = target_ip
         self.fps = fps
         self.num_leds_per_universe = 170
         self.artnet_instances = []
-        
         self.pixels_per_universe = 512
-        
         self.num_universes = self.packet_size // self.pixels_per_universe + 1
+        
+        ### Setting for Physical Controller
+        self.edit_config = edit_config
+        
         
         if self.packet_size == 0:
             print('Packet size must be greater than 0')
