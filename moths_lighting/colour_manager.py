@@ -28,6 +28,10 @@ class ColourManager:
     def get_config(self):
         with open('moths_lighting/config/colour_config.yaml', 'r') as file:
             data = yaml.safe_load(file)
+        
+        print(f"loaded data: {data}")
+        
+        
         data = data[str(self.controller_idx)]
         return data
         
