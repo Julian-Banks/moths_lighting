@@ -32,7 +32,7 @@ class ColourManager:
         print(f"loaded data: {data}")
         
         
-        data = data[str(self.controller_idx)]
+        data = data[self.controller_idx]
         return data
         
         
@@ -81,7 +81,7 @@ class ColourManager:
             data = {}         
             
         #update that specific controller's colour config
-        data[str(self.controller_idx)] = to_print
+        data[self.controller_idx] = to_print
         #Print out to the file.
         with open(target_file, 'w') as file:    
             yaml.dump(to_print, file)
