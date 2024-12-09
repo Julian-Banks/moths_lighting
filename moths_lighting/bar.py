@@ -75,7 +75,7 @@ class Bar:
     def get_config(self):
         with open(self.config_file, 'r') as file:
             data = yaml.safe_load(file)
-        data = data[str(self.controller_idx)]
+        data = data[self.controller_idx]
         return data
     
     def update_config(self):
@@ -93,7 +93,7 @@ class Bar:
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
             data = {}
             
-        data[str(self.controller_idx)] = to_print      
+        data[self.controller_idx] = to_print      
         
         with open(target_file, 'w') as file:
             yaml.dump(data, file)
