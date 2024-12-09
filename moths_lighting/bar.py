@@ -12,6 +12,7 @@ class Bar:
     def __init__(self,colour_manager, mode_manager,controller_idx, num_leds=96):
         
         self.config_file = 'moths_lighting/config/bar_config.yaml'
+        self.controller_idx = controller_idx
         self.set_config()
         #standard, always the same properties
         self.lock = threading.Lock()
@@ -47,9 +48,8 @@ class Bar:
         
         #Modes also want to move this into mode manager class
         self.mode_manager = mode_manager
+      
         
-        #config values:
-        self.controller_idx = controller_idx
 
     def set_config(self):
         config = self.get_config()
