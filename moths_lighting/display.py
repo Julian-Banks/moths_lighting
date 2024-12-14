@@ -201,7 +201,7 @@ class Display:
         def get_brightness():
             return self.artnet_controller.get_parameter('brightness')
         def set_brightness(value):
-            self.artnet_controller.set_paremeter('brightness',value)
+            self.artnet_controller.set_parameter('brightness',value)
        
         #Fade options
         def get_fade():
