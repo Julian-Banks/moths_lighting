@@ -475,7 +475,7 @@ class ArtnetController:
     def set_parameter(self, parameter, value):
         print(self.artnet_devices)
         for artnet_device in self.artnet_devices:
-            print(artnet_device)
+            print(artnet_device.edit_config)
             if artnet_device.edit_config:
                 bars = self.device_bars_map[artnet_device]
                 for bar in bars:
