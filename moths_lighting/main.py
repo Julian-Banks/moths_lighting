@@ -107,7 +107,7 @@ def main():
 
     print('Initializing Display and Encoder...')
     global display
-    display = Display(audio_processor, artnet_controller, colour_manager,
+    display = Display(audio_processor, artnet_controller,
                       artnet_fps_queue, fft_fps_queue, fft_queue)
     encoder = Encoder(pin_A=22, pin_B=27, pin_button=17,
                       callback=on_position_change,
