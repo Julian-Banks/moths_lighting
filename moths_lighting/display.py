@@ -179,8 +179,6 @@ class Display:
         self.blue = 100
         self.updated_colour_idx = 0
         
-        #JUST FOR TESTING!!
-        self.controller_select = [0,1,0,1]
         
         # Initialize MenuManager
         self.showing_fft = False
@@ -447,10 +445,10 @@ class Display:
         
         ##Controller Select
         def set_controller_select(value, controller_num):
-            self.controller_select[controller_num] = value
+            self.artnet_controller.set_edit_config(self, value, controller_num)
             
         def get_controller_select(controller_num):
-            return self.controller_select[controller_num]
+            return self.artnet_controller.get_edit_config[controller_num]
         
         
         # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
