@@ -465,6 +465,7 @@ class ArtnetController:
                 bars = self.device_bars_map.get(artnet_device, [])
                 for bar in bars:
                     parameters.append(getattr(bar, parameter))
+                    print(f"Does the Bar have the parameter: {hasattr(bar, parameter)}")
         print(parameters)
         if len(parameters) > 0:
             return parameters[0]

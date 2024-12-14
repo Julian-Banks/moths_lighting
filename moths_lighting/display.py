@@ -520,13 +520,22 @@ class Display:
             MenuItem("Back")
         ])
         
+        ''' 
+        for idx, controller in range(get_controllers):
+        if controller.bars > 0:
+            AdjustableMenuItem("Edit Controller idx", get_controller_select,  set_controller_select, checkbox = True ,option1= idx),
+        else: 
+            set_controller_select(Fal)'''
         esp_select_menu = Menu("Controller Select", items = [
+
             AdjustableMenuItem("Edit Controller 1", get_controller_select,  set_controller_select, checkbox = True ,option1= 0),
             AdjustableMenuItem("Edit Controller 2", get_controller_select, set_controller_select,  checkbox = True,option1 = 1),
             AdjustableMenuItem("Controller 3", get_controller_select, set_controller_select,  checkbox = True,option1 = 2),
             AdjustableMenuItem("Controller 4", get_controller_select, set_controller_select, checkbox = True,option1 = 3),
-            MenuItem('Continue...', submenu = options_menu)
+            MenuItem('Continue...', submenu = options_menu),
+            MenuItem("Back")
         ])
+        
         # Main Menu
         main_menu = Menu("Main Screen", items=[
             MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
