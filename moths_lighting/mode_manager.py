@@ -87,4 +87,4 @@ class ModeManager:
             auto_cycle = config["auto_cycle"]
             new_mode = mode(name = name, audio_reactive = audio_reactive, auto_cycle = auto_cycle)
             self.add_mode(new_mode)
-        print(f'Modes added: {[mode.name for mode in self.modes]}')
+        #print(f'Modes added: {[mode.name for mode in self.modes]}')

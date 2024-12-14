@@ -465,7 +465,11 @@ class ArtnetController:
                 bars = self.device_bars_map.get(artnet_device, [])
                 for bar in bars:
                     parameters.append(getattr(bar, parameter))
-        return parameters[0]
+        print(parameters)
+        if len(parameters) > 0:
+            return parameters[0]
+        else:
+            return 0 
     
     def set_parameter(self, parameter, value):
         for artnet_device in self.artnet_devices:
@@ -482,7 +486,7 @@ class ArtnetController:
     
     def set_edit_config(self, edit_config, controller_idx):
         self.artnet_devices[controller_idx].edit_config = edit_config
-        
+        self.update_config()
         
         
 #Colour Functions
