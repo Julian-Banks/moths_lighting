@@ -339,6 +339,9 @@ class ArtnetController:
                 bars[0].update_config()
         self.update_colours()
         
+    
+                    
+        
     #AUDIO REACTIVITY OPTIONS
     #Trigger style
     '''
@@ -473,9 +476,6 @@ class ArtnetController:
                 if len(bars) > 0:
                     bars[0].update_config()
 
-#########################################################################################################################################
-#All the above get and set methods are old and will need to be updated. I am going to try and do this with the least breakages possible.
-
 #First we need to be able to get and set whether artnetManagers are in edit_config mode or not.
     def get_edit_config(self, controller_idx):
         return self.artnet_devices[controller_idx].edit_config
@@ -483,3 +483,32 @@ class ArtnetController:
     def set_edit_config(self, edit_config, controller_idx):
         self.artnet_devices[controller_idx].edit_config = edit_config
         
+        
+        
+#Colour Functions
+def add_colour(self,colour):
+        for artnet_device in self.artnet_devices: 
+            if artnet_device.edit_config :
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars : 
+                    bar.colour_manager.add_colour(colour)
+                    
+def update_colour(self, idx, colour):
+        for artnet_device in self.artnet_devices: 
+            if artnet_device.edit_config :
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars : 
+                    bar.colour_manager.update_colour(idx, colour)
+                    
+def remove_colour(self, idx ):
+        for artnet_device in self.artnet_devices: 
+            if artnet_device.edit_config :
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars : 
+                    bar.colour_manager.remove_colour(idx )
+                    
+def get_colour_list(self):
+    for artnet_device in self.artnet_devices: 
+        if artnet_device.edit_config:
+            bars = self.device_bars_map[artnet_device]
+            return bars[0].colour_manager.get_colour_list()

@@ -149,7 +149,7 @@ class MenuManager:
 
 
 class Display:
-    def __init__(self, audio_processor, artnet_controller,colour_manager,
+    def __init__(self, audio_processor, artnet_controller,
                  artnet_fps_queue, fft_fps_queue, fft_queue):
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
@@ -162,7 +162,6 @@ class Display:
         # Initialize system components
         self.audio_processor = audio_processor
         self.artnet_controller = artnet_controller
-        self.colour_manager = colour_manager
         self.artnet_fps_queue = artnet_fps_queue
         self.fft_fps_queue = fft_fps_queue
         self.fft_queue = fft_queue  # FFT data queue
@@ -275,7 +274,8 @@ class Display:
         
         def add_colour():
             colour = Colour(self.red, self.green, self.blue)
-            self.colour_manager.add_colour(colour)
+            self.artnet_controller.add_colour(colour)
+            self.artnet_controller.add_colour(colour)
             self.artnet_controller.set_display_colour(value = 0, colour = colour)
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()   
@@ -283,20 +283,22 @@ class Display:
         def update_colour():
             colour = Colour(self.red, self.green, self.blue)
             idx = self.updated_colour_idx
-            self.colour_manager.update_colour(idx, colour)
+            self.artnet_controller.update_colour(idx, colour) #Very similar name to update_colours()!!! THis updates the colour in the colour manager. 
             self.artnet_controller.set_display_colour(value = 0, colour = colour)
-            self.artnet_controller.update_colours()
+            self.artnet_controller.update_colours() #This updates the bars colours and should be renamed tbh. 
             self.menu_manager.go_back() 
             
         def remove_colour(idx):
-            self.colour_manager.remove_colour(idx)
+            self.artnet_controller.remove_colour(idx)
             self.artnet_controller.set_display_colour(value = 0, colour = Colour(0,0,0))
             self.artnet_controller.update_colours()
             self.menu_manager.go_back()
         #Function for generating the colour list!  
+        
+            
         def edit_colour_list():
             items = [] 
-            for idx, colour in enumerate(self.colour_manager.get_colour_list()):
+            for idx, colour in enumerate(self.artnet_controller.get_colour_list()):
                 colour_name = f"R:{colour.red} G:{colour.green} B:{colour.blue}"
                 
                 colour_submenu = Menu(colour_name, items=[
