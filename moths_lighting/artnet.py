@@ -473,6 +473,7 @@ class ArtnetController:
             return 0 
     
     def set_parameter(self, parameter, value):
+        print(self.artnet_devices)
         for artnet_device in self.artnet_devices:
             print(artnet_device)
             if artnet_device.edit_config:
