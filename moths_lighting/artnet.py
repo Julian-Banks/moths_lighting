@@ -71,7 +71,7 @@ class ArtnetController:
     def dictify_esp_config(self):
         esp_config_list = []
         for config in self.esp_configs:
-            esp_config_list.append({'target_ip': config['target_ip'], 'fps': config['fps'], 'num_bars': config['num_bars']})
+            esp_config_list.append({'target_ip': config['target_ip'], 'fps': config['fps'], 'num_bars': config['num_bars'], 'edit_config': config['edit_config']})
         return esp_config_list
 
     def update_config(self):
