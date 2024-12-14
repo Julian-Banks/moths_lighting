@@ -448,7 +448,7 @@ class Display:
             self.artnet_controller.set_edit_config(self, value, controller_num)
             
         def get_controller_select(controller_num):
-            return self.artnet_controller.get_edit_config[controller_num]
+            return self.artnet_controller.get_edit_config(controller_num)
         
         
         # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
