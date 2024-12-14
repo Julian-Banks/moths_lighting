@@ -32,6 +32,7 @@ class ArtnetController:
             fps = config.get('fps', 40)
             #Each artnetManger has a property of whether it is in edit_config mode or not.
             edit_config = config.get('edit_config', False)
+            print(f"edit_config: {edit_config}")
             # Create new Artnet device
             artnet_device = ArtnetManager(target_ip, packet_size, fps, edit_config = edit_config) 
             # Add the new Artnet device to the list
