@@ -488,7 +488,7 @@ class ArtnetController:
     
     def set_edit_config(self, edit_config, controller_idx):
         self.artnet_devices[controller_idx].edit_config = edit_config
-        #print(f"controller {controller_idx} edit config: {self.artnet_devices[controller_idx].edit_config}")
+        print(f"controller {controller_idx} edit config: {self.artnet_devices[controller_idx].edit_config} was supposed to be set to {edit_config}")
         self.update_config()
         
         
