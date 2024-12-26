@@ -54,7 +54,7 @@ class ColourManager:
         #print('in update colour')
         #print(f"index: {index}, len: {len(self.colours)}")
         self.colours[index] = colour
-        self.update_config()
+        #self.update_config()
             
     def get_colour_list(self):
         return self.colours
