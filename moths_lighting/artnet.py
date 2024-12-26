@@ -151,9 +151,6 @@ class ArtnetController:
         fft_data = self.process_audio(led_queue)
 
         for artnet_device in self.artnet_devices:
-            print("Printing artnet device: ")
-            print(artnet_device)
-            print("_________________")
             if self.device_bars_map[artnet_device]:
                 bars = self.device_bars_map[artnet_device]
                 for bar in bars:
