@@ -306,7 +306,7 @@ class Display:
                     AdjustableMenuItem("Blue", get_blue, set_blue, min_value=0, max_value=255, step=5),
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
                     MenuItem("Remove Colour", action= remove_colour, option1=idx),
-                    MenuItem("Back", action = update_colour)
+                    MenuItem("Back & Save", action = update_colour)
                 
                 ])
                 items.append(MenuItem(colour_name, action=set_current_colour, submenu = colour_submenu, option1 =idx,option2=  colour))

@@ -65,7 +65,7 @@ class ColourManager:
         target_file = 'moths_lighting/config/colour_config.yaml'
         to_print = self.dictify()
         current_directory = os.getcwd()
-        print(f"Current working directory: {current_directory}")
+        #print(f"Current working directory: {current_directory}")
         
         if os.path.exists(target_file):
             with open(target_file, 'r') as file:
