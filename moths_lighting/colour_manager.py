@@ -21,8 +21,13 @@ class ColourManager:
         
         for colour in config:
             #print(f"colour: {colour}")
-            red, green, blue = colour
-            self.colours.append(Colour(red, green, blue))
+            try:
+                red, green, blue = colour
+                self.colours.append(Colour(red, green, blue))
+            except Exception as e:
+                print("the Error is: " ,e) 
+                print(f"The colour is : {colour}")
+                print(f"the full config is: {config}") 
             
             
     def get_config(self):
