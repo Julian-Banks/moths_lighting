@@ -507,8 +507,9 @@ class ArtnetController:
                     bars = self.device_bars_map[artnet_device]
                     for bar in bars : 
                         bar.colour_manager.update_colour(idx, colour)
+                        bar.update_colours()
                     if len(bars) > 0:
-                        bars[0].update_colours()
+                        bars[0].colour_manager.update_config()
                         
     def remove_colour(self, idx ):
             for artnet_device in self.artnet_devices: 
