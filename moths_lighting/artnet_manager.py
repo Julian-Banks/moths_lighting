@@ -17,9 +17,7 @@ class ArtnetManager:
         self.edit_config = edit_config
         
         
-        if self.packet_size == 0:
-            print('Packet size must be greater than 0')
-        else:
+        if self.packet_size != 0:
             for universe in range(self.num_universes):
                 packet_size = self.pixels_per_universe if universe < self.num_universes - 1 else self.packet_size % self.pixels_per_universe + universe*2
                 self.artnet_instances.append(StupidArtnet(self.target_ip, universe, packet_size ,self.fps,True, True))

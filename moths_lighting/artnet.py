@@ -32,7 +32,7 @@ class ArtnetController:
             fps = config.get('fps', 40)
             #Each artnetManger has a property of whether it is in edit_config mode or not.
             edit_config = config.get('edit_config', 1)
-            print(f"edit_config: {edit_config}")
+            #print(f"edit_config: {edit_config}")
             # Create new Artnet device
             artnet_device = ArtnetManager(target_ip, packet_size, fps, edit_config = edit_config) 
             # Add the new Artnet device to the list
@@ -57,7 +57,7 @@ class ArtnetController:
         target_file = self.esp_config_file
         to_print = self.dictify_esp_config()
         current_directory = os.getcwd()
-        print(f"Current working directory: {current_directory}")
+        #print(f"Current working directory: {current_directory}")
         if os.path.exists(target_file):
             with open(target_file, 'w') as file:
                 yaml.dump(to_print, file)
@@ -151,9 +151,10 @@ class ArtnetController:
         fft_data = self.process_audio(led_queue)
 
         for artnet_device in self.artnet_devices:
-            bars = self.device_bars_map[artnet_device]
-            for bar in bars:
-                bar.update(fft_data)
+            if self.device_bars_map[artnet_device]:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.update(fft_data)
         end_time = time.time()
         duration = end_time - start_time
         #print(f"Update duration: {duration:.4f}s")
