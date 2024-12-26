@@ -525,18 +525,17 @@ class Display:
         else: 
             set_controller_select(Fal)'''
         esp_select_menu = Menu("Controller Select", items = [
-
+            MenuItem('Continue...', submenu = options_menu),
             AdjustableMenuItem("Edit Controller 1", get_controller_select,  set_controller_select, checkbox = True ,option1= 0),
             AdjustableMenuItem("Edit Controller 2", get_controller_select, set_controller_select,  checkbox = True,option1 = 1),
             AdjustableMenuItem("Edit Controller 3", get_controller_select, set_controller_select,  checkbox = True,option1 = 2),
             AdjustableMenuItem("Edit Controller 4", get_controller_select, set_controller_select, checkbox = True,option1 = 3),
-            MenuItem('Continue...', submenu = options_menu),
             MenuItem("Back")
         ])
         
         # Main Menu
         main_menu = Menu("Main Screen", items=[
-            MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
+            #MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
             MenuItem("Bars Per Controller.", submenu=configure_controllers_menu),
             MenuItem("Edit Config", submenu=esp_select_menu),
             # Add other main menu items...
