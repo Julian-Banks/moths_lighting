@@ -1,10 +1,10 @@
 0:
   auto_cycle: 0
-  bass_debounce: 1.3877787807814457e-17
+  bass_debounce: 6.938893903907228e-17
   bass_lower_bound: 30
   bass_threshold: 0.20000000000000004
   bass_upper_bound: 300
-  brightness: 0.7
+  brightness: 0.5
   current_step: 910
   fade: 0.08
   fade_out_threshold: 60
@@ -14,16 +14,16 @@
   mid_threshold: 0.20000000000000004
   mid_upper_bound: 3000
   state: 0
-  steps_per_transition: 1120
+  steps_per_transition: 1520
   time_per_mode: 30
   trigger_style: mean
 1:
   auto_cycle: 0
-  bass_debounce: 1.3877787807814457e-17
+  bass_debounce: 6.938893903907228e-17
   bass_lower_bound: 30
   bass_threshold: 0.20000000000000004
   bass_upper_bound: 300
-  brightness: 0.30000000000000004
+  brightness: 0.5
   current_step: 1834
   fade: 0.08
   fade_out_threshold: 60
@@ -33,7 +33,7 @@
   mid_threshold: 0.20000000000000004
   mid_upper_bound: 3000
   state: 0
-  steps_per_transition: 1120
+  steps_per_transition: 1520
   time_per_mode: 30
   trigger_style: max
 2:
