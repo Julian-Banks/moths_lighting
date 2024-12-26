@@ -80,9 +80,13 @@ class ColourManager:
             print("creating file")
             os.makedirs(os.path.dirname(target_file), exist_ok=True)
             data = {}         
-            
+        
+        
+        print(f"Data as it comes out of the ymal file: {data}")
+        print(f"Data[{self.controller_idx}]: {data[self.controller_idx]}")
         #update that specific controller's colour config
         data[self.controller_idx] = to_print
+        print(f"Data after to_print has been added: {data}")
         #Print out to the file.
         with open(target_file, 'w') as file:    
             yaml.dump(to_print, file)
