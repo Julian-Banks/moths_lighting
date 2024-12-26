@@ -83,7 +83,7 @@ class Bar:
         target_file = self.config_file
         to_print = self.dictify()
         current_directory = os.getcwd()
-        print(f"Current working directory: {current_directory}")
+        #print(f"Current working directory: {current_directory}")
         if os.path.exists(target_file):
             with open(target_file, 'r') as file:
                 data = yaml.safe_load(file)
