@@ -89,7 +89,7 @@ class ColourManager:
         print(f"Data after to_print has been added: {data}")
         #Print out to the file.
         with open(target_file, 'w') as file:    
-            yaml.dump(to_print, file)
+            yaml.dump(data, file)
         print(f"Updated colour config {self.controller_idx}")
 
         
