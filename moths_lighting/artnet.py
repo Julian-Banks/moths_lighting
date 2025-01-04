@@ -148,18 +148,17 @@ class ArtnetController:
 
     ################################### MAIN LOOP FUNCTION TO UPDATE BARS ####################################################################
     def update_bars(self, led_queue):
-        with self.lock:
-            start_time = time.time()
-            fft_data = self.process_audio(led_queue)
+        start_time = time.time()
+        fft_data = self.process_audio(led_queue)
 
-            for artnet_device in self.artnet_devices:
-                if self.device_bars_map[artnet_device]:
-                    bars = self.device_bars_map[artnet_device]
-                    for bar in bars:
-                        bar.update(fft_data)
-            end_time = time.time()
-            duration = end_time - start_time
-            #print(f"Update duration: {duration:.4f}s")
+        for artnet_device in self.artnet_devices:
+            if self.device_bars_map[artnet_device]:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    bar.update(fft_data)
+        end_time = time.time()
+        duration = end_time - start_time
+        #print(f"Update duration: {duration:.4f}s")
         
     def process_audio(self, led_queue):
         fft_data_list = []
@@ -180,21 +179,20 @@ class ArtnetController:
             return np.zeros(128)
 
     def send_data(self):
-        with self.lock:
-            for artnet_device in self.artnet_devices:
-                packet = bytearray(artnet_device.packet_size)
-                bars = self.device_bars_map[artnet_device]
-                offset = 0
-                for bar in bars:
-                    pixels = bar.get_pixels()
-                    packet[offset:offset + len(pixels)] = pixels
-                    offset += len(pixels)
+        for artnet_device in self.artnet_devices:
+            packet = bytearray(artnet_device.packet_size)
+            bars = self.device_bars_map[artnet_device]
+            offset = 0
+            for bar in bars:
+                pixels = bar.get_pixels()
+                packet[offset:offset + len(pixels)] = pixels
+                offset += len(pixels)
 
-                if len(packet) == artnet_device.packet_size: 
-                    artnet_device.send(packet)
-                else:
-                    print(f"packet size: {len(packet)}")
-                    print(f"declared packet size: {artnet_device.packet_size}") 
+            if len(packet) == artnet_device.packet_size: 
+                artnet_device.send(packet)
+            else:
+                print(f"packet size: {len(packet)}")
+                print(f"declared packet size: {artnet_device.packet_size}") 
         # Timing control is handled in the main loop
     
     ########################################## END OF MAIN LOOP FUNCTIONS ################################################################
