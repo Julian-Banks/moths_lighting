@@ -1,16 +1,16 @@
 - edit_config: 1
   fps: 40
-  num_bars: 4
+  num_bars: 2
   target_ip: 192.168.53.198
 - edit_config: 1
   fps: 40
   num_bars: 2
   target_ip: 192.168.53.219
-- edit_config: 0
+- edit_config: 1
   fps: 40
   num_bars: 0
   target_ip: 192.168.1.103
-- edit_config: 0
+- edit_config: 1
   fps: 40
   num_bars: 0
   target_ip: 192.168.1.103
