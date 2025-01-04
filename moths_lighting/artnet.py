@@ -22,7 +22,7 @@ class ArtnetController:
         print("in initialization")
         with self.lock:
             print("lock aquired")
-            self.device_bars_map = {}
+            device_bars_map = {}
             self.artnet_devices = []
             self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
             self.esp_configs = self.get_esp_config() 
@@ -49,7 +49,8 @@ class ArtnetController:
                 
                 # Create new bars for the Artnet device
                 bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
-                self.device_bars_map[artnet_device] = bars    
+                device_bars_map[artnet_device] = bars
+            self.device_bars_map = device_bars_map
             print(self.device_bars_map)
             
     def get_esp_config(self):
@@ -81,6 +82,7 @@ class ArtnetController:
 
     def update_config(self):
         with self.lock:
+            print("updating config")
             #self.esp_configs = esp_configs
             self.update_esp_config()
             #first clear the bars. Need to do this because the number of bars may have decreased and then the extra bars which are not recieving data would stay on. 
@@ -91,17 +93,16 @@ class ArtnetController:
     
     
     
-    def clear_all(self):
-        with self.lock:
-            for artnet_device in self.artnet_devices:
-                packet = bytearray(artnet_device.packet_size)
-                bars = self.device_bars_map[artnet_device]
-                offset = 0
-                for bar in bars:
-                    pixels = bytearray(bar.num_leds)
-                    packet[offset:offset + len(pixels)] = pixels
-                    offset += len(pixels)
-                    artnet_device.send(packet)
+    def clear_all(self):   
+        for artnet_device in self.artnet_devices:
+            packet = bytearray(artnet_device.packet_size)
+            bars = self.device_bars_map[artnet_device]
+            offset = 0
+            for bar in bars:
+                pixels = bytearray(bar.num_leds)
+                packet[offset:offset + len(pixels)] = pixels
+                offset += len(pixels)
+                artnet_device.send(packet)
         
     
     def change_mode(self,mode = 0):
@@ -155,7 +156,6 @@ class ArtnetController:
     def update_bars(self, led_queue):
         start_time = time.time()
         fft_data = self.process_audio(led_queue)
-
         for artnet_device in self.artnet_devices:
             if self.device_bars_map[artnet_device]:
                 bars = self.device_bars_map[artnet_device]
