@@ -19,34 +19,35 @@ class ArtnetController:
         self.fps = self.esp_configs[0].get('fps', 40)
 
     def initialize_devices(self):
-        self.device_bars_map = {}
-        self.artnet_devices = []
-        self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
-        self.esp_configs = self.get_esp_config() 
-        
-        for config in self.esp_configs: 
-            target_ip = config['target_ip']
-            #universe = config['universe']
-            num_bars = config.get('num_bars', 1)
-            packet_size = num_bars * self.num_leds * 3
-            fps = config.get('fps', 40)
-            #Each artnetManger has a property of whether it is in edit_config mode or not.
-            edit_config = config.get('edit_config', 1)
-            #print(f"edit_config: {edit_config}")
-            # Create new Artnet device
-            artnet_device = ArtnetManager(target_ip, packet_size, fps, edit_config = edit_config) 
-            # Add the new Artnet device to the list
-            self.artnet_devices.append(artnet_device)
+        with self.lock:
+            self.device_bars_map = {}
+            self.artnet_devices = []
+            self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
+            self.esp_configs = self.get_esp_config() 
             
-            artnet_device_idx = len(self.artnet_devices) - 1
-            #Creat a colour manager for each artnet device 
-            colour_manager = ColourManager(artnet_device_idx)
-            #create a mode manager for each artnet device
-            mode_manager = ModeManager(artnet_device_idx)
-            
-            # Create new bars for the Artnet device
-            bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
-            self.device_bars_map[artnet_device] = bars
+            for config in self.esp_configs: 
+                target_ip = config['target_ip']
+                #universe = config['universe']
+                num_bars = config.get('num_bars', 1)
+                packet_size = num_bars * self.num_leds * 3
+                fps = config.get('fps', 40)
+                #Each artnetManger has a property of whether it is in edit_config mode or not.
+                edit_config = config.get('edit_config', 1)
+                #print(f"edit_config: {edit_config}")
+                # Create new Artnet device
+                artnet_device = ArtnetManager(target_ip, packet_size, fps, edit_config = edit_config) 
+                # Add the new Artnet device to the list
+                self.artnet_devices.append(artnet_device)
+                
+                artnet_device_idx = len(self.artnet_devices) - 1
+                #Creat a colour manager for each artnet device 
+                colour_manager = ColourManager(artnet_device_idx)
+                #create a mode manager for each artnet device
+                mode_manager = ModeManager(artnet_device_idx)
+                
+                # Create new bars for the Artnet device
+                bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
+                self.device_bars_map[artnet_device] = bars    
             print(self.device_bars_map)
             
     def get_esp_config(self):
