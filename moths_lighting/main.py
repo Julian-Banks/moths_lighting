@@ -17,7 +17,6 @@ fft_queue = Queue()  #this queue is for fft_mag data and is used by the display 
 led_queue = Queue()  # this queue is the same fft_mag data but it is used by artnet controller to update led strips 
 artnet_fps_queue = Queue() #this queue is used to store how many frames of Artnet are being sent per second.
 fft_fps_queue = Queue()   #this queue is used to store how many frames of FFT are being processed per second.
-lock = threading.Lock
 
 def artnet_thread(artnet_controller, led_queue):
     print('Starting the Artnet Thread')
@@ -28,15 +27,15 @@ def artnet_thread(artnet_controller, led_queue):
     while not stop_flag.is_set():
         iteration_start_time = time.time()
         
-        with lock:
-            print("updating and sending data")
-            update_start_time = time.time()
-            artnet_controller.update_bars(led_queue)
-            update_end_time = time.time()
-            
-            send_start_time = time.time()
-            artnet_controller.send_data()
-            send_end_time = time.time()
+        
+        print("updating and sending data")
+        update_start_time = time.time()
+        artnet_controller.update_bars(led_queue)
+        update_end_time = time.time()
+        
+        send_start_time = time.time()
+        artnet_controller.send_data()
+        send_end_time = time.time()
 
         iteration_end_time = time.time()
         loop_duration = iteration_end_time - iteration_start_time
