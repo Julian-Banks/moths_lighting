@@ -25,15 +25,17 @@ def artnet_thread(artnet_controller, led_queue):
     loop_durations = deque(maxlen=1000)  
     
     while not stop_flag.is_set():
-        iteration_start_time = time.time()
-        print("updating and sending data")
-        update_start_time = time.time()
-        artnet_controller.update_bars(led_queue)
-        update_end_time = time.time()
         
-        send_start_time = time.time()
-        artnet_controller.send_data()
-        send_end_time = time.time()
+        with artnet_controller.lock:
+            iteration_start_time = time.time()
+            print("updating and sending data")
+            update_start_time = time.time()
+            artnet_controller.update_bars(led_queue)
+            update_end_time = time.time()
+            
+            send_start_time = time.time()
+            artnet_controller.send_data()
+            send_end_time = time.time()
 
         iteration_end_time = time.time()
         loop_duration = iteration_end_time - iteration_start_time
