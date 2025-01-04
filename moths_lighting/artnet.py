@@ -17,14 +17,14 @@ class ArtnetController:
         self.lock = threading.Lock()
         self.initialize_devices()
         self.fps = self.esp_configs[0].get('fps', 40)
+        self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
 
     def initialize_devices(self):
         print("in initialization")
         device_bars_map = {}
         self.artnet_devices = []
-        self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
         self.esp_configs = self.get_esp_config() 
-        
+        print("Got esp config")
         for config in self.esp_configs: 
             target_ip = config['target_ip']
             #universe = config['universe']
