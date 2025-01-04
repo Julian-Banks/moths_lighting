@@ -26,8 +26,6 @@ def artnet_thread(artnet_controller, led_queue):
     
     while not stop_flag.is_set():
         iteration_start_time = time.time()
-        
-        
         print("updating and sending data")
         update_start_time = time.time()
         artnet_controller.update_bars(led_queue)

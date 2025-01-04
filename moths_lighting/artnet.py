@@ -22,11 +22,12 @@ class ArtnetController:
 
     def initialize_devices(self):
         print("in initialization")
-        device_bars_map = {}
+        self.device_bars_map = {}
         self.artnet_devices = []
         self.esp_configs = self.get_esp_config() 
         print("Got esp config")
         for config in self.esp_configs: 
+            print("Initalising Bars...")
             target_ip = config['target_ip']
             #universe = config['universe']
             num_bars = config.get('num_bars', 1)
@@ -48,8 +49,7 @@ class ArtnetController:
             
             # Create new bars for the Artnet device
             bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
-            device_bars_map[artnet_device] = bars
-        self.device_bars_map = device_bars_map
+            self.device_bars_map[artnet_device] = bars
         print(self.device_bars_map)
         
     def get_esp_config(self):
