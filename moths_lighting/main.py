@@ -44,6 +44,7 @@ def artnet_thread(artnet_controller, led_queue):
         computation_time = iteration_end_time - iteration_start_time
         sleep_time = max(1/artnet_controller.esp_configs[0]['fps'] - computation_time, 0)
         time.sleep(sleep_time)
+        print(f"sleep time:{sleep_time}")
         
         send_count += 1
 

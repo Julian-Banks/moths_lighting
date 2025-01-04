@@ -19,7 +19,9 @@ class ArtnetController:
         self.fps = self.esp_configs[0].get('fps', 40)
 
     def initialize_devices(self):
+        print("in initialization")
         with self.lock:
+            print("lock aquired")
             self.device_bars_map = {}
             self.artnet_devices = []
             self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
@@ -82,6 +84,7 @@ class ArtnetController:
             #self.esp_configs = esp_configs
             self.update_esp_config()
             #first clear the bars. Need to do this because the number of bars may have decreased and then the extra bars which are not recieving data would stay on. 
+            print("all devices cleared")
             self.clear_all()
             #then reinitialize the devices      
             self.initialize_devices()
