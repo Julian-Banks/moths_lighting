@@ -659,7 +659,7 @@ class Bar:
         with self.lock:
             self.colours = self.colour_manager.get_colour_list()
             self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
-            self.current_step = len(self.all_colours)*self.colour_offset
+            self.current_step = len(self.all_colours)*self.colour_offset*self.controller_idx
         
     ### Update colours then calls cycle colours to create the list of all colours to cycle through
     def cycle_colours(self, colours, steps_per_transition):
