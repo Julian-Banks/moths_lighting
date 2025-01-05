@@ -303,7 +303,6 @@ class Display:
                     AdjustableMenuItem("Display Colour", get_display_colour, set_display_colour, min_value=0, max_value=1, step=1),
                     MenuItem("Remove Colour", action= remove_colour, option1=idx),
                     MenuItem("Back & Save", action = update_colour)
-                
                 ])
                 items.append(MenuItem(colour_name, action=set_current_colour, submenu = colour_submenu, option1 =idx,option2=  colour))
             items.append(MenuItem("Add Colour", submenu = add_colour_menu))
@@ -536,7 +535,7 @@ class Display:
             MenuItem("Lighting Options", submenu=lighting_options_menu),
             MenuItem("Colour Options", submenu = colour_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
-            MenuItem("Mode Manager", submenu=mode_menu),
+            DynamicMenuItem("Mode Manager", submenu_func=mode_menu),
             MenuItem("Back")
         ])
         
@@ -563,8 +562,6 @@ class Display:
             MenuItem("Show FFT Stats", action=show_fft_stats),
             # Add other main menu items...
         ])
-        
-
 
         return main_menu
 
