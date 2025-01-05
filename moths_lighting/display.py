@@ -485,7 +485,7 @@ class Display:
         
         colour_options_menu = Menu("Colour Options", items= [
             DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
-            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
+            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 60, step = 5),
             AdjustableMenuItem("Colour Offset",get_colour_offset, set_colour_offset, min_value = 0, max_value = 1, step = 0.05),
             MenuItem("Back")
         ])
