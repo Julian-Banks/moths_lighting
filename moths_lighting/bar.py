@@ -41,8 +41,8 @@ class Bar:
         self.energy_index = 0  # Index to keep track of where to insert the next energy value
 
         #colours 
-        self.colour = colour_manager.get_colour_list()[0]
         self.colour_manager = colour_manager
+        self.colour = colour_manager.get_colour_list()[0] #Get the first colour in the colour list as the initial colour.
         self.colours = self.colour_manager.get_colour_list()
         self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
         
@@ -653,9 +653,12 @@ class Bar:
     ##Helper functions with colours
     ### Update colours fetchs the RGB values from the colour manager and then Creates the list of all colours to cycle through
     def update_colours(self):
-        self.colours = self.colour_manager.get_colour_list()
-        self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
-    
+        with self.lock:
+            self.colours = self.colour_manager.get_colour_list()
+            self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
+            if self.current_step>len(self.all_colours):
+                self.current_step = 0
+        
     ### Update colours then calls cycle colours to create the list of all colours to cycle through
     def cycle_colours(self, colours, steps_per_transition):
         """Cycle through a list of RGB colors smoothly with integer values."""

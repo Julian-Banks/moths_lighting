@@ -50,7 +50,7 @@ class ArtnetController:
             # Create new bars for the Artnet device
             bars = [Bar(colour_manager,mode_manager,artnet_device_idx, self.num_leds) for _ in range(num_bars)]
             self.device_bars_map[artnet_device] = bars
-        print(self.device_bars_map)
+        #print(self.device_bars_map)
         
     def get_esp_config(self):
         with open(self.esp_config_file, 'r') as file:
