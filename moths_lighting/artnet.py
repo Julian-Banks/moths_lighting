@@ -14,7 +14,7 @@ class ArtnetController:
         self.esp_config_file = 'moths_lighting/config/esp_config.yaml'
         self.device_bars_map = {}
         self.artnet_devices = []
-        self.num_leds = 144      #Need to update to 96 for the new strips
+        self.num_leds = 96      #Need to update to 96 for the new strips
         self.lock = threading.Lock()
         self.initialize_devices()
         self.fps = self.esp_configs[0].get('fps', 40)

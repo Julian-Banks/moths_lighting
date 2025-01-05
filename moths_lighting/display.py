@@ -665,13 +665,13 @@ class Display:
             draw.rectangle([x_pos, y_top, x_pos + bar_width - 1, y + height], fill=255)
             
         # Draw the bass threshold line across this frequency range
-        threshold_y = y + height - int(self.artnet_controller.get_bass_threshold()* height)
-        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_bass_lower_bound(), upper_bound=self.artnet_controller.get_bass_upper_bound(), width=width)
+        threshold_y = y + height - int(self.artnet_controller.get_parameter('bass_threshold')* height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_parameter('bass_lower_bound'), upper_bound=self.artnet_controller.get_parameter('bass_upper_bound'), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
         
         # Draw the mid threshold line across this frequency range
-        threshold_y = y + height - int(self.artnet_controller.get_mid_threshold() * height)
-        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_mid_lower_bound(), upper_bound=self.artnet_controller.get_mid_upper_bound(), width=width)
+        threshold_y = y + height - int(self.artnet_controller.get_parameter('mid_threshold') * height)
+        start_pixel, end_pixel = self.calculate_line(data=data, lower_bound=self.artnet_controller.get_parameter('mid_lower_bound'), upper_bound=self.artnet_controller.get_parameter('mid_upper_bound'), width=width)
         draw.line([(start_pixel, threshold_y), (end_pixel, threshold_y)], fill=255)
 
         draw.text((60, 10), f"max freq: {max_freq:.2f} Hz", font=self.font, fill=255)
@@ -717,7 +717,6 @@ class Display:
         
     #GET THE MAX FREQUENCY FROM THE DATA
     def get_max_freq(self, data):
-        
         fft_length = len(data)
         frequency_resolution = 5000 / fft_length
         max_index = np.argmax(data)
