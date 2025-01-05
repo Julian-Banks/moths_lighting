@@ -41,7 +41,7 @@ class ColourManager:
         #print('in add colour')
         #print(f"len: {len(self.colours)}")
         self.colours.append(colour)
-        self.update_config()
+       
         
     def remove_colour(self, idx):
         #print('in remove colour')
@@ -54,7 +54,7 @@ class ColourManager:
         #print('in update colour')
         #print(f"index: {index}, len: {len(self.colours)}")
         self.colours[index] = colour
-        #self.update_config()
+       
             
     def get_colour_list(self):
         return self.colours
