@@ -237,7 +237,7 @@ class Display:
             set_green(colour.green)
             set_blue(colour.blue)
             self.updated_colour_idx = idx
-            print('setting current idx, colour')
+            #print('setting current idx, colour')
         
         def set_red(value):
             self.red = value
@@ -274,7 +274,6 @@ class Display:
             colour = Colour(self.red, self.green, self.blue)
             self.artnet_controller.add_colour(colour)
             self.artnet_controller.set_display_colour(value = 0, colour = colour)
-            self.artnet_controller.update_colours()
             self.menu_manager.go_back()   
             
         def update_colour():
@@ -282,13 +281,11 @@ class Display:
             idx = self.updated_colour_idx
             self.artnet_controller.update_colour(idx, colour) #Very similar name to update_colours()!!! THis updates the colour in the colour manager. 
             self.artnet_controller.set_display_colour(value = 0, colour = colour)
-            self.artnet_controller.update_colours() #This updates the bars colours and should be renamed tbh. 
             self.menu_manager.go_back() 
             
         def remove_colour(idx):
             self.artnet_controller.remove_colour(idx)
             self.artnet_controller.set_display_colour(value = 0, colour = Colour(0,0,0))
-            self.artnet_controller.update_colours()
             self.menu_manager.go_back()
         #Function for generating the colour list!  
         

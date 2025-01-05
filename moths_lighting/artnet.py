@@ -137,13 +137,6 @@ class ArtnetController:
                 for bar in bars:
                     static_colour.append(0 if bar.state != "static" else 1)
         return static_colour[0]
-    
-    def update_colours(self):
-        for artnet_device in self.artnet_devices:
-            if artnet_device.edit_config:
-                bars = self.device_bars_map[artnet_device]
-                for bar in bars:
-                    bar.update_colours()
                 
     def end_mode(self):
         for artnet_device in self.artnet_devices:
@@ -256,9 +249,10 @@ class ArtnetController:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
                 bar.steps_per_transition  = steps_per_transition
+                bar.update_colours()
             if len(bars) > 0:
                 bars[0].update_config()
-        self.update_colours()
+        
         
     
 #Could nearly all of the above be solved with this simple function?.....
