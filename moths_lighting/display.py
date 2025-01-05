@@ -458,7 +458,7 @@ class Display:
         #CONFIGURE MENU STRUCTURE
         # Lighting Options Menu
         lighting_options_menu = Menu("Lighting Options", items=[
-            AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0, max_value=1, step=0.1),
+            AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0.1, max_value=1, step=0.1),
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0.02, max_value=0.2, step=0.01),
             AdjustableMenuItem("Mid Debounce",get_mid_debounce, set_mid_debounce, min_value=0, max_value=0.5, step=0.05),
             AdjustableMenuItem("Bass Debounce",get_bass_debounce, set_bass_debounce, min_value=0, max_value=0.5, step=0.05),

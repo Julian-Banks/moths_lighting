@@ -433,7 +433,8 @@ class Bar:
         self.last_time_change = this_time_change
     
         # Map magnitude to amplitude and frequency for the sine wave
-        amplitude = self.brightness 
+        amplitude = self.brightness
+        
         frequency = self.sine_frequency 
 
         # Cycle through colors using current_step
