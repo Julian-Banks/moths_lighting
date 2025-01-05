@@ -291,33 +291,30 @@ class ArtnetController:
     def add_colour(self,colour):
             for artnet_device in self.artnet_devices: 
                 if artnet_device.edit_config :
-                    bars = self.device_bars_map[artnet_device]
-                    for bar in bars : 
+                    if self.device_bars_map[artnet_device]:
+                        bar = self.device_bars_map[artnet_device][0]
                         bar.colour_manager.add_colour(colour)
+                        bar.colour_manager.update_config()
                         bar.update_colours()
-                    if len(bars) > 0:
-                        bars[0].colour_manager.update_config()
                         
                         
     def update_colour(self, idx, colour):
             for artnet_device in self.artnet_devices: 
                 if artnet_device.edit_config :
-                    bars = self.device_bars_map[artnet_device]
-                    for bar in bars : 
+                    if self.device_bars_map[artnet_device]:
+                        bar = self.device_bars_map[artnet_device][0]
                         bar.colour_manager.update_colour(idx, colour)
                         bar.update_colours()
-                    if len(bars) > 0:
-                        bars[0].colour_manager.update_config()
+                        bar.colour_manager.update_config()
                         
     def remove_colour(self, idx ):
             for artnet_device in self.artnet_devices: 
                 if artnet_device.edit_config :
-                    bars = self.device_bars_map[artnet_device]
-                    for bar in bars : 
+                    if self.device_bars_map[artnet_device]:
+                        bar = self.device_bars_map[artnet_device][0]
                         bar.colour_manager.remove_colour(idx )
                         bar.update_colours()
-                    if len(bars) > 0:
-                        bars[0].colour_manager.update_config()
+                        bar.colour_manager.update_config()
                         
     def get_colour_list(self):
         for artnet_device in self.artnet_devices: 
