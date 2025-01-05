@@ -69,7 +69,7 @@ class Bar:
         self.mid_upper_bound = config['mid_upper_bound']
         self.mid_debounce = config['mid_debounce']
         self.bass_debounce = config['bass_debounce']
-        self.colour_offset = 0.25 #config['colour_offset']
+        self.colour_offset = config['colour_offset']
     
     def get_config(self):
         with open(self.config_file, 'r') as file:
@@ -657,7 +657,7 @@ class Bar:
         with self.lock:
             self.colours = self.colour_manager.get_colour_list()
             self.all_colours = self.cycle_colours(colours=self.colours,steps_per_transition=self.steps_per_transition)
-            self.current_step = int(round(len(self.all_colours)*self.colour_offset*self.controller_idx))
+            self.current_step = int(round(len(self.all_colours)*self.colour_offset*self.controller_idx))%len(self.all_colours) #Calculate the colour offset and clamp to the range of self.all_colours
         
     ### Update colours then calls cycle colours to create the list of all colours to cycle through
     def cycle_colours(self, colours, steps_per_transition):
