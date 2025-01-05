@@ -447,6 +447,15 @@ class Display:
             return self.artnet_controller.get_edit_config(controller_num)
         
         
+        def set_colour_offset(value):
+            self.artnet_controller.set_parameter('colour_offset',value)
+            self.artnet_controller.update_bar_colours()
+            
+        def get_colour_offset():
+            return self.artnet_controller.get_parameter('colour_offset')    
+        
+        
+        
         # DEFINE ACTION FUNCTIONS (FOR ON PUSH)
         #Shows the fft_stats
         def show_fft_stats():
@@ -457,11 +466,11 @@ class Display:
         lighting_options_menu = Menu("Lighting Options", items=[
             AdjustableMenuItem("Brightness", get_brightness, set_brightness, min_value=0.1, max_value=1, step=0.1),
             AdjustableMenuItem("Fade", get_fade, set_fade, min_value=0.02, max_value=0.2, step=0.01),
-            AdjustableMenuItem("Mid Debounce",get_mid_debounce, set_mid_debounce, min_value=0, max_value=0.5, step=0.05),
-            AdjustableMenuItem("Bass Debounce",get_bass_debounce, set_bass_debounce, min_value=0, max_value=0.5, step=0.05),
-            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
+            
+            
+          
             # Add other adjustable items...
-            DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
+            
             MenuItem("Back")
         ])
 
@@ -473,6 +482,14 @@ class Display:
         MenuItem("Confirm Colour", action=add_colour),
         MenuItem("Back")
         ])
+        
+        colour_options_menu = Menu("Colour Options", items= [
+            DynamicMenuItem("Edit Colours", submenu_func=edit_colour_list),
+            AdjustableMenuItem("Time per colour", get_time_per_colour, set_time_per_colour, min_value = 5, max_value = 600, step = 5),
+            AdjustableMenuItem("Colour Offset",get_colour_offset, set_colour_offset, min_value = 0, max_value = 1, step = 0.05),
+            MenuItem("Back")
+        ])
+        
               
         # Audio Options Menu
         audio_options_menu = Menu("Audio Options", items=[
@@ -481,10 +498,12 @@ class Display:
             AdjustableMenuItem("Bass Trigger", get_bass_threshold,  set_bass_threshold, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Bass LB", get_bass_lower_bound, set_bass_lower_bound, min_value=0, max_value=get_bass_upper_bound(), step=10),
             AdjustableMenuItem("Bass UB", get_bass_upper_bound, set_bass_upper_bound, min_value=get_bass_lower_bound(), max_value=300, step=10),
+            AdjustableMenuItem("Bass Debounce",get_bass_debounce, set_bass_debounce, min_value=0, max_value=0.5, step=0.05),
             AdjustableMenuItem("Mid Trigger", get_mid_threshold, set_mid_threshold, min_value=0, max_value=1, step=0.1),
             AdjustableMenuItem("Mid LB", get_mid_lower_bound, set_mid_lower_bound, min_value=200, max_value=5000, step=100),
             AdjustableMenuItem("Mid UB", get_mid_upper_bound, set_mid_upper_bound, min_value=200, max_value=5000, step=100),
-            MenuItem("Show FFT Stats", action=show_fft_stats),
+            AdjustableMenuItem("Mid Debounce",get_mid_debounce, set_mid_debounce, min_value=0, max_value=0.5, step=0.05),
+            
             # Add other adjustable items...
             MenuItem("Back")
         ])
@@ -509,6 +528,7 @@ class Display:
         # Options Menu
         options_menu = Menu("Options", items=[
             MenuItem("Lighting Options", submenu=lighting_options_menu),
+            MenuItem("Colour Options", submenu = colour_options_menu),
             MenuItem("Audio Options", submenu=audio_options_menu),
             MenuItem("Mode Manager", submenu=mode_menu),
             MenuItem("Back")
@@ -534,6 +554,7 @@ class Display:
             #MenuItem("ArtNet FPS", action=lambda: print(f"ArtNet FPS: {self.artnet_fps}")),
             MenuItem("Bars Per Controller.", submenu=configure_controllers_menu),
             MenuItem("Edit Config", submenu=esp_select_menu),
+            MenuItem("Show FFT Stats", action=show_fft_stats),
             # Add other main menu items...
         ])
         
