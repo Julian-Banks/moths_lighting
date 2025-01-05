@@ -17,7 +17,7 @@ class ColourManager:
         config = self.get_config()
         #print(f"in colour manager: {config}")
         self.colours = []
-        self.target_file = 'moths_lighting/config/colour_config.yaml'
+        self.target_file = '/home/moths/moths_lighting/moths_lighting/config/colour_config.yaml'
         
         for colour in config:
             #print(f"colour: {colour}")
@@ -31,7 +31,7 @@ class ColourManager:
             
             
     def get_config(self):
-        with open('moths_lighting/config/colour_config.yaml', 'r') as file:
+        with open(self.target_file, 'r') as file:
             data = yaml.safe_load(file)
         data = data[self.controller_idx]
         return data
@@ -67,7 +67,7 @@ class ColourManager:
     
     def update_config(self):
         # Get the current working directory
-        target_file = 'moths_lighting/config/colour_config.yaml'
+        target_file = self.target_file
         to_print = self.dictify()
         current_directory = os.getcwd()
         #print(f"Current working directory: {current_directory}")
