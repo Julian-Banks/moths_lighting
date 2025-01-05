@@ -323,7 +323,7 @@ class ArtnetController:
                         bar.colour_manager.remove_colour(idx )
                         bar.update_colours()
                     if len(bars) > 0:
-                        bars[0].update_colours()
+                        bars[0].colour_manager.update_config()
                         
     def get_colour_list(self):
         for artnet_device in self.artnet_devices: 

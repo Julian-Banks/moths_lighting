@@ -48,7 +48,7 @@ class ColourManager:
         #print(f"idx: {idx}, len: {len(self.colours)}")
         if 0 <= idx < len(self.colours):
             self.colours.pop(idx)
-            self.update_config()
+            
             
     def update_colour(self, index, colour):
         #print('in update colour')
