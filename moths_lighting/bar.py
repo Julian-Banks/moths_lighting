@@ -11,7 +11,7 @@ from scipy.signal import find_peaks
 class Bar:
     def __init__(self,colour_manager, mode_manager,controller_idx, num_leds=96):
         
-        self.config_file = '/home/moths/moths_lighting/moths_lighting/config/bar_config.yaml'
+        self.config_file = 'moths_lighting/moths_lighting/config/bar_config.yaml'
         self.controller_idx = controller_idx
         self.set_config()
         #standard, always the same properties

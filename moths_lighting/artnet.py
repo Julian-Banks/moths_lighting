@@ -11,7 +11,7 @@ from mode_manager import ModeManager
 
 class ArtnetController:
     def __init__(self):
-        self.esp_config_file = '/home/moths/moths_lighting/moths_lighting/config/esp_config.yaml'
+        self.esp_config_file = 'moths_lighting/moths_lighting/config/esp_config.yaml'
         self.device_bars_map = {}
         self.artnet_devices = []
         self.num_leds = 60      #Need to update to 96 for the new strips

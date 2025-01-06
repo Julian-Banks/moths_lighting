@@ -17,7 +17,7 @@ class ColourManager:
         config = self.get_config()
         #print(f"in colour manager: {config}")
         self.colours = []
-        self.target_file = '/home/moths/moths_lighting/moths_lighting/config/colour_config.yaml'
+        self.target_file = 'moths_lighting/moths_lighting/config/colour_config.yaml'
         
         for colour in config:
             #print(f"colour: {colour}")
