@@ -10,7 +10,7 @@ class mode:
 
 class ModeManager:
     def __init__(self, controller_idx):
-        self.mode_config_file = 'moths_lighting/config/mode_config.yaml'
+        self.mode_config_file = 'moths_lighting/moths_lighting/config/mode_config.yaml'
         self.modes = []
         self.modes_menu = []
         self.auto_cycle_modes = []
