@@ -1,6 +1,12 @@
 
-source ~/venv/bin/activate
+cd /
+cd home/moths
 
-git pull origin main
 
-sudo -E ~/venv/bin/python ~/moths_lighting/moths_lighting/main.py
+source venv/bin/activate
+
+cd moths_lighting/
+sudo -u moths git pull origin main
+
+cd ..
+sudo -E venv/bin/python moths_lighting/moths_lighting/main.py
