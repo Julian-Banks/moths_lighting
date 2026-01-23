@@ -12,8 +12,8 @@ class Colour:
 #A class that stores a list of colours and has functions to remove, add, get and set them.
 class ColourManager:
     def __init__(self,controller_idx):
-        
-        self.target_file = 'moths_lighting/moths_lighting/config/colour_config.yaml'
+        # Use path relative to this script's location
+        self.target_file = os.path.join(os.path.dirname(__file__), 'config', 'colour_config.yaml')
         self.controller_idx = controller_idx
         config = self.get_config()
         #print(f"in colour manager: {config}")
