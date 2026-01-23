@@ -194,41 +194,41 @@ class Display:
     def create_menu_structure(self):
         
         #DEFINE FUNCTIONS TO GET AND SET CONFIGURATIONS
-        #LIGHTING OPTIONS                
+        #LIGHTING OPTIONS
         #Brightness options
         def get_brightness():
             return self.artnet_controller.get_parameter('brightness')
         def set_brightness(value):
-            self.artnet_controller.set_parameter('brightness',value)
-       
+            self.artnet_controller.set_parameter_no_save('brightness',value)
+
         #Fade options
         def get_fade():
             return self.artnet_controller.get_parameter('fade')
         def set_fade(value):
-            self.artnet_controller.set_parameter('fade',value)
-            
+            self.artnet_controller.set_parameter_no_save('fade',value)
+
         def get_mid_debounce():
             return self.artnet_controller.get_parameter('mid_debounce')
         def set_mid_debounce(value):
-            self.artnet_controller.set_parameter('mid_debounce',value)
-            
+            self.artnet_controller.set_parameter_no_save('mid_debounce',value)
+
         def get_bass_debounce():
             return self.artnet_controller.get_parameter('bass_debounce')
         def set_bass_debounce(value):
-            self.artnet_controller.set_parameter('bass_debounce',value)
+            self.artnet_controller.set_parameter_no_save('bass_debounce',value)
         
         
-        #Time per mode  
+        #Time per mode
         def get_time_per_mode():
             return self.artnet_controller.get_parameter('time_per_mode')
         def set_time_per_mode(value):
-            self.artnet_controller.set_parameter('time_per_mode',value)
-        
+            self.artnet_controller.set_parameter_no_save('time_per_mode',value)
+
         #Need to add Colour Cycle Speed
         def get_time_per_colour():
             return self.artnet_controller.get_time_per_colour()
         def set_time_per_colour(value):
-            self.artnet_controller.set_time_per_colour(value)
+            self.artnet_controller.set_time_per_colour(value, save=False)
         
         #Need to add Colour Picker
         #here comes the cavalery. IDK how much longer this file can get...
@@ -349,10 +349,9 @@ class Display:
         
         def get_auto_cycle():
             return self.artnet_controller.get_parameter('auto_cycle')
-       
+
         def set_auto_cycle(value):
-            self.artnet_controller.set_parameter('auto_cycle',value)
-            #print(f'in display, setting auto cycle to {value}')
+            self.artnet_controller.set_parameter_no_save('auto_cycle',value)
             
         #CONFIGURE AUDIO OPTIONS
         #Trigger Style
@@ -361,44 +360,44 @@ class Display:
             if trigger_style == "max":
                 return 0
             else:
-                return 1               
+                return 1
         def set_trigger_style(value):
             if value == 0:
-                self.artnet_controller.set_parameter('trigger_style',"max")
+                self.artnet_controller.set_parameter_no_save('trigger_style',"max")
             elif value == 1:
-                self.artnet_controller.set_parameter("trigger_style","mean")
-        
+                self.artnet_controller.set_parameter_no_save("trigger_style","mean")
+
         #Bass options
         def get_bass_lower_bound():
             return self.artnet_controller.get_parameter('bass_lower_bound')
         def set_bass_lower_bound(value):
-            self.artnet_controller.set_parameter('bass_lower_bound',value)
-            
+            self.artnet_controller.set_parameter_no_save('bass_lower_bound',value)
+
         def get_bass_upper_bound():
             return self.artnet_controller.get_parameter('bass_upper_bound')
         def set_bass_upper_bound(value):
-            self.artnet_controller.set_parameter('bass_upper_bound',value)
-        
+            self.artnet_controller.set_parameter_no_save('bass_upper_bound',value)
+
         def get_bass_threshold():
             return self.artnet_controller.get_parameter('bass_threshold')
         def set_bass_threshold(value):
-            self.artnet_controller.set_parameter('bass_threshold',value)     
-        
+            self.artnet_controller.set_parameter_no_save('bass_threshold',value)
+
         #Mid options
         def get_mid_lower_bound():
             return self.artnet_controller.get_parameter('mid_lower_bound')
         def set_mid_lower_bound(value):
-            self.artnet_controller.set_parameter('mid_lower_bound',value)
+            self.artnet_controller.set_parameter_no_save('mid_lower_bound',value)
 
         def get_mid_upper_bound():
-            return self.artnet_controller.get_parameter('mid_upper_bound')        
+            return self.artnet_controller.get_parameter('mid_upper_bound')
         def set_mid_upper_bound(value):
-            self.artnet_controller.set_parameter('mid_upper_bound',value)
-        
+            self.artnet_controller.set_parameter_no_save('mid_upper_bound',value)
+
         def get_mid_threshold():
-            return self.artnet_controller.get_parameter('mid_threshold')     
+            return self.artnet_controller.get_parameter('mid_threshold')
         def set_mid_threshold(value):
-            self.artnet_controller.set_parameter('mid_threshold',value)
+            self.artnet_controller.set_parameter_no_save('mid_threshold',value)
 
         #Audio Sensitivity
         def get_audio_sensitivity():
@@ -457,9 +456,9 @@ class Display:
         
         
         def set_colour_offset(value):
-            self.artnet_controller.set_parameter('colour_offset',value)
+            self.artnet_controller.set_parameter_no_save('colour_offset',value)
             self.artnet_controller.update_bar_colours()
-            
+
         def get_colour_offset():
             return self.artnet_controller.get_parameter('colour_offset')    
         
@@ -579,7 +578,11 @@ class Display:
             if self.showing_fft:
                 self.showing_fft = False
             else:
+                was_adjusting = self.menu_manager.adjusting
                 self.menu_manager.on_button_push()
+                # Save config when exiting adjust mode
+                if was_adjusting and not self.menu_manager.adjusting:
+                    self.artnet_controller.save_bar_config()
 
     #THE DISPLAY THREAD, RUNS CONTINUALLY AND MONTIORS/UPDATES THE DISPLAY
     def update_display(self):
@@ -603,8 +606,8 @@ class Display:
 
     #DRAW THE CURRENT MENU, HANDLES THE LOGIC OF WHAT TO DISPLAY
     def draw_current_menu(self):
-        
-        if self.menu_manager.current_menu.regenerate is not None: 
+        # Only regenerate menus when NOT adjusting to avoid stale references
+        if self.menu_manager.current_menu.regenerate is not None and not self.menu_manager.adjusting:
                 submenu = self.menu_manager.menu_stack[-1].regenerate()    #regenerate the menu
                 self.menu_manager.menu_stack[-1] = submenu          #display it. 
                 

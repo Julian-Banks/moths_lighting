@@ -243,14 +243,15 @@ class ArtnetController:
                 steps_per_transisiton.append(bar.steps_per_transition)
         time_per_colour = int(steps_per_transisiton[0]/self.fps)
         return time_per_colour
-    def set_time_per_colour(self,value):
+
+    def set_time_per_colour(self, value, save=True):
         steps_per_transition = value*self.fps
         for artnet_device in self.artnet_devices:
             bars = self.device_bars_map[artnet_device]
             for bar in bars:
-                bar.steps_per_transition  = steps_per_transition
+                bar.steps_per_transition = steps_per_transition
                 bar.update_colours()
-            if len(bars) > 0:
+            if save and len(bars) > 0:
                 bars[0].update_config()
         
         
@@ -267,8 +268,8 @@ class ArtnetController:
         if len(parameters) > 0:
             return parameters[0]
         else:
-            return 0 
-    
+            return 0
+
     def set_parameter(self, parameter, value):
         for artnet_device in self.artnet_devices:
             if artnet_device.edit_config:
@@ -277,6 +278,23 @@ class ArtnetController:
                     setattr(bar, parameter, value)
                 if len(bars) > 0:
                     bars[0].update_config()
+
+    def set_parameter_no_save(self, parameter, value):
+        """Set parameter without saving to disk - use for live adjustments"""
+        for artnet_device in self.artnet_devices:
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                for bar in bars:
+                    setattr(bar, parameter, value)
+
+    def save_bar_config(self):
+        """Save bar config to disk - call when done adjusting"""
+        for artnet_device in self.artnet_devices:
+            if artnet_device.edit_config:
+                bars = self.device_bars_map[artnet_device]
+                if len(bars) > 0:
+                    bars[0].update_config()
+                    return  # Only need to save once
 
 #First we need to be able to get and set whether artnetManagers are in edit_config mode or not.
     def get_edit_config(self, controller_idx):
