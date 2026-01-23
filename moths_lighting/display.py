@@ -155,10 +155,11 @@ class Display:
         # Initialize display device
         self.device = ssd1306(i2c(port=1, address=0x3C), width=128, height=64)
         try:
-            font_path = os.path.join(os.path.dirname(__file__), "Roboto-Light.ttf")
+            # Font is in the project root (parent of moths_lighting package)
+            font_path = os.path.join(os.path.dirname(__file__), "..", "Roboto-Light.ttf")
             self.font = ImageFont.truetype(font_path, 10)
-        except AttributeError as e:
-            print(f"Error: {e}")
+        except (AttributeError, OSError) as e:
+            print(f"Font not found, using default: {e}")
             self.font = ImageFont.load_default()
 
         # Initialize system components
